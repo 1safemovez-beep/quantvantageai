@@ -1,9 +1,10 @@
-# Ignore local env and virtualenv
 .env
 .venv/
 __pycache__/
 *.pyc
 history.json
-
-# OS files
+coin_balances.json
+.env.local
+.env.development
+.env.production
 .DS_Store

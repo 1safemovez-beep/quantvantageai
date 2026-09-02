@@ -1,12 +1,13 @@
 # QuantVantageAI (repo: quantvantageai)
 
-This repository contains a demo scaffold for an "app evaluation" tool backed by an AI assistant. The repo previously contained PDFs; this scaffold adds a Streamlit example app, a README, and supporting files so you can run a local demo.
+This repository contains a demo scaffold for an "app evaluation" tool backed by an AI assistant. The repo previously contained PDF files (certificate.pdf and fghagft9); this scaffold adds a Streamlit example app, styling, and a simple in-app coin system.
 
 Features
 - Streamlit example UI that collects human answers to an evaluation questionnaire.
+- Simple CoinManager (JSON-backed) that tracks user coins and supports earn/spend actions.
 - Placeholder AI assistant call to QuantumVantage (configurable via environment variables).
-- Simple charts (Plotly) that summarize responses.
-- Local history logging of interactions to history.json.
+- Simple Plotly charts that summarize responses.
+- Styling (metallic/chrome background, pop colors) and print-friendly overrides.
 
 Quick start (Python / Streamlit)
 1. Clone the repo:
@@ -30,9 +31,9 @@ Configuration
 - QUANTVANTAGE_API_KEY: Your API key for the QuantumVantage service. If not provided, the app uses a local mock assistant for demos.
 - QUANTVANTAGE_API_URL: The assistant endpoint. Default in .env.example is a placeholder. Replace with the real endpoint if you have it.
 
-Notes
-- The current repo root includes PDF files (certificate.pdf and fghagft9). Verify whether those should remain in a public repo.
-- This scaffold uses a placeholder request format for the AI assistant. Update examples/streamlit_app.py with the real API contract for QuantumVantage when you have the docs.
+Coin system
+- The app includes a simple JSON-backed coin store (coin_balances.json). This is NOT a blockchain token — it's a local rewards system to let your agent reward users.
+- To upgrade to a blockchain ERC-20 token, see the TODOs in the README.
 
 Next steps
 - Add your real QuantumVantage API endpoint and API key to .env, or implement a proper SDK call if QuantumVantage provides one.

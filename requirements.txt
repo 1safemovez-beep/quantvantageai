@@ -1,4 +1,3 @@
-# Python / Streamlit demo dependencies
 streamlit
 requests
 python-dotenv
