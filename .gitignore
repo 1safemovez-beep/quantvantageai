@@ -1,0 +1,9 @@
+# Ignore local env and virtualenv
+.env
+.venv/
+__pycache__/
+*.pyc
+history.json
+
+# OS files
+.DS_Store
