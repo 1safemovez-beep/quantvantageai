@@ -3,297 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuantVantage AI - Respiratory Evaluation</title>
+    <title>QuantVantage AI | Commercial Architecture Engine</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #D4AF37; /* Sophisticated Gold */
+            --bg: #0A0A0B; /* Deep Space Black */
+            --text: #E0E0E0;
+            --text-dim: #999;
         }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            line-height: 1.6; 
+            margin: 0; 
+            color: var(--text); 
+            background: var(--bg);
+            background-image: radial-gradient(circle at 50% -20%, #1A1A2E 0%, #0A0A0B 80%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
         }
-
-        .container {
-            max-width: 900px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
+        .container { max-width: 900px; margin: 0 auto; padding: 60px 20px; text-align: center; }
+        header { padding: 100px 0 60px; }
+        h1 { 
+            font-size: 3.5rem; 
+            margin-bottom: 15px; 
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(180deg, #FFFFFF 0%, #A0A0A0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 60px 40px;
-            color: white;
-            text-align: center;
+        .tagline { font-size: 1.4rem; color: var(--text-dim); margin-bottom: 40px; font-weight: 300; }
+        .cta-button { 
+            display: inline-block; 
+            background: #FFFFFF; 
+            color: #000; 
+            padding: 18px 48px; 
+            border-radius: 2px; 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 1.1rem; 
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            margin: 10px;
         }
-
-        .header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        .cta-button:hover { 
+            background: transparent;
+            color: #FFF;
+            border-color: #FFF;
+            transform: translateY(-2px);
         }
-
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.95;
+        .btn-gold {
+            background: var(--accent);
+            color: #000;
         }
-
-        .content {
-            padding: 60px 40px;
+        .btn-gold:hover {
+            color: var(--accent);
+            border-color: var(--accent);
         }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
+        .features { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+            margin: 80px 0; 
+            text-align: left; 
         }
-
-        .feature-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            padding: 30px;
-            border-radius: 15px;
-            color: white;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .feature-card { 
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 40px; 
+            border: 1px solid var(--glass-border);
+            transition: border-color 0.3s;
         }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
-        }
-
-        .feature-card h3 {
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-
-        .feature-card p {
-            font-size: 0.95em;
-            line-height: 1.6;
-        }
-
-        .cta-section {
-            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .cta-section h2 {
-            color: white;
+        .feature-card:hover { border-color: var(--accent); }
+        .feature-card h3 { 
+            color: var(--accent); 
+            margin-top: 0; 
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
             margin-bottom: 20px;
-            font-size: 2em;
         }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
+        .feature-card p { font-weight: 300; color: var(--text-dim); }
+        .price-badge { 
+            border: 1px solid var(--accent);
+            color: var(--accent); 
+            padding: 6px 20px; 
+            font-size: 0.8rem; 
+            margin-bottom: 20px; 
+            display: inline-block; 
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
         }
-
-        .btn {
-            padding: 15px 40px;
-            font-size: 1.1em;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
+        footer { 
+            margin-top: 120px; 
+            padding: 40px 0;
+            font-size: 0.8rem; 
+            color: var(--text-dim);
+            border-top: 1px solid var(--glass-border);
+        }
+        .link-mall {
+            color: var(--accent);
             text-decoration: none;
-            display: inline-block;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s;
         }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .info-section {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-
-        .info-section h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-
-        .info-section ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .info-section li {
-            padding: 10px 0;
-            padding-left: 30px;
-            position: relative;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .info-section li:before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #f5576c;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-
-        .coin-badge {
-            background: linear-gradient(135deg, #ffd26a 0%, #ffc371 100%);
-            padding: 10px 20px;
-            border-radius: 50px;
-            display: inline-block;
-            font-weight: bold;
-            color: #333;
-            margin: 10px 0;
-        }
-
-        .footer {
-            background: #f8f9fa;
-            padding: 30px 40px;
-            text-align: center;
-            color: #666;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .footer p {
-            margin-bottom: 10px;
-        }
-
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
-            }
-
-            .content, .header {
-                padding: 30px 20px;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
+        .link-mall:hover {
+            border-color: var(--accent);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🫁 QuantVantage AI</h1>
-            <p>Respiratory Evaluation & AI Assessment Tool</p>
+
+<div class="container">
+    <header>
+        <span class="price-badge">Analytical Intelligence Engine</span>
+        <h1>QuantVantage AI</h1>
+        <p class="tagline">Sophisticated commercial architecture and health optics for the next generation of ventures.</p>
+        
+        <div style="margin-top: 40px;">
+            <a href="https://quantvantageai.streamlit.app" class="cta-button btn-gold">Initialize App Analysis</a>
+            <a href="https://quantvantageai.streamlit.app" class="cta-button">Respiratory Health (Beta)</a>
         </div>
+    </header>
 
-        <div class="content">
-            <div class="cta-section">
-                <h2>Welcome to the Future of Health Evaluation</h2>
-                <p style="margin-bottom: 20px; font-size: 1.1em;">
-                    Powered by Claude AI & advanced analytics
-                </p>
-                <div class="button-group">
-                    <a href="https://quantvantageai.streamlit.app" class="btn btn-primary">Launch Evaluation App</a>
-                    <a href="#learn-more" class="btn btn-secondary">Learn More</a>
-                </div>
-            </div>
-
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <h3>🤖 AI-Powered</h3>
-                    <p>Advanced Claude AI assistant provides intelligent feedback on your respiratory evaluations</p>
-                </div>
-                <div class="feature-card">
-                    <h3>💰 Coin Rewards</h3>
-                    <p>Earn coins for completing evaluations and redeem them for premium insights</p>
-                </div>
-                <div class="feature-card">
-                    <h3>📊 Analytics</h3>
-                    <p>Track your progress with detailed charts and statistics</p>
-                </div>
-            </div>
-
-            <div class="info-section" id="learn-more">
-                <h3>How It Works</h3>
-                <ul>
-                    <li>Answer evaluation questions about respiratory health metrics</li>
-                    <li>Receive personalized AI-driven feedback from Claude</li>
-                    <li>Earn coins for quality evaluations</li>
-                    <li>Spend coins to unlock advanced features and insights</li>
-                    <li>Track your evaluation history and improvement over time</li>
-                </ul>
-            </div>
-
-            <div class="info-section">
-                <h3>Key Features</h3>
-                <ul>
-                    <li>Interactive questionnaire with usability, performance, and design metrics</li>
-                    <li>Real-time AI analysis powered by Claude</li>
-                    <li>JSON-backed coin management system for rewards</li>
-                    <li><span class="coin-badge">COIN System</span> - Earn and spend coins for participation</li>
-                    <li>Beautiful, responsive interface with print-friendly design</li>
-                    <li>Multi-user support with personalized dashboards</li>
-                </ul>
-            </div>
-
-            <div style="text-align: center; margin-top: 40px;">
-                <h3 style="color: #667eea; margin-bottom: 20px;">Ready to Get Started?</h3>
-                <a href="https://quantvantageai.streamlit.app" class="btn btn-primary">Launch App Now</a>
-            </div>
+    <section class="features">
+        <div class="feature-card" style="border-color: var(--accent);">
+            <h3>Commercial Core</h3>
+            <p>Precise cost projections for Week, Month, Year, and 3-Year horizons with net margin auditing and competitive "Stand Out" analysis.</p>
         </div>
-
-        <div class="footer">
-            <p><strong>QuantVantage AI</strong> - Respiratory Evaluation System</p>
-            <p>Powered by <a href="https://streamlit.io">Streamlit</a> & <a href="https://www.anthropic.com">Claude AI</a></p>
-            <p style="margin-top: 15px; font-size: 0.9em;">
-                © 2024 1safemovez-beep. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
-            </p>
+        <div class="feature-card">
+            <h3>Health Optics</h3>
+            <p>Advanced respiratory metrics analysis powered by Claude AI to identify physiological trends and health optimizations.</p>
         </div>
-    </div>
+        <div class="feature-card">
+            <h3>Scalable AI</h3>
+            <p>A unified infrastructure designed to support future specialized evaluations across any industry or vertical.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 QuantVantage AI. Powered by Streamlit & Claude AI.</p>
+        <p style="margin-top: 15px;">
+            <a href="https://quantvantage.ai/mall" class="link-mall">Explore the Premium Tool Bazaar Mall</a>
+        </p>
+    </footer>
+</div>
+
 </body>
 </html>
