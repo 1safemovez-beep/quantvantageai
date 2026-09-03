@@ -71,6 +71,16 @@ with tab1:
                         st.write(f"**Est. Profit:** ${data['profit_amount']}")
                     st.info(f"**Stand Out:** {data['stand_out']}")
                     st.success(f"**Run Better:** {data['run_better']}")
+                    
+                    st.divider()
+                    st.header("📂 Export & Share")
+                    if st.button("🖨️ Prepare for Print"):
+                        st.info("Browser print dialog opening... Use 'Save as PDF' to keep your report.")
+                        st.markdown("<script>window.print();</script>", unsafe_allow_html=True)
+                    
+                    st.divider()
+                    st.markdown("### 🏢 Featured Ecosystem")
+                    st.markdown("[Explore the Premium Tool Bazaar Mall](https://quantvantage.ai/mall)")
                 except: st.error("Parsing failed.")
 
 with tab2:
