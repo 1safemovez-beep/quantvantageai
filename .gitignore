@@ -8,3 +8,4 @@ coin_balances.json
 .env.development
 .env.production
 .DS_Store
+private_assets/
