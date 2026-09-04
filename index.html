@@ -6,170 +6,163 @@
     <title>QuantVantage AI | Commercial Evaluation Engine</title>
     <style>
         :root {
-            --accent: #D4AF37; /* Gold */
-            --teal: #00BFA5;
-            --purple: #7C4DFF;
-            --bg: #050505;
-            --glass: rgba(255, 255, 255, 0.05);
-            --text: #F0F0F0;
+            --emerald: #008F68;
+            --chrome: #E8E8E8;
+            --chrome-dark: #A9A9A9;
+            --purple-deep: #4B0082;
+            --emerald-glow: #50C878;
+            --bg-black: #000000;
+            --glass-chrome: rgba(232, 232, 232, 0.05);
         }
         body { 
             font-family: 'Inter', -apple-system, sans-serif; 
             margin: 0; 
-            background: var(--bg); 
-            color: var(--text);
+            background: var(--bg-black); 
+            color: var(--chrome);
             overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 50%, #111 0%, #050505 100%);
+            background-image: radial-gradient(circle at 50% 50%, #0D0D0F 0%, #000 100%);
         }
         .container { max-width: 1000px; margin: 0 auto; padding: 60px 20px; text-align: center; position: relative; }
         
         /* THE PEACOCK TRIANGLE LOGO */
-        .logo-container { margin-bottom: 40px; }
-        .peacock-svg { width: 120px; height: 120px; filter: drop-shadow(0 0 10px var(--teal)); }
+        .peacock-svg { 
+            width: 160px; height: 160px; 
+            filter: drop-shadow(0 0 15px var(--emerald-glow)); 
+            margin-bottom: 20px;
+        }
         
-        header { padding: 40px 0; }
         h1 { 
-            font-size: 3.8rem; 
-            letter-spacing: -0.03em; 
-            font-weight: 800; 
-            background: linear-gradient(135deg, #FFF 0%, #AAA 100%);
+            font-size: 4.2rem; 
+            letter-spacing: -0.04em; 
+            font-weight: 900; 
+            background: linear-gradient(180deg, #FFFFFF 0%, var(--chrome-dark) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin: 10px 0;
+            margin: 0;
+            text-transform: uppercase;
         }
-        .tagline { font-size: 1.5rem; color: #888; font-weight: 300; margin-bottom: 50px; }
+        .tagline { font-size: 1.6rem; color: var(--emerald); font-weight: 300; margin-bottom: 60px; letter-spacing: 0.1em; }
 
         /* CTA SECTION */
         .hero-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 60px;
-            border-radius: 4px;
+            background: var(--glass-chrome);
+            backdrop-filter: blur(40px);
+            border: 2px solid var(--chrome-dark);
+            padding: 80px 40px;
+            border-radius: 0px;
             margin-bottom: 80px;
-            position: relative;
-            overflow: hidden;
-        }
-        .hero-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0,191,165,0.1) 0%, transparent 70%);
-            z-index: -1;
+            box-shadow: 0 0 40px rgba(0, 143, 104, 0.1);
         }
 
         .btn {
             display: inline-block;
-            padding: 20px 50px;
-            font-size: 1.1rem;
-            font-weight: 700;
+            padding: 22px 60px;
+            font-size: 1.2rem;
+            font-weight: 800;
             text-decoration: none;
             text-transform: uppercase;
-            letter-spacing: 0.15em;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            letter-spacing: 0.2em;
+            transition: all 0.3s ease;
             margin: 15px;
             cursor: pointer;
-            border: 1px solid transparent;
+            border-radius: 0;
         }
-        .btn-gold { background: var(--accent); color: #000; border-radius: 2px; }
-        .btn-gold:hover { background: transparent; color: var(--accent); border-color: var(--accent); transform: translateY(-4px); }
-        .btn-outline { border: 1px solid rgba(255,255,255,0.3); color: #FFF; }
-        .btn-outline:hover { border-color: #FFF; background: rgba(255,255,255,0.1); transform: translateY(-4px); }
+        .btn-chrome { 
+            background: linear-gradient(180deg, #FFF 0%, var(--chrome-dark) 100%); 
+            color: #000; 
+            border: none;
+        }
+        .btn-chrome:hover { 
+            background: var(--emerald); 
+            color: #FFF;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--emerald);
+        }
+        .btn-outline-purple { 
+            border: 2px solid var(--purple-deep); 
+            color: #FFF; 
+        }
+        .btn-outline-purple:hover { 
+            background: var(--purple-deep); 
+            border-color: #FFF;
+        }
 
         /* FEATURES GRID */
         .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; text-align: left; }
         .card { 
             padding: 40px; 
-            background: var(--glass); 
-            border: 1px solid rgba(255,255,255,0.05); 
-            transition: 0.3s;
+            background: #080808; 
+            border-left: 4px solid var(--emerald);
+            transition: 0.4s;
         }
-        .card:hover { border-color: var(--teal); background: rgba(0,191,165,0.05); }
-        .card h3 { color: var(--teal); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.9rem; margin-bottom: 20px; }
-        .card p { color: #999; font-weight: 300; line-height: 1.8; }
+        .card:hover { border-left-color: var(--purple-deep); background: #0C0C0C; }
+        .card h3 { color: var(--chrome); text-transform: uppercase; letter-spacing: 0.2em; font-size: 1rem; margin-bottom: 20px; }
+        .card p { color: #666; font-weight: 400; line-height: 1.8; font-size: 0.95rem; }
 
-        /* ACCIO PROMOTION BADGE */
-        .accio-badge {
-            margin-top: 100px;
-            padding: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(124, 77, 255, 0.1);
-            border: 1px solid rgba(124, 77, 255, 0.2);
-            border-radius: 50px;
-            text-decoration: none;
-            color: #AAA;
-            transition: 0.3s;
-        }
-        .accio-badge:hover { background: rgba(124, 77, 255, 0.2); color: #FFF; transform: scale(1.05); }
-        .accio-icon { width: 30px; height: 30px; fill: var(--purple); }
-
-        footer { margin-top: 60px; padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; color: #555; }
-        .mall-link { color: var(--accent); text-decoration: none; }
+        footer { margin-top: 100px; padding: 40px 0; border-top: 1px solid #111; font-size: 0.8rem; color: #444; text-transform: uppercase; letter-spacing: 0.1em; }
+        .link-mall { color: var(--emerald); text-decoration: none; font-weight: bold; }
+        .link-mall:hover { color: #FFF; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="logo-container">
-        <!-- PEACOCK TRIANGLE LOGO SVG -->
         <svg class="peacock-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <defs>
-                <linearGradient id="peacockGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:var(--teal);stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:var(--purple);stop-opacity:1" />
+                <linearGradient id="peacockChrome" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:var(--emerald);stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:var(--purple-deep);stop-opacity:1" />
                 </linearGradient>
             </defs>
-            <!-- Outer Triangle -->
-            <polygon points="50,5 95,85 5,85" fill="none" stroke="var(--accent)" stroke-width="2" />
-            <!-- Peacock Body -->
-            <circle cx="50" cy="65" r="10" fill="url(#peacockGrad)" />
-            <path d="M50,55 Q50,45 55,40 Q50,35 45,40 Q50,45 50,55" fill="url(#peacockGrad)" />
-            <!-- Feathers -->
-            <line x1="50" y1="65" x2="30" y2="35" stroke="url(#peacockGrad)" stroke-width="1.5" />
-            <line x1="50" y1="65" x2="70" y2="35" stroke="url(#peacockGrad)" stroke-width="1.5" />
-            <line x1="50" y1="65" x2="50" y2="25" stroke="url(#peacockGrad)" stroke-width="1.5" />
-            <circle cx="30" cy="35" r="3" fill="var(--teal)" />
-            <circle cx="70" cy="35" r="3" fill="var(--purple)" />
-            <circle cx="50" cy="25" r="3" fill="var(--accent)" />
+            <polygon points="50,5 95,85 5,85" fill="none" stroke="var(--chrome)" stroke-width="3" />
+            <circle cx="50" cy="65" r="12" fill="url(#peacockChrome)" />
+            <path d="M50,55 Q50,45 55,40 Q50,35 45,40 Q50,45 50,55" fill="var(--chrome)" />
+            <line x1="50" y1="65" x2="30" y2="30" stroke="var(--emerald)" stroke-width="2" />
+            <line x1="50" y1="65" x2="70" y2="30" stroke="var(--purple-deep)" stroke-width="2" />
+            <line x1="50" y1="65" x2="50" y2="20" stroke="var(--chrome)" stroke-width="2" />
+            <circle cx="30" cy="30" r="4" fill="var(--emerald)" />
+            <circle cx="70" cy="30" r="4" fill="var(--purple-deep)" />
+            <circle cx="50" cy="20" r="4" fill="#FFF" />
         </svg>
     </div>
 
     <header>
         <h1>QuantVantage AI</h1>
-        <p class="tagline">The most comprehensive commercial architecture engine for the next generation of founders.</p>
+        <p class="tagline">COMMERCIAL ARCHITECTURE & OPTICS</p>
     </header>
 
     <div class="hero-card">
-        <h2 style="font-weight: 300; letter-spacing: 0.2em; margin-bottom: 40px;">INITIALIZE EVALUATION</h2>
-        <div style="margin-bottom: 40px;">
-            <a href="https://quantvantageai.streamlit.app" class="btn btn-gold">🚀 App Evaluator</a>
-            <a href="https://quantvantageai.streamlit.app" class="btn btn-outline">🫁 Respiratory Health</a>
+        <h2 style="font-weight: 800; letter-spacing: 0.3em; margin-bottom: 40px; color: #FFF;">INITIALIZE CORE</h2>
+        <div>
+            <a href="https://quantvantageai.streamlit.app?mode=app" class="btn btn-chrome">🚀 App Evaluator</a>
+            <a href="https://quantvantageai.streamlit.app?mode=health" class="btn btn-outline-purple">🫁 Health Optics</a>
+            <button id="shareBtn" class="btn" style="border: 1px solid var(--emerald); color: var(--emerald); background: transparent;">🔗 Share Site</button>
         </div>
-        <p style="color: #666; font-size: 0.9rem;">
-            Ready for a full investment-grade report? 
-            <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" style="color: var(--accent); font-weight: bold;">Unlock Premium Analysis ($4.99)</a>
+        <p style="margin-top: 40px;">
+            <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" style="color: var(--emerald); font-weight: 900; text-decoration: none; letter-spacing: 0.1em;">UNLOCK PREMIUM ANALYSIS — $4.99</a>
         </p>
     </div>
 
-    <section class="features">
-        <div class="card">
-            <h3>Revenue Logic</h3>
-            <p>Precise cost projections for Week, Month, Year, and 3-Year horizons. We calculate your exact profit yield and net margin percentage.</p>
-        </div>
-        <div class="card">
-            <h3>Competitive Audit</h3>
-            <p>Our AI identifies the "Better Method" to beat industry leaders. We tell you exactly what stands out about your venture.</p>
-        </div>
-        <div class="card">
-            <h3>Strategic Optimization</h3>
-            <p>Actionable roadmaps to run better, look better, and scale faster. Integrated with the QuantVantage Tool Bazaar Mall.</p>
-        </div>
-    </section>
+    <script>
+        document.getElementById('shareBtn').onclick = async () => {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'QuantVantage AI | Commercial Architecture',
+                        text: 'Check out this futuristic AI evaluation engine.',
+                        url: window.location.href
+                    });
+                } catch (err) {
+                    console.log('Error sharing', err);
+                }
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+            }
+        };
+    </script>
+
 
     <a href="https://accio-ai.com" class="accio-badge">
         <svg class="accio-icon" viewBox="0 0 100 100">

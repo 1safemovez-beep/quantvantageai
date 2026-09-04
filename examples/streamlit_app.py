@@ -74,9 +74,14 @@ with tab1:
                     
                     st.divider()
                     st.header("📂 Export & Share")
-                    if st.button("🖨️ Prepare for Print"):
-                        st.info("Browser print dialog opening... Use 'Save as PDF' to keep your report.")
-                        st.markdown("<script>window.print();</script>", unsafe_allow_html=True)
+                    col_s1, col_s2 = st.columns(2)
+                    with col_s1:
+                        if st.button("🖨️ Prepare for Print"):
+                            st.info("Browser print dialog opening... Use 'Save as PDF' to keep your report.")
+                            st.markdown("<script>window.print();</script>", unsafe_allow_html=True)
+                    with col_s2:
+                        share_text = f"QuantVantage AI Evaluation for {app_name}: Costs starting at ${data['cost_weekly']}/week with a {data['profit_margin_pct']}% margin!"
+                        st.text_input("Copy Shareable Result", value=share_text)
                     
                     st.divider()
                     st.markdown("### 🏢 Featured Ecosystem")
