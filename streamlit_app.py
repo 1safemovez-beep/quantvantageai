@@ -15,6 +15,9 @@ if not st.experimental_user.is_logged_in:
     st.stop()
 
 # --- PROTECTED APP CONTENT ---
+OWNER_EMAIL = "1safemovez@gmail.com"
+is_owner = st.experimental_user.email == OWNER_EMAIL
+
 st.markdown("""
     <style>
     .main { background-color: #F9F9F9; }
@@ -26,11 +29,30 @@ st.markdown("""
         font-weight: bold;
     }
     h1 { color: #3E7096; font-weight: 800; }
+    .owner-badge {
+        background-color: #6F8854;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
+if is_owner:
+    st.markdown('<div class="owner-badge">👑 OWNER & CREATOR ACCESS</div>', unsafe_allow_html=True)
+
 st.title("QuantVantage AI")
 st.write(f"Welcome back, **{st.experimental_user.name}**!")
+
+if is_owner:
+    with st.sidebar.expander("🛠️ Admin Controls"):
+        st.write("Logged in as Creator")
+        if st.button("Refresh All Analytics"):
+            st.rerun()
 
 if st.sidebar.button("Log out"):
     st.logout()
