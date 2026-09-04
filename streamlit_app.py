@@ -4,7 +4,7 @@ import os
 import json
 
 # Restoration of the "First Theme" Design (Clean & Professional)
-st.set_page_config(page_title="QuantVantage AI | Analytical Engine", layout="wide")
+st.set_page_config(page_title="QuantVantage AI Pro | Analytical Engine", layout="wide")
 
 # --- CUSTOM CSS ---
 st.markdown("""
@@ -39,13 +39,13 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- SIDEBAR & PRICING ---
-st.sidebar.title("💎 QuantVantage Pro")
-st.sidebar.info("Unlock high-precision reports and real-time market optics.")
+st.sidebar.title("💎 QuantVantage AI Pro")
+st.sidebar.info("High-precision AI reports and real-time market optics.")
 
-st.sidebar.markdown("### 🎟️ One-Time Access")
-st.sidebar.markdown("[🚀 Full Business Analysis ($4.99)](https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06)")
+st.sidebar.markdown("### 🚀 Get a Full Analysis")
+st.sidebar.markdown("[Unlock Full 12-Page Report ($4.99)](https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06)")
 
-st.sidebar.markdown("### 📈 Monthly Growth")
+st.sidebar.markdown("### 📈 Monthly Membership")
 st.sidebar.markdown("[🌟 Pro Subscription ($2/mo)](https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01)")
 
 st.sidebar.divider()
@@ -54,8 +54,8 @@ if st.sidebar.button("Creator Login"):
     st.login()
 
 # --- MAIN APP ---
-st.title("QuantVantage AI")
-st.subheader("Analytical Intelligence Engine")
+st.title("QuantVantage AI Pro")
+st.subheader("Professional Grade Analytical Intelligence")
 
 is_owner = False
 try:
