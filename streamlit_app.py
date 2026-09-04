@@ -87,7 +87,16 @@ with tab_list[0]:
                         messages=[{"role": "user", "content": f"Provide a professional commercial analysis for a venture named '{app_name}'. Include market potential, risks, and a 'QuantVantage' rating."}]
                     )
                     st.success("Analysis Complete")
-                    st.write(response.content[0].text)
+                    analysis_text = response.content[0].text
+                    st.write(analysis_text)
+                    
+                    # --- DOWNLOAD BUTTON ---
+                    st.download_button(
+                        label="📄 Download Analysis Copy",
+                        data=analysis_text,
+                        file_name=f"{app_name.lower().replace(' ', '_')}_analysis.txt",
+                        mime="text/plain"
+                    )
                     
                     st.divider()
                     st.markdown("""
@@ -116,7 +125,16 @@ with tab_list[1]:
                         messages=[{"role": "user", "content": f"As a health data analyzer, provide professional insights based on these respiratory metrics: '{metrics}'. (Disclaimer: For informational purposes only)."}]
                     )
                     st.success("Insights Generated")
-                    st.write(response.content[0].text)
+                    insights_text = response.content[0].text
+                    st.write(insights_text)
+
+                    # --- DOWNLOAD BUTTON ---
+                    st.download_button(
+                        label="📄 Download Health Insights Copy",
+                        data=insights_text,
+                        file_name="respiratory_health_insights.txt",
+                        mime="text/plain"
+                    )
                     
                     st.divider()
                     st.markdown("""
