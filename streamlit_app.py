@@ -56,13 +56,41 @@ with tab_list[0]:
     st.header("Venture Evaluation")
     app_name = st.text_input("App Name", placeholder="e.g. Virtual Mall")
     if st.button("Generate Commercial Analysis"):
-        st.info("Analyzing market data for " + app_name + "...")
+        if app_name:
+            try:
+                client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
+                with st.spinner("Analyzing " + app_name + "..."):
+                    response = client.messages.create(
+                        model="claude-3-5-sonnet-20240620",
+                        max_tokens=1000,
+                        messages=[{"role": "user", "content": f"Provide a professional commercial analysis for a venture named '{app_name}'. Include market potential, risks, and a 'QuantVantage' rating."}]
+                    )
+                    st.success("Analysis Complete")
+                    st.write(response.content[0].text)
+            except Exception as e:
+                st.error(f"AI Error: {str(e)}")
+        else:
+            st.warning("Please enter a name.")
 
 with tab_list[1]:
     st.header("Respiratory Assessment")
-    metrics = st.text_area("Symptoms/Metrics")
+    metrics = st.text_area("Symptoms/Metrics", placeholder="e.g. Coughing, shortness of breath...")
     if st.button("Generate Health Insights"):
-        st.info("AI is synthesizing health trends...")
+        if metrics:
+            try:
+                client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
+                with st.spinner("Synthesizing health trends..."):
+                    response = client.messages.create(
+                        model="claude-3-5-sonnet-20240620",
+                        max_tokens=1000,
+                        messages=[{"role": "user", "content": f"As a health data analyzer, provide professional insights based on these respiratory metrics: '{metrics}'. (Disclaimer: For informational purposes only)."}]
+                    )
+                    st.success("Insights Generated")
+                    st.write(response.content[0].text)
+            except Exception as e:
+                st.error(f"AI Error: {str(e)}")
+        else:
+            st.warning("Please provide metrics.")
 
 if is_owner:
     with tab_list[2]:
