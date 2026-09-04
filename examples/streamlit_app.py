@@ -2,108 +2,167 @@ import streamlit as st
 import anthropic
 import os
 import json
-import pandas as pd
-from dotenv import load_dotenv
 
-load_dotenv()
+# Restoration of the "First Theme" Design (Clean & Professional)
+st.set_page_config(page_title="QuantVantage AI Pro | Analytical Engine", layout="wide")
 
-# Luxury Branding
-st.set_page_config(page_title="QuantVantage AI | App Evaluator", layout="wide")
-
+# --- CUSTOM CSS ---
 st.markdown("""
     <style>
-    .main {
-        background-color: #0A0A0B;
-        color: #E0E0E0;
-    }
+    .main { background-color: #F9F9F9; }
     .stButton>button {
-        background-color: #D4AF37;
-        color: black;
-        border-radius: 2px;
+        background-color: #3E7096; /* Original Blue */
+        color: white;
+        border-radius: 30px;
+        padding: 10px 24px;
         font-weight: bold;
-        text-transform: uppercase;
-        width: 100%;
     }
-    h1 {
-        color: #D4AF37;
-        text-align: center;
+    h1, h2, h3 { color: #3E7096; font-weight: 800; }
+    .premium-card {
+        background-color: #f0f4f7;
+        padding: 20px;
+        border-radius: 15px;
+        border-left: 5px solid #3E7096;
+        margin-bottom: 20px;
+    }
+    .owner-badge {
+        background-color: #6F8854;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("QUANTVANTAGE AI")
-st.subheader("Analytical Intelligence Engine")
+# --- SIDEBAR & PRICING ---
+st.sidebar.title("💎 QuantVantage AI Pro")
+st.sidebar.info("High-precision AI reports and real-time market optics.")
 
-# Mode Selection Tabs
-tab1, tab2 = st.tabs(["🚀 App Evaluator", "🫁 Respiratory Health"])
+st.sidebar.markdown("### 🚀 Get a Full Analysis")
+st.sidebar.markdown("[Unlock Full 12-Page Report ($4.99)](https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06)")
 
-with tab1:
+st.sidebar.markdown("### 📈 Monthly Membership")
+st.sidebar.markdown("[🌟 Pro Subscription ($2/mo)](https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01)")
+
+st.sidebar.divider()
+
+if st.sidebar.button("Creator Login"):
+    st.login()
+
+# --- MAIN APP ---
+st.title("QuantVantage AI Pro")
+st.subheader("Professional Grade Analytical Intelligence")
+
+is_owner = False
+try:
+    if st.experimental_user.is_logged_in and st.experimental_user.email == "1safemovez@gmail.com":
+        is_owner = True
+        st.markdown('<div class="owner-badge">👑 OWNER & CREATOR ACCESS</div>', unsafe_allow_html=True)
+except:
+    pass
+
+tabs = ["🚀 App Evaluator", "🫁 Health Optics"]
+if is_owner:
+    tabs.append("📊 Owner Analytics")
+
+tab_list = st.tabs(tabs)
+
+with tab_list[0]:
     st.header("Universal App Evaluator")
     app_name = st.text_input("ENTER THE NAME OF YOUR VENTURE", placeholder="e.g. Virtual Mall App")
     
     if st.button("INITIALIZE COMMERCIAL ANALYSIS"):
-        if not os.getenv("ANTHROPIC_API_KEY"):
-            st.error("API Key Missing: Please set ANTHROPIC_API_KEY in Secrets.")
-        elif not app_name:
-            st.warning("Please enter a venture name.")
+        if app_name:
+            try:
+                # Use Haiku for universal access
+                api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
+                if not api_key:
+                    st.error("API Key Missing: Please set ANTHROPIC_API_KEY in Streamlit Secrets.")
+                    st.stop()
+                
+                client = anthropic.Anthropic(api_key=api_key)
+                with st.spinner("Analyzing " + app_name + "..."):
+                    response = client.messages.create(
+                        model="claude-3-haiku-20240307",
+                        max_tokens=1000,
+                        messages=[{"role": "user", "content": f"Provide a professional commercial analysis for a venture named '{app_name}'. Include market potential, risks, and a 'QuantVantage' rating."}]
+                    )
+                    st.success("Analysis Complete")
+                    analysis_text = response.content[0].text
+                    st.write(analysis_text)
+                    
+                    # --- DOWNLOAD BUTTON ---
+                    st.download_button(
+                        label="📄 Download Analysis Copy",
+                        data=analysis_text,
+                        file_name=f"{app_name.lower().replace(' ', '_')}_analysis.txt",
+                        mime="text/plain"
+                    )
+                    
+                    st.divider()
+                    st.markdown("""
+                        <div class="premium-card">
+                            <h3>🔓 Want the Full 12-Page Deep Dive?</h3>
+                            <p>Unlock detailed revenue projections, competitor analysis, and viral score optimization.</p>
+                            <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - $4.99</button></a>
+                        </div>
+                    """, unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"AI Error: {str(e)}")
         else:
-            with st.spinner("Analyzing Commercial Architecture..."):
-                client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-                prompt = f"""Analyze the following app idea: {app_name}. 
-                Provide a commercial evaluation in JSON format with these exact keys:
-                - cost_weekly, cost_monthly, cost_yearly, cost_3year, profit_margin_pct, profit_amount, stand_out, run_better, look_better, higher_profit"""
-                
-                response = client.messages.create(
-                    model="claude-3-5-sonnet-20240620",
-                    max_tokens=1000,
-                    messages=[{"role": "user", "content": prompt}]
-                )
-                
-                try:
-                    data = json.loads(response.content[0].text[response.content[0].text.find('{'):response.content[0].text.rfind('}')+1])
-                    c1, c2 = st.columns(2)
-                    with c1:
-                        st.write(f"**Weekly Cost:** ${data['cost_weekly']}")
-                        st.write(f"**Monthly Cost:** ${data['cost_monthly']}")
-                        st.write(f"**Yearly Cost:** ${data['cost_yearly']}")
-                    with c2:
-                        st.metric("Net Margin", f"{data['profit_margin_pct']}%")
-                        st.write(f"**Est. Profit:** ${data['profit_amount']}")
-                    st.info(f"**Stand Out:** {data['stand_out']}")
-                    st.success(f"**Run Better:** {data['run_better']}")
-                    
-                    st.divider()
-                    st.header("📂 Export & Share")
-                    col_s1, col_s2 = st.columns(2)
-                    with col_s1:
-                        if st.button("🖨️ Prepare for Print"):
-                            st.info("Browser print dialog opening... Use 'Save as PDF' to keep your report.")
-                            st.markdown("<script>window.print();</script>", unsafe_allow_html=True)
-                    with col_s2:
-                        share_text = f"QuantVantage AI Evaluation for {app_name}: Costs starting at ${data['cost_weekly']}/week with a {data['profit_margin_pct']}% margin!"
-                        st.text_input("Copy Shareable Result", value=share_text)
-                    
-                    st.divider()
-                    st.markdown("### 🏢 Featured Ecosystem")
-                    st.markdown("[Explore the Premium Tool Bazaar Mall](https://quantvantage.ai/mall)")
-                except: st.error("Parsing failed.")
+            st.warning("Please enter a name.")
 
-with tab2:
-    st.header("Respiratory Health Assessment")
-    health_metrics = st.text_area("DESCRIBE RESPIRATORY SYMPTOMS OR METRICS", placeholder="e.g. Cough duration, breath depth...")
-    
-    if st.button("INITIALIZE HEALTH EVALUATION"):
-        if not os.getenv("ANTHROPIC_API_KEY"):
-            st.error("API Key Missing.")
-        elif not health_metrics:
-            st.warning("Please provide metrics.")
+with tab_list[1]:
+    st.header("Respiratory Assessment")
+    metrics = st.text_area("Symptoms/Metrics", placeholder="e.g. Coughing, shortness of breath...")
+    if st.button("Generate Health Insights"):
+        if metrics:
+            try:
+                api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
+                client = anthropic.Anthropic(api_key=api_key)
+                with st.spinner("Synthesizing health trends..."):
+                    response = client.messages.create(
+                        model="claude-3-haiku-20240307",
+                        max_tokens=1000,
+                        messages=[{"role": "user", "content": f"As a health data analyzer, provide professional insights based on these respiratory metrics: '{metrics}'. (Disclaimer: For informational purposes only)."}]
+                    )
+                    st.success("Insights Generated")
+                    insights_text = response.content[0].text
+                    st.write(insights_text)
+
+                    # --- DOWNLOAD BUTTON ---
+                    st.download_button(
+                        label="📄 Download Health Insights Copy",
+                        data=insights_text,
+                        file_name="respiratory_health_insights.txt",
+                        mime="text/plain"
+                    )
+                    
+                    st.divider()
+                    st.markdown("""
+                        <div class="premium-card">
+                            <h3>🏥 Upgrade to Pro Health Optics</h3>
+                            <p>Get personalized physiological roadmaps and immediate action steps.</p>
+                            <a href="https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Upgrade Now - $2/mo</button></a>
+                        </div>
+                    """, unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"AI Error: {str(e)}")
         else:
-            with st.spinner("Analyzing Health Data..."):
-                client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-                prompt = f"Analyze these respiratory metrics and provide a health assessment: {health_metrics}"
-                response = client.messages.create(
-                    model="claude-3-5-sonnet-20240620",
-                    max_tokens=1000,
-                    messages=[{"role": "user", "content": prompt}]
-                )
-                st.write(response.content[0].text)
+            st.warning("Please provide metrics.")
+
+if is_owner:
+    with tab_list[2]:
+        st.header("Core Business Analytics")
+        st.write("Logged in as Creator")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total Revenue", "$499.00", "+12%")
+        col2.metric("Reports Generated", "102", "+5")
+        col3.metric("Affiliate Clicks", "452", "+28%")
+
+st.divider()
+st.caption("© 2026 QuantVantage AI. Professional Grade Analytics.")
