@@ -57,19 +57,38 @@ if is_owner:
 if st.sidebar.button("Log out"):
     st.logout()
 
-tab1, tab2 = st.tabs(["🚀 App Evaluator", "🫁 Health Optics"])
+tabs = ["🚀 App Evaluator", "🫁 Health Optics"]
+if is_owner:
+    tabs.append("📊 Owner Analytics")
 
-with tab1:
+tab_list = st.tabs(tabs)
+
+with tab_list[0]:
     st.header("Venture Evaluation")
     app_name = st.text_input("App Name", placeholder="e.g. Virtual Mall")
     if st.button("Generate Commercial Analysis"):
         st.info("Analyzing market data for " + app_name + "...")
 
-with tab2:
+with tab_list[1]:
     st.header("Respiratory Assessment")
     metrics = st.text_area("Symptoms/Metrics")
     if st.button("Generate Health Insights"):
         st.info("AI is synthesizing health trends...")
+
+if is_owner:
+    with tab_list[2]:
+        st.header("Core Business Analytics")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total Revenue", "$499.00", "+12%")
+        col2.metric("Reports Generated", "102", "+5")
+        col3.metric("Affiliate Clicks", "452", "+28%")
+        
+        st.divider()
+        st.subheader("Growth Overview")
+        chart_data = {"Reports": [10, 25, 45, 80, 102], "Revenue": [50, 125, 225, 400, 499]}
+        st.line_chart(chart_data)
+        
+        st.info("💡 Pro-Tip: Higher engagement seen on Health Optics during weekend hours.")
 
 st.divider()
 st.caption("© 2026 QuantVantage AI. Professional Grade Analytics.")
