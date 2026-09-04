@@ -1,6 +1,4 @@
 streamlit
-requests
-python-dotenv
-plotly
-pandas
 anthropic
+pandas
+python-dotenv
