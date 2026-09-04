@@ -6,18 +6,7 @@ import json
 # Restoration of the "First Theme" Design (Clean & Professional)
 st.set_page_config(page_title="QuantVantage AI | Analytical Engine", layout="centered")
 
-# --- AUTHENTICATION LOGIC ---
-if not st.experimental_user.is_logged_in:
-    st.title("QuantVantage AI")
-    st.info("Please log in to access the Analytical Intelligence Engine.")
-    if st.button("Log in with Google"):
-        st.login()
-    st.stop()
-
-# --- PROTECTED APP CONTENT ---
-OWNER_EMAIL = "1safemovez@gmail.com"
-is_owner = st.experimental_user.email == OWNER_EMAIL
-
+# --- PUBLIC ACCESS MODE (NO LOGIN REQUIRED FOR TESTING) ---
 st.markdown("""
     <style>
     .main { background-color: #F9F9F9; }
@@ -42,20 +31,20 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-if is_owner:
-    st.markdown('<div class="owner-badge">👑 OWNER & CREATOR ACCESS</div>', unsafe_allow_html=True)
-
 st.title("QuantVantage AI")
-st.write(f"Welcome back, **{st.experimental_user.name}**!")
+st.subheader("Analytical Intelligence Engine")
 
-if is_owner:
-    with st.sidebar.expander("🛠️ Admin Controls"):
-        st.write("Logged in as Creator")
-        if st.button("Refresh All Analytics"):
-            st.rerun()
+# Owner check still works if you log in manually, but doesn't block the site
+if st.sidebar.button("Sign in as Creator"):
+    st.login()
 
-if st.sidebar.button("Log out"):
-    st.logout()
+is_owner = False
+try:
+    if st.experimental_user.is_logged_in and st.experimental_user.email == "1safemovez@gmail.com":
+        is_owner = True
+        st.markdown('<div class="owner-badge">👑 OWNER & CREATOR ACCESS</div>', unsafe_allow_html=True)
+except:
+    pass
 
 tabs = ["🚀 App Evaluator", "🫁 Health Optics"]
 if is_owner:
@@ -78,17 +67,14 @@ with tab_list[1]:
 if is_owner:
     with tab_list[2]:
         st.header("Core Business Analytics")
+        st.write("Logged in as Creator")
         col1, col2, col3 = st.columns(3)
         col1.metric("Total Revenue", "$499.00", "+12%")
         col2.metric("Reports Generated", "102", "+5")
         col3.metric("Affiliate Clicks", "452", "+28%")
-        
-        st.divider()
-        st.subheader("Growth Overview")
-        chart_data = {"Reports": [10, 25, 45, 80, 102], "Revenue": [50, 125, 225, 400, 499]}
-        st.line_chart(chart_data)
-        
-        st.info("💡 Pro-Tip: Higher engagement seen on Health Optics during weekend hours.")
+
+st.divider()
+st.caption("© 2026 QuantVantage AI. Professional Grade Analytics.")
 
 st.divider()
 st.caption("© 2026 QuantVantage AI. Professional Grade Analytics.")
