@@ -87,7 +87,7 @@ with tab_list[0]:
                 client = anthropic.Anthropic(api_key=api_key)
                 with st.spinner("Analyzing " + app_name + "..."):
                     response = client.messages.create(
-                        model="claude-3-haiku-20240307",
+                        model="claude-sonnet-4-5",
                         max_tokens=1000,
                         messages=[{"role": "user", "content": f"Provide a professional commercial analysis for a venture named '{app_name}'. Include market potential, risks, and a 'QuantVantage' rating."}]
                     )
@@ -126,7 +126,7 @@ with tab_list[1]:
                 client = anthropic.Anthropic(api_key=api_key)
                 with st.spinner("Synthesizing health trends..."):
                     response = client.messages.create(
-                        model="claude-3-haiku-20240307",
+                        model="claude-sonnet-4-5",
                         max_tokens=1000,
                         messages=[{"role": "user", "content": f"As a health data analyzer, provide professional insights based on these respiratory metrics: '{metrics}'. (Disclaimer: For informational purposes only)."}]
                     )
