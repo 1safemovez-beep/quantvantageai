@@ -1,5 +1,5 @@
 # QuantVantage AI Pro - Analytical Engine
-# Build Trigger: 2026-09-05
+# Build Version: 2026-09-09-FINAL
 import streamlit as st
 import anthropic
 import os
@@ -80,8 +80,13 @@ with tab_list[0]:
     if st.button("INITIALIZE COMMERCIAL ANALYSIS"):
         if app_name:
             try:
-                # Use Haiku as it is more likely to be accessible on new accounts
-                client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
+                # Get API Key from Secrets
+                api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
+                if not api_key:
+                    st.error("API Key Missing: Please set ANTHROPIC_API_KEY in Streamlit Secrets.")
+                    st.stop()
+                
+                client = anthropic.Anthropic(api_key=api_key)
                 with st.spinner("Analyzing " + app_name + "..."):
                     response = client.messages.create(
                         model="claude-sonnet-4-5",
@@ -119,7 +124,8 @@ with tab_list[1]:
     if st.button("Generate Health Insights"):
         if metrics:
             try:
-                client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
+                api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
+                client = anthropic.Anthropic(api_key=api_key)
                 with st.spinner("Synthesizing health trends..."):
                     response = client.messages.create(
                         model="claude-sonnet-4-5",

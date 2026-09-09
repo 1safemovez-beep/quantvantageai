@@ -1,5 +1,5 @@
 # QuantVantage AI Pro - Analytical Engine
-# Build Version: 2026-09-09-FINAL
+# Build Trigger: 2026-09-05
 import streamlit as st
 import anthropic
 import os
@@ -67,7 +67,7 @@ try:
 except:
     pass
 
-tabs = ["🚀 App Evaluator", "🫁 Health Optics"]
+tabs = ["🚀 App Evaluator"]
 if is_owner:
     tabs.append("📊 Owner Analytics")
 
@@ -75,18 +75,13 @@ tab_list = st.tabs(tabs)
 
 with tab_list[0]:
     st.header("Universal App Evaluator")
-    app_name = st.text_input("ENTER THE NAME OF YOUR VENTURE", placeholder="e.g. Virtual Mall App")
+    app_name = st.text_input("ENTER THE NAME OF YOUR VENTURE", placeholder="e.g. Premier tool bazaar Mall")
     
     if st.button("INITIALIZE COMMERCIAL ANALYSIS"):
         if app_name:
             try:
-                # Get API Key from Secrets
-                api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
-                if not api_key:
-                    st.error("API Key Missing: Please set ANTHROPIC_API_KEY in Streamlit Secrets.")
-                    st.stop()
-                
-                client = anthropic.Anthropic(api_key=api_key)
+                # Use Haiku as it is more likely to be accessible on new accounts
+                client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
                 with st.spinner("Analyzing " + app_name + "..."):
                     response = client.messages.create(
                         model="claude-sonnet-4-5",
@@ -107,6 +102,13 @@ with tab_list[0]:
                     
                     st.divider()
                     st.markdown("""
+                        <div style="background: rgba(177, 151, 252, 0.05); border: 1px solid #3E7096; padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+                            <h3 style="color: #3E7096; margin-top: 0;">🏢 Fork to AI Mall</h3>
+                            <p style="font-size: 0.9rem;">Ready to scale? Take your evaluation results to the <b>Business Floor</b> of the Premium Tool Bazaar to find the right AI tech stack.</p>
+                            <a href="https://premium-tool-bazaar.emergent.host/storefronts/ai-instructor" target="_blank">
+                                <button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;">ENTER BUSINESS MALL FLOOR</button>
+                            </a>
+                        </div>
                         <div class="premium-card">
                             <h3>🔓 Want the Full 12-Page Deep Dive?</h3>
                             <p>Unlock detailed revenue projections, competitor analysis, and viral score optimization.</p>
@@ -118,47 +120,8 @@ with tab_list[0]:
         else:
             st.warning("Please enter a name.")
 
-with tab_list[1]:
-    st.header("Respiratory Assessment")
-    metrics = st.text_area("Symptoms/Metrics", placeholder="e.g. Coughing, shortness of breath...")
-    if st.button("Generate Health Insights"):
-        if metrics:
-            try:
-                api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
-                client = anthropic.Anthropic(api_key=api_key)
-                with st.spinner("Synthesizing health trends..."):
-                    response = client.messages.create(
-                        model="claude-sonnet-4-5",
-                        max_tokens=1000,
-                        messages=[{"role": "user", "content": f"As a health data analyzer, provide professional insights based on these respiratory metrics: '{metrics}'. (Disclaimer: For informational purposes only)."}]
-                    )
-                    st.success("Insights Generated")
-                    insights_text = response.content[0].text
-                    st.write(insights_text)
-
-                    # --- DOWNLOAD BUTTON ---
-                    st.download_button(
-                        label="📄 Download Health Insights Copy",
-                        data=insights_text,
-                        file_name="respiratory_health_insights.txt",
-                        mime="text/plain"
-                    )
-                    
-                    st.divider()
-                    st.markdown("""
-                        <div class="premium-card">
-                            <h3>🏥 Upgrade to Pro Health Optics</h3>
-                            <p>Get personalized physiological roadmaps and immediate action steps.</p>
-                            <a href="https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Upgrade Now - $2/mo</button></a>
-                        </div>
-                    """, unsafe_allow_html=True)
-            except Exception as e:
-                st.error(f"AI Error: {str(e)}")
-        else:
-            st.warning("Please provide metrics.")
-
 if is_owner:
-    with tab_list[2]:
+    with tab_list[1]:
         st.header("Core Business Analytics")
         st.write("Logged in as Creator")
         col1, col2, col3 = st.columns(3)

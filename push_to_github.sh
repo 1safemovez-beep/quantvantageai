@@ -1,16 +1,15 @@
 #!/bin/bash
+# QuantVantage AI - GitHub Automation
+# Usage: ./push_to_github.sh <YOUR_GITHUB_TOKEN>
 
-# Initialize git if needed
-if [ ! -d .git ]; then
-    git init
-    git remote add origin https://github.com/1safemovez-beep/quantvantageai.git
-fi
+TOKEN=$1
+REPO_URL="https://1safemovez-beep:${TOKEN}@github.com/1safemovez-beep/quantvantageai.git"
 
-# Final commit with Share features and design restoration
-git add .
-git commit -m "Final: Bold Chrome design + Robust Share & Print features"
-
-# Push
-echo "Attempting to push to GitHub..."
-echo "If you are asked for a password, you MUST use your GitHub 'Personal Access Token'."
-git push -u origin main
+git init
+git config --global user.email "1safemovez@gmail.com"
+git config --global user.name "1safemovez-beep"
+git add streamlit_app.py index.html requirements.txt examples/streamlit_app.py
+git commit -m "Sync examples/streamlit_app.py and add Pro features"
+git branch -M main
+git remote add origin "${REPO_URL}" || git remote set-url origin "${REPO_URL}"
+git push -u origin main --force

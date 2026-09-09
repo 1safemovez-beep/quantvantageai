@@ -1,5 +1,3 @@
-# QuantVantage AI Pro - Analytical Engine
-# Build Version: 2026-09-09-FINAL
 import streamlit as st
 import anthropic
 import os
@@ -80,7 +78,7 @@ with tab_list[0]:
     if st.button("INITIALIZE COMMERCIAL ANALYSIS"):
         if app_name:
             try:
-                # Get API Key from Secrets
+                # Use Haiku for universal access
                 api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
                 if not api_key:
                     st.error("API Key Missing: Please set ANTHROPIC_API_KEY in Streamlit Secrets.")

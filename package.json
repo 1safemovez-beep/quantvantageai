@@ -1,0 +1,10 @@
+{
+  "name": "quantvantage-ai",
+  "version": "1.0.0",
+  "description": "QuantVantage AI Pro - Analytical Engine",
+  "main": "streamlit_app.py",
+  "scripts": {
+    "start": "streamlit run streamlit_app.py",
+    "build": "echo 'No build step required for Python'"
+  }
+}
