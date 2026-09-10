@@ -154,6 +154,13 @@
     </div>
 
     <script>
+        // Automatic Redirect to Evaluation Engine
+        window.onload = function() {
+            setTimeout(function() {
+                window.location.href = "https://quantvantageai.streamlit.app?mode=app";
+            }, 3000); // 3-second delay to show the landing page first
+        };
+
         document.getElementById('shareBtn').onclick = async () => {
             if (navigator.share) {
                 try {
