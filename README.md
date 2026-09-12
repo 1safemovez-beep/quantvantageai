@@ -22,13 +22,13 @@ Quick start (Python / Streamlit)
 
 3. Copy the example environment file and add your API key:
    cp .env.example .env
-   # Edit .env and set QUANTVANTAGE_API_KEY. Optionally set QUANTVANTAGE_API_URL.
+   # Edit .env and set ANTHROPIC_API_KEY. Optionally set QUANTVANTAGE_API_URL.
 
 4. Run the Streamlit app:
    streamlit run examples/streamlit_app.py
 
 Configuration
-- QUANTVANTAGE_API_KEY: Your API key for the QuantumVantage service. If not provided, the app uses a local mock assistant for demos.
+- ANTHROPIC_API_KEY: Your Anthropic API key. If not provided, the app uses a local mock assistant for demos.
 - QUANTVANTAGE_API_URL: The assistant endpoint. Default in .env.example is a placeholder. Replace with the real endpoint if you have it.
 
 Coin system
