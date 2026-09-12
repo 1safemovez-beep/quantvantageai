@@ -1,0 +1,10 @@
+Domain: quantvantageai.com
+Status: ACTIVE / PAID
+Registrar: Netlify, Inc.
+Receipt: EZJCYZ-00002
+Payment received: September 3, 2026
+Expiration shown on invoice: September 3, 2027
+
+Handling note:
+- Preserve the original receipt as evidence.
+- Do not modify original ownership records.

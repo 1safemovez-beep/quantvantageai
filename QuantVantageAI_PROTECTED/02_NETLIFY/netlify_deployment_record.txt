@@ -1,0 +1,26 @@
+Netlify project: quantvantageai.com
+Netlify project name shown: quantvantageai
+Owner shown: AI try
+Project ID: c64c5be7-a101-465e-9411-c3cda1f5cff9
+Visibility: Public
+Deployment source: GitHub
+Published: September 10, 2026
+Project created: September 1, 2026 at 9:53 AM
+Last update shown: September 12, 2026 at 6:38 PM
+
+Production deployments shown:
+1. main@db88029 — Published — September 10
+   "Add automatic redirect to evaluation engine"
+2. main@7b2cf15 — September 8
+   "Add GitHub Pages deployment workflow"
+3. main@101e853 — September 8
+   "Sync examples/streamlit_app.py and add Pro fe..."
+4. main@24abf27 — September 4
+   "Add requirements and restore design"
+
+Observability snapshot:
+- Requests in last hour: 6
+- Errors: 0.00%
+- Bandwidth: 5.8 KB
+
+Preserve screenshots for project ownership, deployment history, and observability.

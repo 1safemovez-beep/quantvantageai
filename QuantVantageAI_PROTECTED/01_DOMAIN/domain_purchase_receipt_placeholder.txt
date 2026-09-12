@@ -1,0 +1,4 @@
+Place the original domain receipt PDF here as:
+domain_purchase_receipt.pdf
+
+Do not edit, overwrite, or replace the original evidence file.

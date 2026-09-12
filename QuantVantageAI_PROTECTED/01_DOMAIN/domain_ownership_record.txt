@@ -1,0 +1,152 @@
+============================================================
+QUANTVANTAGEAI.COM — OWNERSHIP / DOMAIN / DEPLOYMENT RECORD
+============================================================
+
+PROJECT:
+QuantVantageAI / QVPro
+
+CANONICAL DOMAIN:
+quantvantageai.com
+
+DOMAIN STATUS:
+CONFIRMED PAID / ACTIVE
+The domain ownership issue has been resolved.
+
+DOMAIN REGISTRATION EVIDENCE:
+Registrar: Netlify, Inc.
+Domain: quantvantageai.com
+Invoice/Receipt: EZJCYZ-00002
+Payment received: September 3, 2026
+Amount paid: $13.99
+Domain expiration shown on invoice: September 3, 2027
+
+IMPORTANT:
+The domain receipt is evidence that quantvantageai.com was purchased
+and paid for. Preserve the original receipt/invoice in the protected
+project records.
+
+NETLIFY PROJECT:
+Project name: quantvantageai.com
+Netlify project name shown: quantvantageai
+Project visibility: Public
+Deployment source: GitHub
+Published: September 10, 2026
+
+NETLIFY PROJECT OWNER:
+The Netlify project screen shows:
+"Owned by AI try"
+
+IMPORTANT OWNERSHIP NOTE:
+Preserve screenshots showing the Netlify project, deployment history,
+and account/project ownership information. Do not delete or overwrite
+these records.
+
+NETLIFY PROJECT ID:
+c64c5be7-a101-465e-9411-c3cda1f5cff9
+
+PROJECT CREATED:
+September 1, 2026 at 9:53 AM
+
+LAST UPDATE SHOWN:
+September 12, 2026 at 6:38 PM
+
+PRODUCTION DEPLOYMENTS SHOWN:
+1. main@db88029
+   Published
+   September 10
+   "Add automatic redirect to evaluation engine"
+
+2. main@7b2cf15
+   September 8
+   "Add GitHub Pages deployment workflow"
+
+3. main@101e853
+   September 8
+   "Sync examples/streamlit_app.py and add Pro fe..."
+
+4. main@24abf27
+   September 4
+   "Add requirements and restore design"
+
+NETLIFY OBSERVABILITY:
+Last hour shown:
+6 requests
+Errors: 0.00%
+Bandwidth: 5.8 KB
+
+CURRENT ARCHITECTURE EVIDENCE:
+The production site is connected to GitHub and has active production
+deployments. The September 10 deployment specifically added an
+automatic redirect to the evaluation engine.
+
+PROTECTED RECORDS TO STORE:
+Create/use:
+
+/QuantVantageAI_PROTECTED/
+    /01_DOMAIN/
+        domain_purchase_receipt.pdf
+        domain_ownership_record.txt
+        domain_status.txt
+
+    /02_NETLIFY/
+        netlify_project_screenshots/
+        netlify_deployment_record.txt
+        netlify_project_id.txt
+
+    /03_GITHUB/
+        github_repository/
+        original_zip/
+        github_deployment_records/
+
+    /04_QVPRO/
+        qvpro_source/
+        evaluator_engine/
+        streamlit_app/
+        modules/
+
+    /05_DOCUMENTATION/
+        ownership_notes/
+        architecture/
+        deployment/
+        recovery/
+
+    /06_EVIDENCE/
+        domain_receipts/
+        deployment_screenshots/
+        ownership_screenshots/
+        project_history/
+
+PROTECTION RULES:
+1. NEVER delete the original ZIP.
+2. NEVER overwrite the original ZIP.
+3. NEVER modify original receipts or ownership evidence.
+4. Keep working copies separate from originals.
+5. Preserve Git history.
+6. Preserve deployment history.
+7. Preserve domain purchase/renewal records.
+8. Preserve project IDs and configuration records.
+9. Do not put passwords, API keys, secret tokens, or private credentials
+   into ordinary documentation.
+10. Keep credentials/secrets in a separate secure location.
+11. The protected folder is the source-of-truth archive for recovery
+    and ownership documentation.
+12. Do not allow an AI builder to overwrite the protected archive.
+
+CURRENT STATUS:
+Domain issue: RESOLVED
+Domain: ACTIVE/PAID
+Production deployment: ACTIVE
+GitHub deployment connection: PRESENT
+QVPro/evaluation engine: FUNCTIONAL
+Project preservation/consolidation: IN PROGRESS
+Production hardening: IN PROGRESS
+
+PURPOSE:
+This record establishes a chronological evidence trail for the
+QuantVantageAI/QVPro project, including domain payment, Netlify project
+information, production deployments, GitHub connection, and preservation
+requirements.
+
+============================================================
+END OF RECORD
+============================================================

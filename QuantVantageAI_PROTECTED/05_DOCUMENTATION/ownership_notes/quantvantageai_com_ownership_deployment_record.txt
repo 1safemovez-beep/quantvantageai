@@ -1,0 +1,4 @@
+See:
+../../01_DOMAIN/domain_ownership_record.txt
+
+This note anchors the canonical ownership and deployment record within the documentation section of the protected archive.
