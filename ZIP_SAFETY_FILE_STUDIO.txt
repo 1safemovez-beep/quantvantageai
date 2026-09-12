@@ -1,0 +1,153 @@
+QuantVantageAI ZIP Safety File (Studio)
+
+Copy/paste commands below in your terminal from any location.
+All paths are absolute.
+
+ZIP FILES:
+- /home/runner/work/quantvantageai/quantvantageai/deploy_this_to_netlify.zip
+- /home/runner/work/quantvantageai/quantvantageai/quantvantage_ai_deploy.zip
+- /home/runner/work/quantvantageai/quantvantageai/quantvantage_ai_netlify.zip
+- /home/runner/work/quantvantageai/quantvantageai/quantvantage_complete_launch.zip
+- /home/runner/work/quantvantageai/quantvantageai/quantvantage_fixed_v3.zip
+- /home/runner/work/quantvantageai/quantvantageai/quantvantage_unified_v2.zip
+
+1) LIST ALL ZIPS
+ls -1 /home/runner/work/quantvantageai/quantvantageai/*.zip
+
+2) VIEW CONTENTS OF EACH ZIP (safe, no extraction)
+unzip -l "/home/runner/work/quantvantageai/quantvantageai/deploy_this_to_netlify.zip"
+unzip -l "/home/runner/work/quantvantageai/quantvantageai/quantvantage_ai_deploy.zip"
+unzip -l "/home/runner/work/quantvantageai/quantvantageai/quantvantage_ai_netlify.zip"
+unzip -l "/home/runner/work/quantvantageai/quantvantageai/quantvantage_complete_launch.zip"
+unzip -l "/home/runner/work/quantvantageai/quantvantageai/quantvantage_fixed_v3.zip"
+unzip -l "/home/runner/work/quantvantageai/quantvantageai/quantvantage_unified_v2.zip"
+
+3) EXTRACT EACH ZIP TO /tmp (safe workspace)
+mkdir -p "/tmp/deploy_this_to_netlify_extracted" && unzip -o "/home/runner/work/quantvantageai/quantvantageai/deploy_this_to_netlify.zip" -d "/tmp/deploy_this_to_netlify_extracted"
+mkdir -p "/tmp/quantvantage_ai_deploy_extracted" && unzip -o "/home/runner/work/quantvantageai/quantvantageai/quantvantage_ai_deploy.zip" -d "/tmp/quantvantage_ai_deploy_extracted"
+mkdir -p "/tmp/quantvantage_ai_netlify_extracted" && unzip -o "/home/runner/work/quantvantageai/quantvantageai/quantvantage_ai_netlify.zip" -d "/tmp/quantvantage_ai_netlify_extracted"
+mkdir -p "/tmp/quantvantage_complete_launch_extracted" && unzip -o "/home/runner/work/quantvantageai/quantvantageai/quantvantage_complete_launch.zip" -d "/tmp/quantvantage_complete_launch_extracted"
+mkdir -p "/tmp/quantvantage_fixed_v3_extracted" && unzip -o "/home/runner/work/quantvantageai/quantvantageai/quantvantage_fixed_v3.zip" -d "/tmp/quantvantage_fixed_v3_extracted"
+mkdir -p "/tmp/quantvantage_unified_v2_extracted" && unzip -o "/home/runner/work/quantvantageai/quantvantageai/quantvantage_unified_v2.zip" -d "/tmp/quantvantage_unified_v2_extracted"
+
+4) QUICK SHA256 HASH CHECKS
+sha256sum "/home/runner/work/quantvantageai/quantvantageai/deploy_this_to_netlify.zip"
+sha256sum "/home/runner/work/quantvantageai/quantvantageai/quantvantage_ai_deploy.zip"
+sha256sum "/home/runner/work/quantvantageai/quantvantageai/quantvantage_ai_netlify.zip"
+sha256sum "/home/runner/work/quantvantageai/quantvantageai/quantvantage_complete_launch.zip"
+sha256sum "/home/runner/work/quantvantageai/quantvantageai/quantvantage_fixed_v3.zip"
+sha256sum "/home/runner/work/quantvantageai/quantvantageai/quantvantage_unified_v2.zip"
+
+5) OPEN REPO FOLDER IN STUDIO
+cd "/home/runner/work/quantvantageai/quantvantageai"
+
+PER-ZIP PREVIEW (first lines of unzip -l):
+
+## deploy_this_to_netlify.zip
+Archive:  /home/runner/work/quantvantageai/quantvantageai/deploy_this_to_netlify.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+     4575  2026-09-01 14:15   index.html
+     1540  2026-09-01 13:03   app_evaluator/marketing/support.html
+---------                     -------
+     6115                     2 files
+
+## quantvantage_ai_deploy.zip
+Archive:  /home/runner/work/quantvantageai/quantvantageai/quantvantage_ai_deploy.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2026-08-31 08:46   app_evaluator/
+     2887  2026-08-31 09:22   app_evaluator/evaluator_engine.py
+     1092  2026-08-31 08:50   app_evaluator/README.md
+        0  2026-08-31 09:00   app_evaluator/marketing/
+     3018  2026-08-31 09:00   app_evaluator/marketing/admin_dashboard.html
+     2039  2026-08-31 08:42   app_evaluator/marketing/marketing_scripts.md
+     4076  2026-08-31 08:50   app_evaluator/marketing/landing_page.html
+     3050  2026-08-31 08:35   app_evaluator/ai_mall_app_evaluation.md
+     3516  2026-08-31 08:46   app_evaluator/quantvantage_premium_tool_bazaar.md
+        0  2026-08-31 08:35   app_evaluator/templates/
+     3009  2026-08-31 08:50   app_evaluator/templates/report_template.md
+        0  2026-08-31 08:46   app_evaluator/__pycache__/
+     3957  2026-08-31 08:46   app_evaluator/__pycache__/evaluator_engine.cpython-312.pyc
+---------                     -------
+    26644                     13 files
+
+## quantvantage_ai_netlify.zip
+Archive:  /home/runner/work/quantvantageai/quantvantageai/quantvantage_ai_netlify.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+     1092  2026-09-01 13:39   README.md
+     4575  2026-09-01 13:39   index.html
+        0  2026-09-01 13:39   templates/
+     3300  2026-09-01 13:39   templates/report_template.md
+        0  2026-09-01 13:39   marketing/
+     3300  2026-09-01 13:39   marketing/admin.html
+     3504  2026-09-01 13:39   evaluator_engine.py
+---------                     -------
+    15771                     7 files
+
+## quantvantage_complete_launch.zip
+Archive:  /home/runner/work/quantvantageai/quantvantageai/quantvantage_complete_launch.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2026-09-01 13:03   app_evaluator/
+     1092  2026-09-01 12:55   app_evaluator/README.md
+        0  2026-09-01 13:03   app_evaluator/legal/
+      796  2026-09-01 13:03   app_evaluator/legal/terms_of_service.md
+      600  2026-09-01 13:03   app_evaluator/legal/refund_policy.md
+     3523  2026-09-01 12:55   app_evaluator/quantvantage_premium_tool_bazaar.md
+        0  2026-09-01 13:03   app_evaluator/financials/
+     1491  2026-09-01 13:03   app_evaluator/financials/cost_profit_analysis.md
+     3064  2026-09-01 12:55   app_evaluator/ai_mall_app_evaluation.md
+        0  2026-09-01 12:55   app_evaluator/templates/
+     3009  2026-09-01 12:55   app_evaluator/templates/report_template.md
+        0  2026-09-01 13:03   app_evaluator/marketing/
+     1540  2026-09-01 13:03   app_evaluator/marketing/support.html
+     4575  2026-09-01 13:03   app_evaluator/marketing/landing_page.html
+     3300  2026-09-01 12:55   app_evaluator/marketing/admin_dashboard.html
+     2039  2026-09-01 12:55   app_evaluator/marketing/marketing_scripts.md
+        0  2026-09-01 12:55   app_evaluator/__pycache__/
+
+## quantvantage_fixed_v3.zip
+Archive:  /home/runner/work/quantvantageai/quantvantageai/quantvantage_fixed_v3.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+       41  2026-09-04 16:41   requirements.txt
+        0  2026-09-04 16:41   app_evaluator/
+        0  2026-09-04 16:41   app_evaluator/financials/
+     1491  2026-09-04 16:41   app_evaluator/financials/cost_profit_analysis.md
+        0  2026-09-04 16:41   app_evaluator/legal/
+      796  2026-09-04 16:41   app_evaluator/legal/terms_of_service.md
+      600  2026-09-04 16:41   app_evaluator/legal/refund_policy.md
+        0  2026-09-04 16:41   app_evaluator/marketing/
+     1540  2026-09-04 16:41   app_evaluator/marketing/support.html
+     4575  2026-09-04 16:41   app_evaluator/marketing/landing_page.html
+     3300  2026-09-04 16:41   app_evaluator/marketing/admin_dashboard.html
+     2039  2026-09-04 16:41   app_evaluator/marketing/marketing_scripts.md
+        0  2026-09-04 16:41   app_evaluator/__pycache__/
+     3957  2026-09-04 16:41   app_evaluator/__pycache__/evaluator_engine.cpython-312.pyc
+        0  2026-09-04 16:41   app_evaluator/templates/
+     1192  2026-09-04 16:41   app_evaluator/templates/health_template.md
+     3009  2026-09-04 16:41   app_evaluator/templates/report_template.md
+
+## quantvantage_unified_v2.zip
+Archive:  /home/runner/work/quantvantageai/quantvantageai/quantvantage_unified_v2.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2026-09-04 01:45   app_evaluator/
+     3064  2026-09-01 12:55   app_evaluator/ai_mall_app_evaluation.md
+        0  2026-09-01 13:03   app_evaluator/marketing/
+     3300  2026-09-01 12:55   app_evaluator/marketing/admin_dashboard.html
+     1540  2026-09-01 13:03   app_evaluator/marketing/support.html
+     2039  2026-09-01 12:55   app_evaluator/marketing/marketing_scripts.md
+     4575  2026-09-01 13:03   app_evaluator/marketing/landing_page.html
+        0  2026-09-04 01:45   app_evaluator/__pycache__/
+     3957  2026-09-01 12:55   app_evaluator/__pycache__/evaluator_engine.cpython-312.pyc
+     3523  2026-09-01 12:55   app_evaluator/quantvantage_premium_tool_bazaar.md
+     1092  2026-09-01 12:55   app_evaluator/README.md
+        0  2026-09-01 13:03   app_evaluator/financials/
+     1491  2026-09-01 13:03   app_evaluator/financials/cost_profit_analysis.md
+     4428  2026-09-04 01:45   app_evaluator/evaluator_engine.py
+        0  2026-09-01 13:03   app_evaluator/legal/
+      796  2026-09-01 13:03   app_evaluator/legal/terms_of_service.md
+      600  2026-09-01 13:03   app_evaluator/legal/refund_policy.md
