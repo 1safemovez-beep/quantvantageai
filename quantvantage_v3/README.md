@@ -28,7 +28,7 @@ Quick start (Python / Streamlit)
    streamlit run examples/streamlit_app.py
 
 Configuration
-- ANTHROPIC_API_KEY: Your Anthropic API key. If not provided, the app uses a local mock assistant for demos.
+- ANTHROPIC_API_KEY: Your Anthropic API key. This matches the runtime variable read by the Streamlit apps from secrets or the environment. If not provided, the app uses a local mock assistant for demos.
 - QUANTVANTAGE_API_URL: The assistant endpoint. Default in .env.example is a placeholder. Replace with the real endpoint if you have it.
 
 Coin system
