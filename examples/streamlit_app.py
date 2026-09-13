@@ -352,7 +352,7 @@ st.sidebar.title("💎 QuantVantage AI Pro")
 st.sidebar.info("AI-powered creation, market, and commercial evaluation.")
 
 st.sidebar.markdown("### 🚀 Get a Full Analysis")
-st.sidebar.markdown("[Unlock Full 12-Page Report ($4.99)](https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06)")
+st.sidebar.markdown("[Unlock Full 12-Page Report (Grand Opening Price)](https://buy.stripe.com/dRm4grdJxcF3bUKgIuaVa0d)")
 
 st.sidebar.markdown("### 📈 Monthly Membership")
 st.sidebar.markdown("[🌟 Pro Subscription ($2/mo)](https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01)")
@@ -493,7 +493,7 @@ with tab_list[0]:
                 <div class="premium-card">
                     <h3>🔓 Optional Detailed Deep Dive</h3>
                     <p>Use the downloadable report for optional extra details beyond the core 4–6 page structure.</p>
-                    <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - $4.99</button></a>
+                    <a href="https://buy.stripe.com/dRm4grdJxcF3bUKgIuaVa0d" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - Grand Opening Price</button></a>
                 </div>
             """,
                 unsafe_allow_html=True,

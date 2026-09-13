@@ -9,7 +9,7 @@ class QuantVantageAI:
         self.report_data = {
             "DATE": datetime.date.today().strftime("%B %d, %Y"),
             "APP_NAME": target_name,
-            "PURCHASE_LINK": "https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06",
+            "PURCHASE_LINK": "https://buy.stripe.com/dRm4grdJxcF3bUKgIuaVa0d",
             "OVERALL_SCORE": "78",
             "OPPORTUNITY_SCORE": "81",
             "COMMERCIAL_SCORE": "76",
