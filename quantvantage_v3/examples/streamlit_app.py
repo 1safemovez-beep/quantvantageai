@@ -2,6 +2,40 @@ import streamlit as st
 import anthropic
 import os
 import json
+import sys
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+ROOT_DIR = BASE_DIR if (BASE_DIR / "app_evaluator").exists() else BASE_DIR.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.append(str(ROOT_DIR))
+
+from app_evaluator.evaluator_engine import QuantVantageAI
+
+
+def render_disclosure():
+    st.info("Important disclosure: QuantVantage AI provides informational content only and does not provide financial, legal, or medical advice.")
+    st.caption("App names, venture details, and health metrics entered here are sent to the AI processing provider to generate results. Stripe purchase links open Stripe-hosted checkout pages.")
+
+
+def store_generated_output(target_name, mode, content):
+    evaluator = QuantVantageAI(target_name or "quantvantage-request", mode=mode)
+    return evaluator.store_generated_output(content, extension="txt")
+
+
+def render_delete_controls():
+    st.subheader("Privacy & Data Controls")
+    st.caption("Delete My Data removes locally generated report files and their registry entries for this demo when you provide the deletion reference shown after generation.")
+    deletion_reference = st.text_input("Deletion reference", key="delete_reference")
+    if st.button("Delete My Data", key="delete_button"):
+        result = QuantVantageAI("deletion-request").delete_customer(deletion_reference)
+        if result["deleted"]:
+            st.success(f"Deleted {result['deleted_records']} record(s) and {result['deleted_files']} generated file(s).")
+            if result["missing_files"]:
+                st.info("Some generated files were already absent, but matching records were removed.")
+        else:
+            st.error((result.get("errors") or ["Unable to delete generated data."])[0])
+    st.caption("For manual privacy help, email support@quantvantage-ai.com with your deletion reference.")
 
 # Restoration of the "First Theme" Design (Clean & Professional)
 st.set_page_config(page_title="QuantVantage AI Pro | Analytical Engine", layout="wide")
@@ -56,6 +90,7 @@ if st.sidebar.button("Creator Login"):
 # --- MAIN APP ---
 st.title("QuantVantage AI Pro")
 st.subheader("Professional Grade Analytical Intelligence")
+render_disclosure()
 
 is_owner = False
 try:
@@ -94,6 +129,8 @@ with tab_list[0]:
                     st.success("Analysis Complete")
                     analysis_text = response.content[0].text
                     st.write(analysis_text)
+                    record = store_generated_output(app_name, "app", analysis_text)
+                    st.caption(f"Deletion reference: {record['request_id']}")
                     
                     # --- DOWNLOAD BUTTON ---
                     st.download_button(
@@ -133,6 +170,8 @@ with tab_list[1]:
                     st.success("Insights Generated")
                     insights_text = response.content[0].text
                     st.write(insights_text)
+                    record = store_generated_output(metrics[:40], "health", insights_text)
+                    st.caption(f"Deletion reference: {record['request_id']}")
 
                     # --- DOWNLOAD BUTTON ---
                     st.download_button(
@@ -164,5 +203,7 @@ if is_owner:
         col2.metric("Reports Generated", "102", "+5")
         col3.metric("Affiliate Clicks", "452", "+28%")
 
+st.divider()
+render_delete_controls()
 st.divider()
 st.caption("© 2026 QuantVantage AI. Professional Grade Analytics.")
