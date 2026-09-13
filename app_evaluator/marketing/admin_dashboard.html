@@ -5,20 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuantVantage AI | Admin Dashboard</title>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
-        .dashboard { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
+        :root { --silver: #E8E8E8; --silver-dark: #A9A9A9; --primary: #3E7096; --secondary: #6F8854; --amber: #C68E31; --danger: #dc3545; --graphite: #0C1321; --graphite-soft: #152033; --electric-blue: #4AA8FF; --violet-accent: #867BFF; }
+        body { font-family: sans-serif; background: radial-gradient(circle at top, rgba(74, 168, 255, 0.16), transparent 26%), linear-gradient(180deg, #050812 0%, var(--graphite) 100%); margin: 0; padding: 28px; color: var(--silver); }
+        .dashboard { max-width: 1040px; margin: 0 auto; background: linear-gradient(160deg, rgba(23, 32, 51, 0.94), rgba(8, 11, 20, 0.92)); padding: 34px; border-radius: 28px; box-shadow: 0 28px 60px rgba(0,0,0,0.36); border: 1px solid rgba(232, 232, 232, 0.12); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(232, 232, 232, 0.12); padding-bottom: 20px; margin-bottom: 30px; }
         .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
-        .stat-card { background: #3E7096; color: white; padding: 20px; border-radius: 8px; text-align: center; }
-        .stat-card h3 { margin: 0; font-size: 0.9rem; opacity: 0.8; }
+        .stat-card { background: linear-gradient(135deg, rgba(62, 112, 150, 0.82), rgba(74, 168, 255, 0.32)); color: white; padding: 22px; border-radius: 20px; text-align: center; border: 1px solid rgba(232, 232, 232, 0.1); box-shadow: inset 0 1px 0 rgba(232, 232, 232, 0.08); }
+        .stat-card h3 { margin: 0; font-size: 0.9rem; opacity: 0.8; letter-spacing: 0.12em; text-transform: uppercase; }
         .stat-card div { font-size: 2rem; font-weight: bold; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { text-align: left; background: #eee; padding: 12px; border-bottom: 2px solid #ddd; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; overflow: hidden; border-radius: 18px; }
+        th { text-align: left; background: rgba(232, 232, 232, 0.08); padding: 12px; border-bottom: 1px solid rgba(232, 232, 232, 0.12); color: var(--silver-dark); letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.78rem; }
+        td { padding: 14px 12px; border-bottom: 1px solid rgba(232, 232, 232, 0.08); color: rgba(232, 232, 232, 0.78); }
         .status { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
-        .status-paid { background: #d4edda; color: #155724; }
-        .btn { background: #6F8854; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 0.9rem; border: none; cursor: pointer; }
-        .status-message { margin: 20px 0; padding: 12px; border-radius: 8px; background: #f8f9fa; color: #333; min-height: 20px; }
+        .status-paid { background: rgba(111, 136, 84, 0.18); color: #BDE2C2; }
+        .btn { background: linear-gradient(135deg, var(--secondary), var(--primary)); color: white; padding: 10px 20px; text-decoration: none; border-radius: 999px; font-size: 0.9rem; border: none; cursor: pointer; box-shadow: 0 12px 22px rgba(62, 112, 150, 0.18); }
+        .status-message { margin: 20px 0; padding: 14px 16px; border-radius: 16px; background: rgba(232, 232, 232, 0.06); color: var(--silver); min-height: 20px; border: 1px solid rgba(232, 232, 232, 0.08); }
     </style>
 </head>
 <body>

@@ -20,6 +20,10 @@ def render_disclosure():
     st.caption("App names and venture details entered here are sent to the AI processing provider to generate results. Stripe purchase links open Stripe-hosted checkout pages.")
 
 
+def render_ai_status():
+    st.markdown('<div class="qv-hero"><div class="qv-status">AI signal active</div><p><strong>QuantVantage Premium Interface</strong><br><span>Silver remains the anchor while electric blue and violet accents elevate the live analytical workflow.</span></p></div>', unsafe_allow_html=True)
+
+
 def store_generated_output(target_name, content):
     evaluator = QuantVantageAI(target_name or "quantvantage-request", mode="app")
     return evaluator.store_generated_output(content, extension="txt")
@@ -45,24 +49,54 @@ st.set_page_config(page_title="QuantVantage AI Pro | Analytical Engine", layout=
 # --- CUSTOM CSS ---
 st.markdown("""
     <style>
-    .main { background-color: #F9F9F9; }
+    :root {
+        --qv-silver: #E8E8E8;
+        --qv-silver-dark: #A9A9A9;
+        --qv-blue: #3E7096;
+        --qv-green: #6F8854;
+        --qv-electric: #4AA8FF;
+        --qv-violet: #867BFF;
+        --qv-panel: rgba(18, 25, 40, 0.88);
+    }
+    .stApp {
+        background:
+            radial-gradient(circle at top, rgba(74, 168, 255, 0.16), transparent 28%),
+            radial-gradient(circle at 85% 18%, rgba(134, 123, 255, 0.14), transparent 22%),
+            linear-gradient(180deg, #070A12 0%, #0D1320 55%, #05070C 100%);
+        color: var(--qv-silver);
+    }
+    .main { background: transparent; color: var(--qv-silver); }
+    [data-testid="stAppViewContainer"] { color: var(--qv-silver); }
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, rgba(18, 25, 40, 0.96), rgba(8, 11, 18, 0.98));
+        border-right: 1px solid rgba(232, 232, 232, 0.08);
+    }
     .stButton>button {
-        background-color: #3E7096; /* Original Blue */
+        background: linear-gradient(135deg, #3E7096 0%, #4AA8FF 100%);
         color: white;
-        border-radius: 30px;
+        border: 1px solid rgba(232, 232, 232, 0.12);
+        border-radius: 999px;
         padding: 10px 24px;
         font-weight: bold;
+        box-shadow: 0 16px 28px rgba(74, 168, 255, 0.18);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    h1, h2, h3 { color: #3E7096; font-weight: 800; }
+    .stButton>button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 20px 34px rgba(74, 168, 255, 0.24);
+    }
+    h1, h2, h3 { color: var(--qv-silver); font-weight: 800; letter-spacing: 0.02em; }
     .premium-card {
-        background-color: #f0f4f7;
+        background: linear-gradient(160deg, rgba(23, 32, 51, 0.94), rgba(10, 13, 21, 0.92));
         padding: 20px;
-        border-radius: 15px;
-        border-left: 5px solid #3E7096;
+        border-radius: 22px;
+        border-left: 5px solid var(--qv-silver);
         margin-bottom: 20px;
+        border: 1px solid rgba(232, 232, 232, 0.08);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.25);
     }
     .owner-badge {
-        background-color: #6F8854;
+        background: linear-gradient(135deg, #6F8854 0%, #4AA8FF 100%);
         color: white;
         padding: 5px 12px;
         border-radius: 20px;
@@ -71,6 +105,63 @@ st.markdown("""
         display: inline-block;
         margin-bottom: 10px;
     }
+    .qv-hero {
+        padding: 18px 22px;
+        margin: 8px 0 22px;
+        border-radius: 22px;
+        border: 1px solid rgba(232, 232, 232, 0.1);
+        background: linear-gradient(135deg, rgba(232, 232, 232, 0.08), var(--qv-panel));
+        box-shadow: 0 20px 36px rgba(0,0,0,0.22);
+    }
+    .qv-hero strong { color: var(--qv-silver); letter-spacing: 0.08em; text-transform: uppercase; }
+    .qv-hero span { color: rgba(232, 232, 232, 0.72); }
+    .qv-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(232, 232, 232, 0.14);
+        background: rgba(232, 232, 232, 0.05);
+        color: var(--qv-silver-dark);
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+    .qv-status::before {
+        content: "";
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #73E8FF;
+        box-shadow: 0 0 14px rgba(115, 232, 255, 0.85);
+    }
+    [data-testid="stMetric"] {
+        background: linear-gradient(160deg, rgba(23, 32, 51, 0.94), rgba(10, 13, 21, 0.92));
+        border: 1px solid rgba(232, 232, 232, 0.08);
+        padding: 14px;
+        border-radius: 18px;
+        box-shadow: 0 18px 36px rgba(0,0,0,0.22);
+    }
+    [data-baseweb="tab-list"] { gap: 8px; }
+    [data-baseweb="tab"] {
+        background: rgba(232, 232, 232, 0.04);
+        border-radius: 999px;
+        color: var(--qv-silver-dark);
+        border: 1px solid rgba(232, 232, 232, 0.08);
+        padding: 8px 16px;
+    }
+    [aria-selected="true"] {
+        background: linear-gradient(135deg, rgba(62, 112, 150, 0.72), rgba(134, 123, 255, 0.4)) !important;
+        color: white !important;
+    }
+    .stTextInput input, .stTextArea textarea {
+        background: rgba(232, 232, 232, 0.05);
+        color: var(--qv-silver);
+        border: 1px solid rgba(232, 232, 232, 0.12);
+        border-radius: 16px;
+    }
+    .stTextInput input::placeholder, .stTextArea textarea::placeholder { color: rgba(232, 232, 232, 0.38); }
     </style>
     """, unsafe_allow_html=True)
 
@@ -92,6 +183,7 @@ if st.sidebar.button("Creator Login"):
 # --- MAIN APP ---
 st.title("QuantVantage AI Pro")
 st.subheader("Professional Grade Analytical Intelligence")
+render_ai_status()
 render_disclosure()
 
 is_owner = False

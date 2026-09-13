@@ -13,22 +13,34 @@
             --emerald-glow: #50C878;
             --bg-black: #000000;
             --glass-chrome: rgba(232, 232, 232, 0.05);
+            --graphite: #0F1726;
+            --graphite-soft: #182033;
+            --electric-blue: #4AA8FF;
+            --violet-accent: #867BFF;
+            --cyan-accent: #73E8FF;
+            --silver-border: rgba(232, 232, 232, 0.18);
+            --silver-glow: rgba(232, 232, 232, 0.12);
+            --panel-depth: rgba(12, 18, 32, 0.84);
         }
         body { 
-            font-family: 'Inter', -apple-system, sans-serif; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
             margin: 0; 
             background: var(--bg-black); 
             color: var(--chrome);
             overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 50%, #0D0D0F 0%, #000 100%);
+            background-image:
+                radial-gradient(circle at top, rgba(74, 168, 255, 0.18), transparent 32%),
+                radial-gradient(circle at 80% 20%, rgba(134, 123, 255, 0.18), transparent 28%),
+                radial-gradient(circle at 20% 80%, rgba(80, 200, 120, 0.12), transparent 24%),
+                linear-gradient(180deg, #05070C 0%, #090D15 45%, #020304 100%);
         }
-        .container { max-width: 1000px; margin: 0 auto; padding: 60px 20px; text-align: center; position: relative; }
+        .container { max-width: 1080px; margin: 0 auto; padding: 72px 24px 48px; text-align: center; position: relative; }
         
         /* THE PEACOCK TRIANGLE LOGO */
         .peacock-svg { 
             width: 160px; height: 160px; 
-            filter: drop-shadow(0 0 15px var(--emerald-glow)); 
-            margin-bottom: 20px;
+            filter: drop-shadow(0 0 18px var(--emerald-glow)); 
+            margin-bottom: 16px;
         }
         
         h1 { 
@@ -41,67 +53,106 @@
             margin: 0;
             text-transform: uppercase;
         }
-        .tagline { font-size: 1.6rem; color: var(--emerald); font-weight: 300; margin-bottom: 60px; letter-spacing: 0.1em; }
+        .tagline { font-size: 1.1rem; color: var(--chrome-dark); font-weight: 500; margin: 16px auto 18px; letter-spacing: 0.28em; text-transform: uppercase; }
+        .intro-copy { max-width: 700px; margin: 0 auto 60px; color: rgba(232, 232, 232, 0.74); font-size: 1.08rem; line-height: 1.8; }
 
         /* CTA SECTION */
         .hero-card {
-            background: var(--glass-chrome);
+            background:
+                linear-gradient(145deg, rgba(232, 232, 232, 0.08), rgba(15, 23, 38, 0.92)),
+                var(--panel-depth);
             backdrop-filter: blur(40px);
-            border: 2px solid var(--chrome-dark);
+            border: 1px solid var(--silver-border);
             padding: 80px 40px;
-            border-radius: 0px;
+            border-radius: 28px;
             margin-bottom: 80px;
-            box-shadow: 0 0 40px rgba(0, 143, 104, 0.1);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 var(--silver-glow);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(74, 168, 255, 0.12), transparent 30%, rgba(134, 123, 255, 0.08) 68%, transparent 100%);
+            pointer-events: none;
         }
 
         .btn {
             display: inline-block;
-            padding: 22px 60px;
+            padding: 18px 42px;
             font-size: 1.2rem;
             font-weight: 800;
             text-decoration: none;
             text-transform: uppercase;
-            letter-spacing: 0.2em;
-            transition: all 0.3s ease;
+            letter-spacing: 0.16em;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
             margin: 15px;
             cursor: pointer;
-            border-radius: 0;
+            border-radius: 999px;
+            position: relative;
+            z-index: 1;
         }
         .btn-chrome { 
             background: linear-gradient(180deg, #FFF 0%, var(--chrome-dark) 100%); 
             color: #000; 
             border: none;
+            box-shadow: 0 18px 32px rgba(232, 232, 232, 0.14);
         }
         .btn-chrome:hover { 
-            background: var(--emerald); 
-            color: #FFF;
-            transform: scale(1.05);
-            box-shadow: 0 0 30px var(--emerald);
+            background: linear-gradient(135deg, var(--chrome) 0%, #FFFFFF 35%, #C9D4FF 100%);
+            color: #04070F;
+            transform: translateY(-2px);
+            box-shadow: 0 18px 36px rgba(115, 232, 255, 0.18);
         }
         .btn-outline-purple { 
-            border: 2px solid var(--purple-deep); 
+            border: 1px solid rgba(134, 123, 255, 0.58); 
             color: #FFF; 
+            background: linear-gradient(135deg, rgba(134, 123, 255, 0.18), rgba(74, 168, 255, 0.08));
+            box-shadow: inset 0 1px 0 rgba(232, 232, 232, 0.08);
         }
         .btn-outline-purple:hover { 
-            background: var(--purple-deep); 
-            border-color: #FFF;
+            background: linear-gradient(135deg, rgba(134, 123, 255, 0.34), rgba(74, 168, 255, 0.26)); 
+            border-color: rgba(232, 232, 232, 0.68);
+            transform: translateY(-2px);
         }
 
         /* FEATURES GRID */
         .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; text-align: left; }
         .card { 
             padding: 40px; 
-            background: #080808; 
-            border-left: 4px solid var(--emerald);
-            transition: 0.4s;
+            background: linear-gradient(160deg, rgba(24, 32, 51, 0.92), rgba(8, 10, 18, 0.92)); 
+            border: 1px solid rgba(232, 232, 232, 0.08);
+            border-left: 4px solid var(--chrome);
+            border-radius: 24px;
+            transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
         }
-        .card:hover { border-left-color: var(--purple-deep); background: #0C0C0C; }
+        .card:hover { border-left-color: var(--electric-blue); transform: translateY(-4px); box-shadow: 0 22px 48px rgba(74, 168, 255, 0.12); }
         .card h3 { color: var(--chrome); text-transform: uppercase; letter-spacing: 0.2em; font-size: 1rem; margin-bottom: 20px; }
-        .card p { color: #666; font-weight: 400; line-height: 1.8; font-size: 0.95rem; }
-
-        footer { margin-top: 100px; padding: 40px 0; border-top: 1px solid #111; font-size: 0.8rem; color: #444; text-transform: uppercase; letter-spacing: 0.1em; }
-        .link-mall { color: var(--emerald); text-decoration: none; font-weight: bold; }
-        .link-mall:hover { color: #FFF; }
+        .card p { color: rgba(232, 232, 232, 0.62); font-weight: 400; line-height: 1.8; font-size: 0.95rem; }
+        .status-ribbon { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 22px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--silver-border); background: rgba(232, 232, 232, 0.05); color: var(--chrome); font-size: 0.82rem; letter-spacing: 0.14em; text-transform: uppercase; }
+        .status-ribbon::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--cyan-accent); box-shadow: 0 0 16px rgba(115, 232, 255, 0.9); animation: pulse 2.8s ease-in-out infinite; }
+        .signal-grid { margin-top: 34px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+        .signal-card { padding: 18px; border-radius: 20px; border: 1px solid rgba(232, 232, 232, 0.08); background: rgba(4, 7, 15, 0.42); text-align: left; }
+        .signal-card span { display: block; font-size: 0.74rem; letter-spacing: 0.16em; color: var(--chrome-dark); text-transform: uppercase; margin-bottom: 8px; }
+        .signal-card strong { color: var(--chrome); font-size: 1.05rem; }
+        .signal-card em { display: block; margin-top: 6px; color: var(--electric-blue); font-style: normal; font-size: 0.84rem; }
+        .accio-badge { display: inline-flex; align-items: center; gap: 12px; margin-top: 22px; padding: 12px 18px; border-radius: 999px; border: 1px solid rgba(232, 232, 232, 0.12); color: var(--chrome-dark); text-decoration: none; background: rgba(232, 232, 232, 0.04); transition: transform 0.25s ease, border-color 0.25s ease, color 0.25s ease; }
+        .accio-badge:hover { transform: translateY(-2px); color: var(--chrome); border-color: rgba(74, 168, 255, 0.4); }
+        .accio-icon { width: 26px; height: 26px; color: var(--chrome); }
+        footer { margin-top: 76px; padding: 32px 0; border-top: 1px solid rgba(232, 232, 232, 0.08); font-size: 0.8rem; color: #6E768B; text-transform: uppercase; letter-spacing: 0.1em; }
+        .link-mall { color: var(--electric-blue); text-decoration: none; font-weight: bold; }
+        .link-mall:hover { color: var(--chrome); }
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.92); opacity: 0.7; }
+            50% { transform: scale(1.15); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .signal-grid { grid-template-columns: 1fr; }
+            .hero-card { padding: 48px 22px; }
+        }
     </style>
 </head>
 <body>
@@ -130,26 +181,45 @@
     <header>
         <h1>QuantVantage AI</h1>
         <p class="tagline">COMMERCIAL ARCHITECTURE & OPTICS</p>
+        <p class="intro-copy">A luxury intelligence surface for venture analysis, decision clarity, and premium AI-assisted evaluation across personal and QVpro workflows.</p>
     </header>
 
     <div class="hero-card">
+        <div class="status-ribbon">AI Engine Online</div>
         <h2 style="font-weight: 800; letter-spacing: 0.3em; margin-bottom: 40px; color: #FFF;">INITIALIZE EVALUATION</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div class="card" style="text-align: center; border-radius: 0; background: rgba(255,255,255,0.02);">
+            <div class="card" style="text-align: center; background: rgba(255,255,255,0.02);">
                 <h3 style="color: var(--chrome);">Personal Engine</h3>
                 <p style="color: var(--chrome-dark); font-size: 0.8rem; margin-bottom: 20px;">Lightweight app analysis with real-time feedback.</p>
                 <span style="display: block; color: var(--emerald); font-weight: bold; margin-bottom: 20px;">$4.99 / report</span>
                 <a href="https://quantvantageai.streamlit.app?mode=app" class="btn btn-chrome" style="width: 100%; box-sizing: border-box; margin: 0;">Select Personal</a>
             </div>
-            <div class="card" style="text-align: center; border-radius: 0; border-left: 4px solid var(--purple-deep); background: rgba(255,255,255,0.02);">
+            <div class="card" style="text-align: center; border-left: 4px solid var(--violet-accent); background: rgba(255,255,255,0.02);">
                 <h3 style="color: var(--chrome);">QVpro Commercial</h3>
                 <p style="color: var(--chrome-dark); font-size: 0.8rem; margin-bottom: 20px;">High-fidelity terminal for commercial venture valuation.</p>
-                <span style="display: block; color: var(--purple-deep); font-weight: bold; margin-bottom: 20px;">$12.00 / report</span>
+                <span style="display: block; color: var(--violet-accent); font-weight: bold; margin-bottom: 20px;">$12.00 / report</span>
                 <a href="https://quantvantage-beta.site.accio.ai" class="btn btn-outline-purple" style="width: 100%; box-sizing: border-box; margin: 0;">Select QVpro</a>
             </div>
         </div>
+        <div class="signal-grid">
+            <div class="signal-card">
+                <span>Signal</span>
+                <strong>Live model routing</strong>
+                <em>Silver-led premium decision layer</em>
+            </div>
+            <div class="signal-card">
+                <span>Optics</span>
+                <strong>Elevated commercial UI</strong>
+                <em>Refined glass depth and motion</em>
+            </div>
+            <div class="signal-card">
+                <span>State</span>
+                <strong>Ready for guided review</strong>
+                <em>Disclosure and deletion flow aligned</em>
+            </div>
+        </div>
         <div style="margin-top: 30px;">
-            <button id="shareBtn" class="btn" style="border: 1px solid var(--emerald); color: var(--emerald); background: transparent;">🔗 Share Site</button>
+            <button id="shareBtn" class="btn" style="border: 1px solid rgba(74, 168, 255, 0.42); color: var(--electric-blue); background: rgba(74, 168, 255, 0.06);">🔗 Share Site</button>
         </div>
     </div>
 
