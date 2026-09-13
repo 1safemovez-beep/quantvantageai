@@ -96,7 +96,7 @@ class QuantVantageAI:
             "mode": self.mode,
             "output_path": str(Path(output_path).resolve()),
             "owner_reference": owner_reference or "",
-            "created_at": datetime.datetime.utcnow().isoformat(timespec="seconds") + "Z",
+            "created_at": datetime.datetime.now(datetime.UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         }
         records.append(record)
         self._save_registry(records, registry_file)
