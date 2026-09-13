@@ -1,9 +1,9 @@
 # QuantVantageAI (repo: quantvantageai)
 
-QuantVantageAI/QVPro provides **AI-powered business, market, and commercial evaluation**.
+QuantVantageAI/QVPro provides **AI-powered creation, market, and commercial evaluation**.
 
 ## Product scope
-- Business and market evaluation reports
+- Creation and market evaluation reports
 - Commercial scenario analysis and strategic recommendations
 - Compact sponsored placement support (clearly labeled)
 

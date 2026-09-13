@@ -1,6 +1,6 @@
 # Commercial Evaluation Report: {{APP_NAME}}
 **Date:** {{DATE}}
-**Evaluation Scope:** AI-powered business, market, and commercial evaluation.
+**Evaluation Scope:** AI-powered creation, market, and commercial evaluation.
 
 ---
 
@@ -36,7 +36,7 @@
 ---
 
 ## PAGE 3 — Commercial Analysis
-- **Business model assumptions:** {{BUSINESS_ASSUMPTIONS}}
+- **Creation model assumptions:** {{BUSINESS_ASSUMPTIONS}}
 - **Revenue model analysis:** {{REVENUE_MODEL_ANALYSIS}}
 - **Cost and margin view:** {{COST_MARGIN_ANALYSIS}}
 - **Financial scenario analysis:** {{FINANCIAL_SCENARIOS}}

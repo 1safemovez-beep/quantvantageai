@@ -28,7 +28,7 @@ class QuantVantageAI:
             "RISK_1_MITIGATION": "Diversify channels and enforce CAC payback guardrails.",
             "RISK_2_NAME": "Positioning ambiguity",
             "RISK_2_WHY": "Mixed messaging reduces conversion and trust.",
-            "RISK_2_MITIGATION": "Keep messaging centered on business and commercial evaluation outcomes.",
+            "RISK_2_MITIGATION": "Keep messaging centered on creation and commercial evaluation outcomes.",
             "RISK_3_NAME": "Feature sprawl",
             "RISK_3_WHY": "Non-core features dilute execution velocity.",
             "RISK_3_MITIGATION": "Prioritize core evaluation workflows and sunset low-value paths.",

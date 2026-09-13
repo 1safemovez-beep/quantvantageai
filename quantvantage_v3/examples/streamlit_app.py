@@ -274,7 +274,7 @@ def delete_generated_report(report_id: str):
 expire_campaigns_if_needed()
 
 st.sidebar.title("💎 QuantVantage AI Pro")
-st.sidebar.info("AI-powered business, market, and commercial evaluation.")
+st.sidebar.info("AI-powered creation, market, and commercial evaluation.")
 
 st.sidebar.markdown("### 🚀 Get a Full Analysis")
 st.sidebar.markdown("[Unlock Full 12-Page Report ($4.99)](https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06)")
@@ -288,7 +288,7 @@ if st.sidebar.button("Creator Login"):
     st.login()
 
 st.title("QuantVantage AI Pro")
-st.subheader("AI-powered business, market, and commercial evaluation")
+st.subheader("AI-powered creation, market, and commercial evaluation")
 st.caption(
     "For informational and commercial planning use only. QVPro is not an investment adviser, broker, trading platform, or personalized investment recommendation service."
 )
@@ -343,7 +343,7 @@ if is_owner:
 tab_list = st.tabs(base_tabs)
 
 with tab_list[0]:
-    st.header("Business & Market Evaluation")
+    st.header("Creation & Market Evaluation")
     app_name = st.text_input("ENTER THE NAME OF YOUR VENTURE", placeholder="e.g. Premier tool bazaar mall")
 
     if st.button("GENERATE COMMERCIAL EVALUATION"):
@@ -363,7 +363,7 @@ with tab_list[0]:
                             {
                                 "role": "user",
                                 "content": (
-                                    "Generate a concise 4-6 page markdown business evaluation for venture: "
+                                    "Generate a concise 4-6 page markdown creation evaluation for idear: "
                                     f"'{app_name}'. Use exactly this structure and headings: \n"
                                     "PAGE 1: Executive Summary\n"
                                     "- Overall score\n- Opportunity score\n- Commercial score\n- Risk score\n- Recommended next step\n"
@@ -373,7 +373,7 @@ with tab_list[0]:
                                     "PAGE 4: Top Risks (3-5 only, each with Risk / Why it matters / How to reduce it)\n"
                                     "PAGE 5: Strategic Recommendations (Immediate actions, 30-day, 60-day, 90-day priorities)\n"
                                     "PAGE 6: Optional Deep-Dive Material (optional section, concise).\n"
-                                    "Use language for market analysis, business analysis, commercial evaluation, financial scenario analysis, business assumptions, and commercial recommendations. "
+                                    "Use language for market analysis, creation analysis, commercial evaluation, financial scenario analysis, creation assumptions, and commercial recommendations. "
                                     "Do not provide personalized investment advice. Do not include buy/sell signals, brokerage guidance, or guaranteed predictions. Remove repetitive filler."
                                 ),
                             }
@@ -409,7 +409,7 @@ with tab_list[0]:
             except Exception as e:
                 st.error(f"AI Error: {str(e)}")
         else:
-            st.warning("Please enter a venture name.")
+            st.warning("Please enter an idear name.")
 
 with tab_list[1]:
     st.header("Sponsor With Email")
@@ -594,7 +594,7 @@ if is_owner:
             st.metric("Sponsor Email Requests", len(load_subscriptions().get("subscriptions", [])))
 
     with tab_list[3]:
-        st.header("Core Business Analytics")
+        st.header("Core Creation Analytics")
         st.write("Logged in as Creator")
         col1, col2, col3 = st.columns(3)
         col1.metric("Total Revenue", "$499.00", "+12%")
@@ -613,4 +613,4 @@ if is_owner:
                 st.success("Stored report deleted.")
 
 st.divider()
-st.caption("© 2026 QuantVantage AI. AI-powered business, market, and commercial evaluation.")
+st.caption("© 2026 QuantVantage AI. AI-powered creation, market, and commercial evaluation.")
