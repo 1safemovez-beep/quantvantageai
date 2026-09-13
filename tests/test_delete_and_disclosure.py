@@ -71,11 +71,9 @@ class DeleteAndDisclosureTests(unittest.TestCase):
             with self.subTest(engine=str(engine_path)):
                 with tempfile.TemporaryDirectory() as temp_dir:
                     temp_root = Path(temp_dir)
-                    evaluator = engine_module.QuantVantageAI(
-                        "Demo Venture",
-                        registry_path=temp_root / "data" / "generated_records.json",
-                        output_dir=temp_root / "generated_reports",
-                    )
+                    evaluator = engine_module.QuantVantageAI("Demo Venture")
+                    evaluator.registry_path = temp_root / "data" / "generated_records.json"
+                    evaluator.output_dir = temp_root / "generated_reports"
                     record = evaluator.store_generated_output("classified report body", owner_reference="buyer@example.com")
                     generated_path = Path(record["output_path"])
 
@@ -94,11 +92,9 @@ class DeleteAndDisclosureTests(unittest.TestCase):
         engine_module = load_engine(ENGINE_PATHS[0])
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_root = Path(temp_dir)
-            evaluator = engine_module.QuantVantageAI(
-                "Demo Venture",
-                registry_path=temp_root / "data" / "generated_records.json",
-                output_dir=temp_root / "generated_reports",
-            )
+            evaluator = engine_module.QuantVantageAI("Demo Venture")
+            evaluator.registry_path = temp_root / "data" / "generated_records.json"
+            evaluator.output_dir = temp_root / "generated_reports"
 
             blank_result = evaluator.delete_customer("")
             self.assertFalse(blank_result["deleted"])
@@ -131,11 +127,9 @@ class DeleteAndDisclosureTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            evaluator = engine_module.QuantVantageAI(
-                "Demo Venture",
-                registry_path=registry_path,
-                output_dir=temp_root / "generated_reports",
-            )
+            evaluator = engine_module.QuantVantageAI("Demo Venture")
+            evaluator.registry_path = registry_path
+            evaluator.output_dir = temp_root / "generated_reports"
 
             result = evaluator.delete_customer("qv-badpath")
 
