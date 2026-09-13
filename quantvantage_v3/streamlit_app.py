@@ -170,7 +170,7 @@ st.sidebar.title("💎 QuantVantage AI Pro")
 st.sidebar.info("High-precision AI reports and real-time market optics.")
 
 st.sidebar.markdown("### 🚀 Get a Full Analysis")
-st.sidebar.markdown("[Unlock Full 12-Page Report ($4.99)](https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06)")
+st.sidebar.markdown("[Unlock Full 12-Page Report ($4.99)](https://buy.stripe.com/bJe4grgVJ5cB1g64ZMaVa0b)")
 
 st.sidebar.markdown("### 📈 Monthly Membership")
 st.sidebar.markdown("[🌟 Pro Subscription ($2/mo)](https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01)")
@@ -241,7 +241,7 @@ with tab_list[0]:
                         <div class="premium-card">
                             <h3>🔓 Want the Full 12-Page Deep Dive?</h3>
                             <p>Unlock detailed revenue projections, competitor analysis, and viral score optimization.</p>
-                            <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - $4.99</button></a>
+                            <a href="https://buy.stripe.com/bJe4grgVJ5cB1g64ZMaVa0b" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - $4.99</button></a>
                         </div>
                     """, unsafe_allow_html=True)
             except Exception as e:

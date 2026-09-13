@@ -13,7 +13,7 @@ class QuantVantageAI:
         self.last_generated_record = None
         self.report_data = {
             "DATE": datetime.date.today().strftime("%B %d, %Y"),
-            "PURCHASE_LINK": "https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06",
+            "PURCHASE_LINK": "https://buy.stripe.com/bJe4grgVJ5cB1g64ZMaVa0b",
         }
         
         if mode == "app":
