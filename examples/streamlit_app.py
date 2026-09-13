@@ -60,10 +60,22 @@ st.title("QuantVantage AI Pro")
 st.subheader("Professional Grade Analytical Intelligence")
 
 is_owner = False
+admin_email = "1safemovez@gmail.com"
+admin_password = st.secrets.get("ADMIN_PASSWORD", os.getenv("ADMIN_PASSWORD"))
 try:
-    if st.experimental_user.is_logged_in and st.experimental_user.email == "1safemovez@gmail.com":
-        is_owner = True
-        st.markdown('<div class="owner-badge">👑 OWNER & CREATOR ACCESS</div>', unsafe_allow_html=True)
+    if st.experimental_user.is_logged_in and st.experimental_user.email == admin_email:
+        if admin_password:
+            entered_admin_password = st.sidebar.text_input("Admin Password", type="password", key="admin_password")
+            if entered_admin_password:
+                if entered_admin_password == admin_password:
+                    is_owner = True
+                    st.markdown('<div class="owner-badge">👑 OWNER & CREATOR ACCESS</div>', unsafe_allow_html=True)
+                else:
+                    st.sidebar.error("Incorrect admin password.")
+            else:
+                st.sidebar.info("Enter admin password to unlock creator analytics.")
+        else:
+            st.sidebar.warning("ADMIN_PASSWORD is not configured. Add it to Streamlit Secrets.")
 except:
     pass
 
