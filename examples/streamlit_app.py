@@ -1,5 +1,5 @@
 # QuantVantage AI Pro - Analytical Engine
-# Build Version: 2026-09-13-ADVERTISING
+# Build Version: 2026-09-13-RISK-REDUCTION
 import base64
 import json
 import os
@@ -10,7 +10,13 @@ from pathlib import Path
 import anthropic
 import streamlit as st
 
-st.set_page_config(page_title="QuantVantage AI Pro | Analytical Engine", layout="wide")
+try:
+    from cryptography.fernet import Fernet, InvalidToken
+except Exception:  # pragma: no cover
+    Fernet = None
+    InvalidToken = Exception
+
+st.set_page_config(page_title="QuantVantage AI Pro | Commercial Evaluation", layout="wide")
 
 st.markdown(
     """
@@ -42,21 +48,24 @@ st.markdown(
         margin-bottom: 10px;
     }
     .ad-mini-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
-    .ad-mini-desc { font-size: 0.85rem; margin-bottom: 8px; }
+    .ad-mini-desc { font-size: 0.85rem; margin-bottom: 6px; }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
 BASE_DIR = Path(__file__).resolve().parent
-AD_DATA_PATH = BASE_DIR / "advertising_data.json"
+AD_DATA_PATH = BASE_DIR / "advertising_data.enc"
+AD_DATA_LEGACY_PATH = BASE_DIR / "advertising_data.json"
 RATE_CARD_PATH = BASE_DIR / "advertising_rate_card.json"
-SUBSCRIPTIONS_PATH = BASE_DIR / "ad_subscriptions.json"
+SUBSCRIPTIONS_PATH = BASE_DIR / "ad_subscriptions.enc"
+SUBSCRIPTIONS_LEGACY_PATH = BASE_DIR / "ad_subscriptions.json"
+REPORTS_PATH = BASE_DIR / "generated_reports.enc"
+REPORTS_LEGACY_PATH = BASE_DIR / "generated_reports.json"
 
 OWNER_EMAIL = "1safemovez@gmail.com"
 AD_STATUSES = ["Draft", "Pending Approval", "Approved", "Active", "Paused", "Expired"]
-PLACEMENTS = ["Sidebar Compact", "App Evaluator Compact", "Health Optics Compact", "Premium Compact"]
-
+PLACEMENTS = ["Sidebar Compact", "App Evaluator Compact", "Premium Compact", "Footer Compact"]
 DEFAULT_RATE_CARD = {
     "QVPro Sponsor": "199",
     "3-Month Sponsor": "499",
@@ -79,12 +88,64 @@ def _save_json(path: Path, value):
     path.write_text(json.dumps(value, indent=2), encoding="utf-8")
 
 
+def _get_encryption_key():
+    key = None
+    try:
+        key = st.secrets.get("QV_DATA_ENCRYPTION_KEY", None)
+    except Exception:
+        key = None
+    if not key:
+        key = os.getenv("QV_DATA_ENCRYPTION_KEY")
+    return key
+
+
+def _get_fernet():
+    key = _get_encryption_key()
+    if not key or not Fernet:
+        return None
+    try:
+        return Fernet(key.encode("utf-8"))
+    except Exception:
+        return None
+
+
+FERNET = _get_fernet()
+SECURE_STORAGE_ENABLED = FERNET is not None
+
+
+def _load_sensitive(path_enc: Path, legacy_path: Path, default_value):
+    if path_enc.exists() and FERNET:
+        try:
+            encrypted = path_enc.read_bytes()
+            decrypted = FERNET.decrypt(encrypted)
+            return json.loads(decrypted.decode("utf-8"))
+        except (InvalidToken, ValueError, json.JSONDecodeError):
+            return default_value
+
+    if legacy_path.exists():
+        legacy = _load_json(legacy_path, default_value)
+        if FERNET:
+            _save_sensitive(path_enc, legacy)
+        return legacy
+
+    return default_value
+
+
+def _save_sensitive(path_enc: Path, value):
+    if not FERNET:
+        return False
+    encoded = json.dumps(value, indent=2).encode("utf-8")
+    encrypted = FERNET.encrypt(encoded)
+    path_enc.write_bytes(encrypted)
+    return True
+
+
 def load_ads():
-    return _load_json(AD_DATA_PATH, {"ads": []})
+    return _load_sensitive(AD_DATA_PATH, AD_DATA_LEGACY_PATH, {"ads": []})
 
 
 def save_ads(data):
-    _save_json(AD_DATA_PATH, data)
+    return _save_sensitive(AD_DATA_PATH, data)
 
 
 def load_rate_card():
@@ -96,11 +157,19 @@ def save_rate_card(card):
 
 
 def load_subscriptions():
-    return _load_json(SUBSCRIPTIONS_PATH, {"subscriptions": []})
+    return _load_sensitive(SUBSCRIPTIONS_PATH, SUBSCRIPTIONS_LEGACY_PATH, {"subscriptions": []})
 
 
 def save_subscriptions(data):
-    _save_json(SUBSCRIPTIONS_PATH, data)
+    return _save_sensitive(SUBSCRIPTIONS_PATH, data)
+
+
+def load_reports():
+    return _load_sensitive(REPORTS_PATH, REPORTS_LEGACY_PATH, {"reports": []})
+
+
+def save_reports(data):
+    return _save_sensitive(REPORTS_PATH, data)
 
 
 def encode_uploaded_image(uploaded_file):
@@ -149,13 +218,13 @@ def upsert_ad(ad_payload):
     if not found:
         ads.append(ad_payload)
     ad_store["ads"] = ads
-    save_ads(ad_store)
+    return save_ads(ad_store)
 
 
 def delete_ad(ad_id):
     ad_store = load_ads()
     ad_store["ads"] = [a for a in ad_store.get("ads", []) if a.get("id") != ad_id]
-    save_ads(ad_store)
+    return save_ads(ad_store)
 
 
 def increment_metric(ad_id, metric):
@@ -183,10 +252,29 @@ def expire_campaigns_if_needed():
         save_ads(ad_store)
 
 
+def save_generated_report(app_name: str, report_text: str):
+    store = load_reports()
+    store["reports"].append(
+        {
+            "id": str(uuid.uuid4()),
+            "app_name": app_name,
+            "created_at": datetime.utcnow().isoformat(),
+            "report": report_text,
+        }
+    )
+    return save_reports(store)
+
+
+def delete_generated_report(report_id: str):
+    store = load_reports()
+    store["reports"] = [r for r in store.get("reports", []) if r.get("id") != report_id]
+    return save_reports(store)
+
+
 expire_campaigns_if_needed()
 
 st.sidebar.title("💎 QuantVantage AI Pro")
-st.sidebar.info("High-precision AI reports and real-time market optics.")
+st.sidebar.info("AI-powered business, market, and commercial evaluation.")
 
 st.sidebar.markdown("### 🚀 Get a Full Analysis")
 st.sidebar.markdown("[Unlock Full 12-Page Report ($4.99)](https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06)")
@@ -200,7 +288,15 @@ if st.sidebar.button("Creator Login"):
     st.login()
 
 st.title("QuantVantage AI Pro")
-st.subheader("Professional Grade Analytical Intelligence")
+st.subheader("AI-powered business, market, and commercial evaluation")
+st.caption(
+    "For informational and commercial planning use only. QVPro is not an investment adviser, broker, trading platform, or personalized investment recommendation service."
+)
+
+if not SECURE_STORAGE_ENABLED:
+    st.warning(
+        "Secure storage key missing. Set QV_DATA_ENCRYPTION_KEY in Streamlit secrets or environment to enable encrypted advertiser/subscription/report storage."
+    )
 
 is_owner = False
 try:
@@ -224,7 +320,8 @@ if current_active_ads:
         st.session_state["ad_impressions_seen"].add(compact_ad["id"])
 
     with st.container(border=True):
-        st.markdown("### 📣 Sponsored")
+        st.markdown("### ADVERTISEMENT / SPONSORED")
+        st.caption("Paid placement. Not a QVPro recommendation.")
         cols = st.columns([1, 3])
         with cols[0]:
             if compact_ad.get("logo"):
@@ -233,25 +330,23 @@ if current_active_ads:
                 st.image(compact_ad["creative"], width=64)
         with cols[1]:
             st.markdown(f"<div class='ad-mini-title'>{compact_ad.get('headline', 'Sponsored')}</div>", unsafe_allow_html=True)
-            st.markdown(
-                f"<div class='ad-mini-desc'>{compact_ad.get('short_description', '')}</div>",
-                unsafe_allow_html=True,
-            )
-            if st.button("Visit Sponsor", key=f"visit_{compact_ad['id']}"):
+            st.markdown(f"<div class='ad-mini-desc'>{compact_ad.get('short_description', '')}</div>", unsafe_allow_html=True)
+            c1, c2 = st.columns([1, 2])
+            if c1.button("Track Click", key=f"track_{compact_ad['id']}"):
                 increment_metric(compact_ad["id"], "clicks")
-                st.link_button("Open destination", compact_ad.get("destination_url", "https://example.com"))
+            c2.link_button("Visit Sponsor", compact_ad.get("destination_url", "https://example.com"))
 
-base_tabs = ["🚀 App Evaluator", "🫁 Health Optics", "📧 Sponsor With Email"]
+base_tabs = ["🚀 App Evaluator", "📧 Sponsor With Email"]
 if is_owner:
     base_tabs.extend(["🛠️ Advertising", "📊 Owner Analytics"])
 
 tab_list = st.tabs(base_tabs)
 
 with tab_list[0]:
-    st.header("Universal App Evaluator")
-    app_name = st.text_input("ENTER THE NAME OF YOUR VENTURE", placeholder="e.g. Premier tool bazaar Mall")
+    st.header("Business & Market Evaluation")
+    app_name = st.text_input("ENTER THE NAME OF YOUR VENTURE", placeholder="e.g. Premier tool bazaar mall")
 
-    if st.button("INITIALIZE COMMERCIAL ANALYSIS"):
+    if st.button("GENERATE COMMERCIAL EVALUATION"):
         if app_name:
             try:
                 api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
@@ -260,34 +355,52 @@ with tab_list[0]:
                     st.stop()
 
                 client = anthropic.Anthropic(api_key=api_key)
-                with st.spinner("Analyzing " + app_name + "..."):
+                with st.spinner("Building commercial evaluation..."):
                     response = client.messages.create(
                         model="claude-sonnet-4-5",
-                        max_tokens=1000,
+                        max_tokens=1800,
                         messages=[
                             {
                                 "role": "user",
-                                "content": f"Provide a professional commercial analysis for a venture named '{app_name}'. Include market potential, risks, and a 'QuantVantage' rating.",
+                                "content": (
+                                    "Generate a concise 4-6 page markdown business evaluation for venture: "
+                                    f"'{app_name}'. Use exactly this structure and headings: \n"
+                                    "PAGE 1: Executive Summary\n"
+                                    "- Overall score\n- Opportunity score\n- Commercial score\n- Risk score\n- Recommended next step\n"
+                                    "- WHAT YOU'LL GET section including: Market opportunity analysis, Competitor analysis, Customer/target-market analysis, Commercial viability, Revenue-model analysis, Risk analysis, Strategic recommendations, Action plan.\n"
+                                    "PAGE 2: Market & Opportunity\n"
+                                    "PAGE 3: Commercial Analysis\n"
+                                    "PAGE 4: Top Risks (3-5 only, each with Risk / Why it matters / How to reduce it)\n"
+                                    "PAGE 5: Strategic Recommendations (Immediate actions, 30-day, 60-day, 90-day priorities)\n"
+                                    "PAGE 6: Optional Deep-Dive Material (optional section, concise).\n"
+                                    "Use language for market analysis, business analysis, commercial evaluation, financial scenario analysis, business assumptions, and commercial recommendations. "
+                                    "Do not provide personalized investment advice. Do not include buy/sell signals, brokerage guidance, or guaranteed predictions. Remove repetitive filler."
+                                ),
                             }
                         ],
                     )
-                    st.success("Analysis Complete")
-                    analysis_text = response.content[0].text
-                    st.write(analysis_text)
+                    report_text = response.content[0].text
+                    st.success("Commercial evaluation complete")
+                    st.markdown(report_text)
 
                     st.download_button(
-                        label="📄 Download Analysis Copy",
-                        data=analysis_text,
-                        file_name=f"{app_name.lower().replace(' ', '_')}_analysis.txt",
-                        mime="text/plain",
+                        label="📄 Download Evaluation Report",
+                        data=report_text,
+                        file_name=f"{app_name.lower().replace(' ', '_')}_commercial_evaluation.md",
+                        mime="text/markdown",
                     )
+
+                    if SECURE_STORAGE_ENABLED:
+                        save_generated_report(app_name, report_text)
+                    else:
+                        st.info("Generated report persistence disabled until QV_DATA_ENCRYPTION_KEY is configured.")
 
                     st.divider()
                     st.markdown(
                         """
                         <div class="premium-card">
-                            <h3>🔓 Want the Full 12-Page Deep Dive?</h3>
-                            <p>Unlock detailed revenue projections, competitor analysis, and viral score optimization.</p>
+                            <h3>🔓 Optional Detailed Deep Dive</h3>
+                            <p>Use the downloadable report for optional extra details beyond the core 4–6 page structure.</p>
                             <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - $4.99</button></a>
                         </div>
                     """,
@@ -296,57 +409,11 @@ with tab_list[0]:
             except Exception as e:
                 st.error(f"AI Error: {str(e)}")
         else:
-            st.warning("Please enter a name.")
+            st.warning("Please enter a venture name.")
 
 with tab_list[1]:
-    st.header("Respiratory Assessment")
-    metrics = st.text_area("Symptoms/Metrics", placeholder="e.g. Coughing, shortness of breath...")
-    if st.button("Generate Health Insights"):
-        if metrics:
-            try:
-                api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
-                client = anthropic.Anthropic(api_key=api_key)
-                with st.spinner("Synthesizing health trends..."):
-                    response = client.messages.create(
-                        model="claude-sonnet-4-5",
-                        max_tokens=1000,
-                        messages=[
-                            {
-                                "role": "user",
-                                "content": f"As a health data analyzer, provide professional insights based on these respiratory metrics: '{metrics}'. (Disclaimer: For informational purposes only).",
-                            }
-                        ],
-                    )
-                    st.success("Insights Generated")
-                    insights_text = response.content[0].text
-                    st.write(insights_text)
-
-                    st.download_button(
-                        label="📄 Download Health Insights Copy",
-                        data=insights_text,
-                        file_name="respiratory_health_insights.txt",
-                        mime="text/plain",
-                    )
-
-                    st.divider()
-                    st.markdown(
-                        """
-                        <div class="premium-card">
-                            <h3>🏥 Upgrade to Pro Health Optics</h3>
-                            <p>Get personalized physiological roadmaps and immediate action steps.</p>
-                            <a href="https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Upgrade Now - $2/mo</button></a>
-                        </div>
-                    """,
-                        unsafe_allow_html=True,
-                    )
-            except Exception as e:
-                st.error(f"AI Error: {str(e)}")
-        else:
-            st.warning("Please provide metrics.")
-
-with tab_list[2]:
     st.header("Sponsor With Email")
-    st.caption("Compact advertiser onboarding request form.")
+    st.caption("Submit paid placement inquiries for creator review.")
     with st.form("ad_subscription_form", clear_on_submit=True):
         company = st.text_input("Company Name")
         contact_email = st.text_input("Contact Email")
@@ -354,7 +421,9 @@ with tab_list[2]:
         notes = st.text_area("Campaign Notes", placeholder="Placement goals, dates, budget range...")
         submitted = st.form_submit_button("Submit Sponsor Request")
         if submitted:
-            if company and contact_email:
+            if not SECURE_STORAGE_ENABLED:
+                st.error("Secure storage is required. Configure QV_DATA_ENCRYPTION_KEY first.")
+            elif company and contact_email:
                 subs = load_subscriptions()
                 subs["subscriptions"].append(
                     {
@@ -372,7 +441,7 @@ with tab_list[2]:
                 st.error("Company and contact email are required.")
 
 if is_owner:
-    with tab_list[3]:
+    with tab_list[2]:
         st.header("Advertising Management")
 
         st.subheader("Rate Card (Creator editable)")
@@ -386,7 +455,7 @@ if is_owner:
                 st.success("Rate card updated.")
 
         st.info("ADVERTISING PAYMENT FLOW NOT YET CONFIGURED")
-        st.caption("Existing Stripe links are for current app products; advertiser checkout is not implemented yet.")
+        st.caption("Current Stripe links cover existing app products. Dedicated advertiser checkout and confirmation are not implemented.")
 
         st.subheader("Add Advertiser")
         with st.form("add_advertiser_form", clear_on_submit=True):
@@ -407,8 +476,10 @@ if is_owner:
             add_submit = st.form_submit_button("Add Advertiser")
 
             if add_submit:
-                if company_name and contact_email and headline and destination_url:
-                    upsert_ad(
+                if not SECURE_STORAGE_ENABLED:
+                    st.error("Secure storage is required. Configure QV_DATA_ENCRYPTION_KEY first.")
+                elif company_name and contact_email and headline and destination_url:
+                    ok = upsert_ad(
                         {
                             "id": str(uuid.uuid4()),
                             "company_name": company_name,
@@ -428,7 +499,10 @@ if is_owner:
                             "created_at": datetime.utcnow().isoformat(),
                         }
                     )
-                    st.success("Advertiser added.")
+                    if ok:
+                        st.success("Advertiser added.")
+                    else:
+                        st.error("Unable to save advertiser. Check secure storage configuration.")
                 else:
                     st.error("Company, contact email, headline, and destination URL are required.")
 
@@ -453,24 +527,27 @@ if is_owner:
                 placement_e = st.selectbox("Placement", PLACEMENTS, index=PLACEMENTS.index(selected_ad.get("placement", PLACEMENTS[0])) if selected_ad.get("placement") in PLACEMENTS else 0)
                 status_e = st.selectbox("Status", AD_STATUSES, index=AD_STATUSES.index(selected_ad.get("status", "Draft")) if selected_ad.get("status") in AD_STATUSES else 0)
                 if st.form_submit_button("Save Campaign Changes"):
-                    selected_ad.update(
-                        {
-                            "company_name": company_name_e,
-                            "contact_email": contact_email_e,
-                            "logo": logo_e,
-                            "creative": creative_e,
-                            "headline": headline_e,
-                            "short_description": short_desc_e,
-                            "destination_url": destination_e,
-                            "campaign_price": float(price_e),
-                            "start_date": start_e.isoformat(),
-                            "end_date": end_e.isoformat(),
-                            "placement": placement_e,
-                            "status": status_e,
-                        }
-                    )
-                    upsert_ad(selected_ad)
-                    st.success("Campaign updated.")
+                    if not SECURE_STORAGE_ENABLED:
+                        st.error("Secure storage is required. Configure QV_DATA_ENCRYPTION_KEY first.")
+                    else:
+                        selected_ad.update(
+                            {
+                                "company_name": company_name_e,
+                                "contact_email": contact_email_e,
+                                "logo": logo_e,
+                                "creative": creative_e,
+                                "headline": headline_e,
+                                "short_description": short_desc_e,
+                                "destination_url": destination_e,
+                                "campaign_price": float(price_e),
+                                "start_date": start_e.isoformat(),
+                                "end_date": end_e.isoformat(),
+                                "placement": placement_e,
+                                "status": status_e,
+                            }
+                        )
+                        upsert_ad(selected_ad)
+                        st.success("Campaign updated.")
 
             col_a, col_b, col_c, col_d, col_e = st.columns(5)
             if col_a.button("Approve", use_container_width=True):
@@ -514,17 +591,26 @@ if is_owner:
                 )
             st.dataframe(rows, use_container_width=True)
             st.metric("Total Campaign Revenue", f"${total_revenue:,.2f}")
+            st.metric("Sponsor Email Requests", len(load_subscriptions().get("subscriptions", [])))
 
-            sub_count = len(load_subscriptions().get("subscriptions", []))
-            st.metric("Sponsor Email Requests", sub_count)
-
-    with tab_list[4]:
+    with tab_list[3]:
         st.header("Core Business Analytics")
         st.write("Logged in as Creator")
         col1, col2, col3 = st.columns(3)
         col1.metric("Total Revenue", "$499.00", "+12%")
-        col2.metric("Reports Generated", "102", "+5")
+        col2.metric("Reports Generated", str(len(load_reports().get("reports", []))), "+0")
         col3.metric("Affiliate Clicks", "452", "+28%")
 
+        reports = load_reports().get("reports", [])
+        if reports:
+            st.subheader("Generated Report Storage")
+            report_map = {f"{r.get('app_name')} — {r.get('created_at')}": r for r in reports}
+            selected_report_label = st.selectbox("Stored Report", list(report_map.keys()))
+            selected_report = report_map[selected_report_label]
+            st.text_area("Preview", selected_report.get("report", ""), height=220)
+            if st.button("Delete Stored Report"):
+                delete_generated_report(selected_report.get("id"))
+                st.success("Stored report deleted.")
+
 st.divider()
-st.caption("© 2026 QuantVantage AI. Professional Grade Analytics.")
+st.caption("© 2026 QuantVantage AI. AI-powered business, market, and commercial evaluation.")

@@ -7,9 +7,17 @@ coin_balances.json
 advertising_data.json
 advertising_rate_card.json
 ad_subscriptions.json
+generated_reports.json
+advertising_data.enc
+ad_subscriptions.enc
+generated_reports.enc
 quantvantage_v3/advertising_data.json
 quantvantage_v3/advertising_rate_card.json
 quantvantage_v3/ad_subscriptions.json
+quantvantage_v3/generated_reports.json
+quantvantage_v3/advertising_data.enc
+quantvantage_v3/ad_subscriptions.enc
+quantvantage_v3/generated_reports.enc
 .env.local
 .env.development
 .env.production

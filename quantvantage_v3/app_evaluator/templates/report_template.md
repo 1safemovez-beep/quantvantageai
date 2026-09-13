@@ -1,79 +1,97 @@
-# Analytical Analysis: {{APP_NAME}}
+# Commercial Evaluation Report: {{APP_NAME}}
 **Date:** {{DATE}}
-**Status:** {{MARKET_STATUS}}
+**Evaluation Scope:** AI-powered business, market, and commercial evaluation.
 
 ---
 
-## 1. Value Proposition & Income Potential
-* **Core Functionality:** {{CORE_FEATURES}}
-* **Revenue Model:** {{REVENUE_MODEL}}
-* **Income Frequency:** {{INCOME_FREQUENCY}}
-* **Estimated Income:** {{INCOME_PROJECTION}}
+## PAGE 1 — Executive Summary
 
-## 2. Competitive Landscape
-{{COMPETITOR_TABLE}}
+### Scores
+- **Overall score:** {{OVERALL_SCORE}} / 100
+- **Opportunity score:** {{OPPORTUNITY_SCORE}} / 100
+- **Commercial score:** {{COMMERCIAL_SCORE}} / 100
+- **Risk score:** {{RISK_SCORE}} / 100
 
-### Comparison & Contrast
-* **Similarities:** {{SIMILARITIES}}
-* **Differences:** {{DIFFERENCES}}
-* **Uniqueness Rating:** {{UNIQUENESS_SCORE}} / 10
+### Recommended next step
+{{RECOMMENDED_NEXT_STEP}}
 
-## 3. Market Activity & Net Worth
-* **Current Activity:** {{ACTIVITY_LEVEL}}
-* **Market CAGR:** {{CAGR}}
-* **Future Net Worth Projection:** {{NET_WORTH_EVALUATION}}
-
-## 4. Profitability & ROI Analysis
-* **Estimated Margin:** {{PROFIT_MARGIN}}%
-* **Customer Acquisition Cost (CAC) Est:** ${{EST_CAC}}
-* **Break-even Point:** {{BREAK_EVEN_UNITS}} units
-* **Profitability Outlook:** {{PROFIT_OUTLOOK}}
-
-## 5. Strategic Recommendations
-* **Tech Stack Cost Projection:** {{TECH_STACK_COST}}
-* **Monetization Hacks:** {{MONETIZATION_HACKS}}
-* **Viral Potential Score:** {{VIRAL_SCORE}} / 10
-
-## 6. Optimization Scorecard (Eliminating Friction)
-* **UX Friction Reduction:** {{UX_IMPROVEMENT}}
-* **Trust & Safety Layer:** {{TRUST_IMPROVEMENT}}
-* **Performance Optimization:** {{PERFORMANCE_IMPROVEMENT}}
-* **"Better Choice" Verdict:** {{BETTER_CHOICE_SUMMARY}}
-
-## 7. Outlook
-* **Best Case:** {{BEST_CASE}}
-* **Worst Case:** {{WORST_CASE}}
-* **Overall Recommendation:** {{RECOMMENDATION}}
+### WHAT YOU'LL GET
+- Market opportunity analysis
+- Competitor analysis
+- Customer/target-market analysis
+- Commercial viability
+- Revenue-model analysis
+- Risk analysis
+- Strategic recommendations
+- Action plan
 
 ---
 
-### 💳 Actions & Support
+## PAGE 2 — Market & Opportunity
+- **Market demand signals:** {{MARKET_DEMAND}}
+- **Target segment fit:** {{TARGET_MARKET_FIT}}
+- **Competitor landscape summary:** {{COMPETITOR_SUMMARY}}
+- **Opportunity thesis:** {{OPPORTUNITY_THESIS}}
+
+---
+
+## PAGE 3 — Commercial Analysis
+- **Business model assumptions:** {{BUSINESS_ASSUMPTIONS}}
+- **Revenue model analysis:** {{REVENUE_MODEL_ANALYSIS}}
+- **Cost and margin view:** {{COST_MARGIN_ANALYSIS}}
+- **Financial scenario analysis:** {{FINANCIAL_SCENARIOS}}
+
+---
+
+## PAGE 4 — Top Risks
+
+### Risk 1
+- **Risk:** {{RISK_1_NAME}}
+- **Why it matters:** {{RISK_1_WHY}}
+- **How to reduce it:** {{RISK_1_MITIGATION}}
+
+### Risk 2
+- **Risk:** {{RISK_2_NAME}}
+- **Why it matters:** {{RISK_2_WHY}}
+- **How to reduce it:** {{RISK_2_MITIGATION}}
+
+### Risk 3
+- **Risk:** {{RISK_3_NAME}}
+- **Why it matters:** {{RISK_3_WHY}}
+- **How to reduce it:** {{RISK_3_MITIGATION}}
+
+### Risk 4 (optional)
+- **Risk:** {{RISK_4_NAME}}
+- **Why it matters:** {{RISK_4_WHY}}
+- **How to reduce it:** {{RISK_4_MITIGATION}}
+
+### Risk 5 (optional)
+- **Risk:** {{RISK_5_NAME}}
+- **Why it matters:** {{RISK_5_WHY}}
+- **How to reduce it:** {{RISK_5_MITIGATION}}
+
+---
+
+## PAGE 5 — Strategic Recommendations
+- **Immediate actions:** {{ACTIONS_IMMEDIATE}}
+- **30-day priorities:** {{ACTIONS_30_DAY}}
+- **60-day priorities:** {{ACTIONS_60_DAY}}
+- **90-day priorities:** {{ACTIONS_90_DAY}}
+
+---
+
+## PAGE 6 — Optional Deep-Dive Material
+{{OPTIONAL_DEEP_DIVE}}
+
+---
+
+### Actions & Support
 <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
   <a href="{{PURCHASE_LINK}}" style="background: #e63946; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">💳 Purchase Full Report ($4.99)</a>
   <button onclick="window.print()" style="background: #457b9d; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">🖨️ Print Report</button>
-  <button id="shareButton" style="background: #1d3557; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">🔗 Share</button>
-  <a href="https://www.google.com/drive/using-drive/" target="_blank" style="background: #f1faee; color: #1d3557; padding: 10px 20px; text-decoration: none; border: 1px solid #1d3557; border-radius: 5px; font-weight: bold;">☁️ Save to Drive</a>
 </div>
 
-<script>
-document.getElementById('shareButton').onclick = async () => {
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: 'QuantVantage AI Evaluation: {{APP_NAME}}',
-        text: 'Check out this deep-dive market analysis.',
-        url: window.location.href
-      });
-    } catch (err) {
-      console.log('Share failed:', err);
-    }
-  } else {
-    alert('Copy this link to share: ' + window.location.href);
-  }
-};
-</script>
+### Disclosure
+This report is for informational and commercial planning purposes only. It is not investment advice, brokerage guidance, or a personalized investment recommendation.
 
-**Affiliate Partner:** [{{AFFILIATE_NAME}}]({{AFFILIATE_URL}}) - *{{AFFILIATE_DESC}}*
-
----
 *Generated by QuantVantage AI*

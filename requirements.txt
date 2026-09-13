@@ -2,3 +2,4 @@ streamlit
 anthropic
 pandas
 python-dotenv
+cryptography==50.0.0
