@@ -44,7 +44,7 @@ st.sidebar.info("High-precision AI reports and real-time market optics.")
 
 PERSONAL_TIER_LINK = st.secrets.get("PERSONAL_TIER_LINK", os.getenv("PERSONAL_TIER_LINK", "https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06"))
 COMMERCIAL_TIER_LINK = st.secrets.get("COMMERCIAL_TIER_LINK", os.getenv("COMMERCIAL_TIER_LINK", "https://quantvantage-beta.site.accio.ai"))
-ADVERTISING_TIER_LINK = st.secrets.get("ADVERTISING_TIER_LINK", os.getenv("ADVERTISING_TIER_LINK", "https://quantvantage.ai/mall"))
+ADVERTISING_TIER_LINK = st.secrets.get("ADVERTISING_TIER_LINK", os.getenv("ADVERTISING_TIER_LINK", "https://buy.stripe.com/bJefZ9fRFfRfgb0ak6aVa0e"))
 
 st.sidebar.markdown("### 🚀 Personal Tier")
 st.sidebar.markdown(f"[Unlock Full 12-Page Report ($4.99)]({PERSONAL_TIER_LINK})")
