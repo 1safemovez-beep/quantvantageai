@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.quantvantageai.twa",
+      "sha256_cert_fingerprints": [
+        "69:59:69:72:FD:E3:19:9A:B8:EA:21:1A:78:59:E5:56:F8:69:3F:E0:FE:ED:5A:9B:54:C9:72:73:42:92:6B:B1"
+      ]
+    }
+  }
+]
