@@ -9,7 +9,7 @@ import json
 st.set_page_config(page_title="QuantVantage AI Pro | Analytical Engine", layout="wide")
 
 # --- CUSTOM CSS ---
-st.markdown("""
+st.markdown(f"""
     <style>
     .main { background-color: #F9F9F9; }
     .stButton>button {
@@ -44,11 +44,18 @@ st.markdown("""
 st.sidebar.title("💎 QuantVantage AI Pro")
 st.sidebar.info("High-precision AI reports and real-time market optics.")
 
-st.sidebar.markdown("### 🚀 Get a Full Analysis")
-st.sidebar.markdown("[Unlock Full 12-Page Report ($4.99)](https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06)")
+PERSONAL_TIER_LINK = st.secrets.get("PERSONAL_TIER_LINK", os.getenv("PERSONAL_TIER_LINK", "https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06"))
+COMMERCIAL_TIER_LINK = st.secrets.get("COMMERCIAL_TIER_LINK", os.getenv("COMMERCIAL_TIER_LINK", "https://quantvantage-beta.site.accio.ai"))
+ADVERTISING_TIER_LINK = st.secrets.get("ADVERTISING_TIER_LINK", os.getenv("ADVERTISING_TIER_LINK", "https://buy.stripe.com/bJefZ9fRFfRfgb0ak6aVa0e"))
 
-st.sidebar.markdown("### 📈 Monthly Membership")
-st.sidebar.markdown("[🌟 Pro Subscription ($2/mo)](https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01)")
+st.sidebar.markdown("### 🚀 Personal Tier")
+st.sidebar.markdown(f"[Unlock Full 12-Page Report ($4.99)]({PERSONAL_TIER_LINK})")
+
+st.sidebar.markdown("### 🏢 Commercial Tier")
+st.sidebar.markdown(f"[Launch QVpro Commercial Analysis ($12.00)]({COMMERCIAL_TIER_LINK})")
+
+st.sidebar.markdown("### 📣 Advertising Tier")
+st.sidebar.markdown(f"[Run Advertising Placement Package ($199.00)]({ADVERTISING_TIER_LINK})")
 
 st.sidebar.divider()
 
@@ -60,10 +67,22 @@ st.title("QuantVantage AI Pro")
 st.subheader("Professional Grade Analytical Intelligence")
 
 is_owner = False
+admin_email = "1safemovez@gmail.com"
+admin_password = st.secrets.get("ADMIN_PASSWORD", os.getenv("ADMIN_PASSWORD"))
 try:
-    if st.experimental_user.is_logged_in and st.experimental_user.email == "1safemovez@gmail.com":
-        is_owner = True
-        st.markdown('<div class="owner-badge">👑 OWNER & CREATOR ACCESS</div>', unsafe_allow_html=True)
+    if st.experimental_user.is_logged_in and st.experimental_user.email == admin_email:
+        if admin_password:
+            entered_admin_password = st.sidebar.text_input("Admin Password", type="password", key="admin_password")
+            if entered_admin_password:
+                if entered_admin_password == admin_password:
+                    is_owner = True
+                    st.markdown('<div class="owner-badge">👑 OWNER & CREATOR ACCESS</div>', unsafe_allow_html=True)
+                else:
+                    st.sidebar.error("Incorrect admin password.")
+            else:
+                st.sidebar.info("Enter admin password to unlock creator analytics.")
+        else:
+            st.sidebar.warning("ADMIN_PASSWORD is not configured. Add it to Streamlit Secrets.")
 except:
     pass
 
@@ -106,11 +125,11 @@ with tab_list[0]:
                     )
                     
                     st.divider()
-                    st.markdown("""
+                    st.markdown(f"""
                         <div class="premium-card">
                             <h3>🔓 Want the Full 12-Page Deep Dive?</h3>
                             <p>Unlock detailed revenue projections, competitor analysis, and viral score optimization.</p>
-                            <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - $4.99</button></a>
+                            <a href="{PERSONAL_TIER_LINK}" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - $4.99</button></a>
                         </div>
                     """, unsafe_allow_html=True)
             except Exception as e:
@@ -147,9 +166,9 @@ with tab_list[1]:
                     st.divider()
                     st.markdown("""
                         <div class="premium-card">
-                            <h3>🏥 Upgrade to Pro Health Optics</h3>
-                            <p>Get personalized physiological roadmaps and immediate action steps.</p>
-                            <a href="https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Upgrade Now - $2/mo</button></a>
+                            <h3>📣 Advertising Tier</h3>
+                            <p>Activate sponsored placement and campaign visibility with your ad package.</p>
+                            <a href="{ADVERTISING_TIER_LINK}" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Start Advertising - $199.00</button></a>
                         </div>
                     """, unsafe_allow_html=True)
             except Exception as e:
