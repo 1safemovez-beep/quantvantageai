@@ -17,7 +17,8 @@
         td { padding: 12px; border-bottom: 1px solid #eee; }
         .status { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
         .status-paid { background: #d4edda; color: #155724; }
-        .btn { background: #6F8854; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 0.9rem; }
+        .btn { background: #6F8854; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 0.9rem; border: none; cursor: pointer; }
+        .status-message { margin: 20px 0; padding: 12px; border-radius: 8px; background: #f8f9fa; color: #333; min-height: 20px; }
     </style>
 </head>
 <body>
@@ -35,13 +36,15 @@
         </div>
         <div class="stat-card" style="background: #6F8854;">
             <h3>Active Reports</h3>
-            <div>102</div>
+            <div id="activeReportsCount">2</div>
         </div>
         <div class="stat-card" style="background: #C68E31;">
             <h3>Affiliate Clicks</h3>
             <div>452</div>
         </div>
     </div>
+
+    <div id="action-status" class="status-message" aria-live="polite">Delete actions remove records from this dashboard view.</div>
 
     <h2>Recent Transactions</h2>
     <table>
@@ -62,7 +65,7 @@
                 <td>AI Mall App</td>
                 <td>$4.99</td>
                 <td><span class="status status-paid">PAID</span></td>
-                <td><button class="btn" style="background: #dc3545;" onclick="alert('Record deleted!')">Delete</button></td>
+                <td><button class="btn" style="background: #dc3545;" onclick="deleteTransaction(this)">Delete</button></td>
             </tr>
             <tr>
                 <td>Aug 31, 2026</td>
@@ -70,11 +73,32 @@
                 <td>Art AI Studio</td>
                 <td>$4.99</td>
                 <td><span class="status status-paid">PAID</span></td>
-                <td><button class="btn" style="background: #dc3545;" onclick="alert('Record deleted!')">Delete</button></td>
+                <td><button class="btn" style="background: #dc3545;" onclick="deleteTransaction(this)">Delete</button></td>
             </tr>
         </tbody>
     </table>
 </div>
+
+<script>
+    function deleteTransaction(button) {
+        const row = button.closest('tr');
+        if (!row) return;
+
+        const customer = row.children[1]?.textContent?.trim() || 'this customer';
+        row.remove();
+
+        const remaining = document.querySelectorAll('tbody tr').length;
+        const count = document.getElementById('activeReportsCount');
+        if (count) {
+            count.textContent = String(remaining);
+        }
+
+        const status = document.getElementById('action-status');
+        if (status) {
+            status.textContent = `Deleted the dashboard record for ${customer}.`;
+        }
+    }
+</script>
 
 </body>
 </html>

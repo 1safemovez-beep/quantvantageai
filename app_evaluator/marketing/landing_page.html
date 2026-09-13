@@ -21,6 +21,7 @@
         .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin: 60px 0; text-align: left; }
         .feature-card { background: white; padding: 25px; border-radius: 12px; border: 1px solid #eee; }
         .feature-card h3 { color: var(--secondary); margin-top: 0; }
+        .disclosure-card { text-align: left; margin: 40px 0; border-left: 4px solid var(--primary); }
         .price-badge { background: var(--secondary); color: white; padding: 5px 15px; border-radius: 15px; font-size: 0.9rem; margin-bottom: 10px; display: inline-block; }
         .preview { margin-top: 40px; border: 1px dashed #ccc; padding: 20px; border-radius: 10px; font-style: italic; color: #777; }
         footer { margin-top: 80px; font-size: 0.9rem; color: #999; }
@@ -67,10 +68,16 @@
         "The most comprehensive analysis I've received. It identified three competitors I didn't even know existed." — Beta User
     </div>
 
+    <section class="feature-card disclosure-card" aria-label="Important disclosure">
+        <h3>Important Disclosure</h3>
+        <p>QuantVantage AI provides AI-generated analytical content for informational purposes only and does not provide financial, legal, or medical advice.</p>
+        <p>If you submit an app name, venture details, or health metrics, that information is sent to the app's AI processing provider to generate your requested output.</p>
+    </section>
+
     <footer>
         <div style="margin-bottom: 20px;">
-            <p>Need to manage your records? <a href="support.html" style="color: #888;">AI Help & Support</a> | <a href="#" style="color: #888;" onclick="alert('Delete request sent. Check your email to confirm.')">Delete My Data</a></p>
-            <p style="font-size: 0.8rem;"><a href="../legal/terms_of_service.md" style="color: #bbb;">Terms of Service</a> | <a href="../legal/refund_policy.md" style="color: #bbb;">Refund Policy</a></p>
+            <p>Need to manage your records? <a href="support.html" style="color: #888;">AI Help & Support</a> | <a href="support.html#data-deletion" style="color: #888;">Request Data Deletion</a></p>
+            <p style="font-size: 0.8rem;"><a href="../legal/privacy_policy.md" style="color: #bbb;">Privacy Policy</a> | <a href="../legal/terms_of_service.md" style="color: #bbb;">Terms of Service</a> | <a href="../legal/refund_policy.md" style="color: #bbb;">Refund Policy</a></p>
         </div>
         &copy; 2026 QuantVantage AI. Powered by the Analytical Intelligence Engine.
     </footer>
