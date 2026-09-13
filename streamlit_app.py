@@ -1,170 +1,314 @@
-# QuantVantage AI Pro - Analytical Engine
-# Build Version: 2026-09-09-FINAL
+# QuantVantage AI Pro - Master Analysis Engine
+# Build Version: 2026-09-12-CONSOLIDATED
 import streamlit as st
-import anthropic
 import os
 import json
+from app_evaluator.evaluator_engine import QVProEngine
 
-# Restoration of the "First Theme" Design (Clean & Professional)
-st.set_page_config(page_title="QuantVantage AI Pro | Analytical Engine", layout="wide")
+# Restoration of the "Luxury Spatial Tech" Design (High-Performance Dark Mode)
+st.set_page_config(page_title="QuantVantage AI Pro | Master Engine", layout="wide", initial_sidebar_state="collapsed")
 
 # --- CUSTOM CSS ---
 st.markdown("""
     <style>
-    .main { background-color: #F9F9F9; }
+    /* Main Background with Space Gradient */
+    .main { 
+        background: radial-gradient(circle at 50% 50%, #0D0D0F 0%, #000000 100%); 
+        color: #E8E8E8;
+    }
+    
+    /* Sidebar styling */
+    [data-testid="stSidebar"] {
+        background-color: #080808;
+        border-right: 1px solid #1A1A1A;
+    }
+    
+    /* Typography */
+    h1, h2, h3 { 
+        color: #E8E8E8 !important; 
+        font-weight: 900 !important; 
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+    
+    /* Button - Chrome & Emerald Glow */
     .stButton>button {
-        background-color: #3E7096; /* Original Blue */
-        color: white;
-        border-radius: 30px;
-        padding: 10px 24px;
-        font-weight: bold;
+        background: linear-gradient(180deg, #FFFFFF 0%, #A9A9A9 100%);
+        color: #000000 !important;
+        border-radius: 0px !important;
+        padding: 15px 40px !important;
+        font-weight: 800 !important;
+        border: none !important;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        transition: all 0.3s ease;
     }
-    h1, h2, h3 { color: #3E7096; font-weight: 800; }
+    .stButton>button:hover {
+        background: #008F68 !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 0 20px #008F68;
+        transform: scale(1.02);
+    }
+    
+    /* Premium Cards - Glassmorphism */
     .premium-card {
-        background-color: #f0f4f7;
-        padding: 20px;
-        border-radius: 15px;
-        border-left: 5px solid #3E7096;
-        margin-bottom: 20px;
+        background: rgba(232, 232, 232, 0.05);
+        backdrop-filter: blur(20px);
+        padding: 30px;
+        border-radius: 0px;
+        border: 1px solid #A9A9A9;
+        border-left: 5px solid #008F68;
+        margin-bottom: 25px;
     }
+    
+    /* Owner Badge - Emerald Glow */
     .owner-badge {
-        background-color: #6F8854;
+        background-color: #008F68;
         color: white;
-        padding: 5px 12px;
-        border-radius: 20px;
+        padding: 6px 15px;
+        border-radius: 0px;
         font-size: 0.8rem;
         font-weight: bold;
         display: inline-block;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        box-shadow: 0 0 10px #008F68;
+    }
+
+    /* Input Field Styling */
+    .stTextInput>div>div>input {
+        background-color: #0A0A0A !important;
+        color: #E8E8E8 !important;
+        border: 1px solid #333 !important;
+        border-radius: 0px !important;
+    }
+    
+    /* Tabs Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        white-space: pre-wrap;
+        background-color: transparent;
+        border-radius: 0px;
+        color: #666;
+        font-weight: 700;
+        border: 1px solid transparent;
+    }
+    .stTabs [aria-selected="true"] {
+        color: #008F68 !important;
+        border-bottom: 2px solid #008F68 !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
 # --- SIDEBAR & PRICING ---
-st.sidebar.title("💎 QuantVantage AI Pro")
-st.sidebar.info("High-precision AI reports and real-time market optics.")
+# Load Translations
+with open("locales/translations.json", "r") as f:
+    translations = json.load(f)
 
-st.sidebar.markdown("### 🚀 Get a Full Analysis")
-st.sidebar.markdown("[Unlock Full 12-Page Report ($4.99)](https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06)")
+selected_lang = st.sidebar.selectbox("🌐 Select Language", list(translations.keys()))
+t = translations[selected_lang]
 
-st.sidebar.markdown("### 📈 Monthly Membership")
-st.sidebar.markdown("[🌟 Pro Subscription ($2/mo)](https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01)")
+st.sidebar.title(t["sidebar_title"])
+st.sidebar.info(t["sidebar_info"])
+
+st.sidebar.markdown(f"### {t['sidebar_analysis_header']}")
+st.sidebar.markdown(f"[{t['sidebar_analysis_link']}](https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06)")
+
+st.sidebar.markdown(f"### {t['sidebar_membership_header']}")
+st.sidebar.markdown(f"[{t['sidebar_membership_link']}](https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01)")
 
 st.sidebar.divider()
 
-if st.sidebar.button("Creator Login"):
+# --- SECURITY CHECK ---
+encryption_key = None
+try:
+    encryption_key = st.secrets.get("QV_DATA_ENCRYPTION_KEY")
+except:
+    pass
+
+if not encryption_key:
+    encryption_key = os.getenv("QV_DATA_ENCRYPTION_KEY")
+
+if not encryption_key:
+    st.sidebar.warning("🔐 Security Warning: QV_DATA_ENCRYPTION_KEY is missing. Data will not be encrypted.")
+    if st.sidebar.button("Generate New Key"):
+        from app_evaluator.security import SecureVault
+        new_key = SecureVault.generate_key()
+        st.sidebar.code(new_key, language="text")
+        st.sidebar.info("Copy this to your Streamlit Secrets or .env file.")
+
+if st.sidebar.button(t["creator_login"]):
     st.login()
 
 # --- MAIN APP ---
-st.title("QuantVantage AI Pro")
-st.subheader("Professional Grade Analytical Intelligence")
+st.title(t["app_title"])
+st.subheader(t["app_subtitle"])
 
 is_owner = False
 try:
     if st.experimental_user.is_logged_in and st.experimental_user.email == "1safemovez@gmail.com":
         is_owner = True
-        st.markdown('<div class="owner-badge">👑 OWNER & CREATOR ACCESS</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="owner-badge">{t["owner_badge"]}</div>', unsafe_allow_html=True)
 except:
     pass
 
-tabs = ["🚀 App Evaluator", "🫁 Health Optics"]
+tabs = [t["tab_evaluator"], t["tab_health"]]
 if is_owner:
-    tabs.append("📊 Owner Analytics")
+    tabs.append(t["tab_analytics"])
 
 tab_list = st.tabs(tabs)
 
 with tab_list[0]:
-    st.header("Universal App Evaluator")
-    app_name = st.text_input("ENTER THE NAME OF YOUR VENTURE", placeholder="e.g. Premier tool bazaar Mall")
+    st.header(t["evaluator_header"])
+    app_name = st.text_input(t["input_app_name"], placeholder=t["placeholder_app_name"])
     
-    if st.button("INITIALIZE COMMERCIAL ANALYSIS"):
-        if app_name:
-            try:
-                # Get API Key from Secrets
-                api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
-                if not api_key:
-                    st.error("API Key Missing: Please set ANTHROPIC_API_KEY in Streamlit Secrets.")
-                    st.stop()
-                
-                client = anthropic.Anthropic(api_key=api_key)
-                with st.spinner("Analyzing " + app_name + "..."):
-                    response = client.messages.create(
-                        model="claude-sonnet-4-5",
-                        max_tokens=1000,
-                        messages=[{"role": "user", "content": f"Provide a professional commercial analysis for a venture named '{app_name}'. Include market potential, risks, and a 'QuantVantage' rating."}]
-                    )
-                    st.success("Analysis Complete")
-                    analysis_text = response.content[0].text
-                    st.write(analysis_text)
+    # Session state for current analysis
+    if "current_analysis" not in st.session_state:
+        st.session_state.current_analysis = None
+
+    col_init, col_del = st.columns([1, 1])
+
+    with col_init:
+        if st.button(t["btn_initialize"]):
+            if app_name:
+                try:
+                    # Get API Key from Secrets
+                    api_key = None
+                    try:
+                        api_key = st.secrets.get("ANTHROPIC_API_KEY")
+                    except:
+                        pass
                     
-                    # --- DOWNLOAD BUTTON ---
-                    st.download_button(
-                        label="📄 Download Analysis Copy",
-                        data=analysis_text,
-                        file_name=f"{app_name.lower().replace(' ', '_')}_analysis.txt",
-                        mime="text/plain"
-                    )
+                    if not api_key:
+                        api_key = os.getenv("ANTHROPIC_API_KEY")
                     
-                    st.divider()
-                    st.markdown("""
-                        <div class="premium-card">
-                            <h3>🔓 Want the Full 12-Page Deep Dive?</h3>
-                            <p>Unlock detailed revenue projections, competitor analysis, and viral score optimization.</p>
-                            <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - $4.99</button></a>
-                        </div>
-                    """, unsafe_allow_html=True)
-            except Exception as e:
-                st.error(f"AI Error: {str(e)}")
-        else:
-            st.warning("Please enter a name.")
+                    engine = QVProEngine(app_name, api_key=api_key)
+                    with st.spinner(f"{t['spinner_analyzing']} {app_name}..."):
+                        analysis_data = engine.run_full_evaluation()
+                        report_text = engine.generate_report()
+                        
+                        st.session_state.current_analysis = {
+                            "name": app_name,
+                            "report": report_text,
+                            "data": analysis_data
+                        }
+                        st.success(t["success_complete"])
+                except Exception as e:
+                    st.error(f"QVPro Core Error: {str(e)}")
+            else:
+                st.warning(t["warning_name"])
+
+    with col_del:
+        if st.session_state.current_analysis:
+            if st.button(t["btn_delete"], type="secondary"):
+                st.session_state.current_analysis = None
+                st.rerun()
+
+    if st.session_state.current_analysis:
+        analysis_data = st.session_state.current_analysis["data"]
+        report_text = st.session_state.current_analysis["report"]
+        scores = analysis_data["scores"]
+
+        st.divider()
+        st.subheader("📊 QVPro Score Breakdown")
+        
+        # Define metrics for mapping
+        metrics_list = ["market", "product", "competitor", "financial", "commercial", "monetization", "growth", "risks"]
+        
+        # Dynamic Bar Chart for visual impact
+        chart_data = {m: scores[m] for m in metrics_list}
+        st.bar_chart(chart_data, color="#008F68")
+
+        # High-Fidelity Terminal Scorecard
+        cols = st.columns(len(scores) - 1)
+        for idx, metric in enumerate(metrics_list):
+            val = scores[metric]
+            display_val = str(val) if val is not None else "N/A"
+            # Logic: Emerald for high scores, Chrome for others
+            color = "#008F68" if (val is not None and val >= 85) else "#A9A9A9"
+            cols[idx].markdown(f"""
+                <div style="background: rgba(232, 232, 232, 0.03); padding: 15px 5px; border: 1px solid {color}; text-align: center;">
+                    <p style="color: #A9A9A9; font-size: 0.6rem; margin: 0; white-space: nowrap; overflow: hidden; letter-spacing: 0.1em;">{metric.upper()}</p>
+                    <h3 style="color: {color}; margin: 5px 0; font-size: 1.4rem;">{display_val}</h3>
+                </div>
+            """, unsafe_allow_html=True)
+
+        overall_score = scores['overall']
+        display_overall = str(overall_score) if overall_score is not None else "N/A"
+        st.markdown(f"""
+            <div style="background: rgba(232, 232, 232, 0.05); backdrop-filter: blur(20px); padding: 40px; border: 2px solid #008F68; text-align: center; margin: 30px 0; box-shadow: 0 0 30px rgba(0, 143, 104, 0.2);">
+                <h1 style="color: #FFFFFF !important; margin: 0; font-size: 4.5rem; letter-spacing: -0.05em;">{display_overall}</h1>
+                <p style="color: #008F68; font-size: 1.4rem; margin: 10px 0; letter-spacing: 0.3em; font-weight: 300;">MASTER QVPRO OPTICS</p>
+                <div style="background: #008F68; color: #000; padding: 8px 30px; font-size: 0.9rem; display: inline-block; font-weight: 900; letter-spacing: 0.1em;">
+                    {analysis_data['verdict'].upper()}
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.divider()
+        st.markdown(report_text)
+        
+        # --- DOWNLOAD BUTTON ---
+        st.download_button(
+            label=t["btn_download_copy"],
+            data=report_text,
+            file_name=f"{st.session_state.current_analysis['name'].lower().replace(' ', '_')}_analysis.md",
+            mime="text/markdown"
+        )
+        
+        st.divider()
+        st.markdown(f"""
+            <div class="premium-card">
+                <h3>{t['premium_card_header']}</h3>
+                <p>{t['premium_card_text']}</p>
+                <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">{t['btn_get_full_report']}</button></a>
+            </div>
+        """, unsafe_allow_html=True)
 
 with tab_list[1]:
-    st.header("Respiratory Assessment")
-    metrics = st.text_area("Symptoms/Metrics", placeholder="e.g. Coughing, shortness of breath...")
-    if st.button("Generate Health Insights"):
+    st.header(t["health_header"])
+    metrics = st.text_area(t["input_metrics"], placeholder=t["placeholder_metrics"])
+    if st.button(t["btn_generate_health"]):
         if metrics:
             try:
                 api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
-                client = anthropic.Anthropic(api_key=api_key)
-                with st.spinner("Synthesizing health trends..."):
-                    response = client.messages.create(
-                        model="claude-sonnet-4-5",
-                        max_tokens=1000,
-                        messages=[{"role": "user", "content": f"As a health data analyzer, provide professional insights based on these respiratory metrics: '{metrics}'. (Disclaimer: For informational purposes only)."}]
-                    )
-                    st.success("Insights Generated")
-                    insights_text = response.content[0].text
+                engine = QVProEngine("Health Assessment", api_key=api_key)
+                with st.spinner(t["spinner_health"]):
+                    insights_text = engine.run_health_evaluation(metrics, selected_lang)
+                    st.success(t["success_health"])
                     st.write(insights_text)
 
                     # --- DOWNLOAD BUTTON ---
                     st.download_button(
-                        label="📄 Download Health Insights Copy",
+                        label=t["btn_download_health"],
                         data=insights_text,
                         file_name="respiratory_health_insights.txt",
                         mime="text/plain"
                     )
                     
                     st.divider()
-                    st.markdown("""
+                    st.markdown(f"""
                         <div class="premium-card">
-                            <h3>🏥 Upgrade to Pro Health Optics</h3>
-                            <p>Get personalized physiological roadmaps and immediate action steps.</p>
-                            <a href="https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Upgrade Now - $2/mo</button></a>
+                            <h3>{t['premium_health_header']}</h3>
+                            <p>{t['premium_health_text']}</p>
+                            <a href="https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">{t['btn_upgrade_now']}</button></a>
                         </div>
                     """, unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"AI Error: {str(e)}")
         else:
-            st.warning("Please provide metrics.")
+            st.warning(t["warning_metrics"])
 
 if is_owner:
     with tab_list[2]:
-        st.header("Core Business Analytics")
-        st.write("Logged in as Creator")
+        st.header(t["owner_header"])
+        st.write(t["owner_login_status"])
         col1, col2, col3 = st.columns(3)
-        col1.metric("Total Revenue", "$499.00", "+12%")
-        col2.metric("Reports Generated", "102", "+5")
-        col3.metric("Affiliate Clicks", "452", "+28%")
+        col1.metric(t["metric_revenue"], "$499.00", "+12%")
+        col2.metric(t["metric_reports"], "102", "+5")
+        col3.metric(t["metric_clicks"], "452", "+28%")
 
 st.divider()
-st.caption("© 2026 QuantVantage AI. Professional Grade Analytics.")
+st.caption(t["footer"])

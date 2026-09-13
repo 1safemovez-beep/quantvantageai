@@ -1,99 +1,97 @@
-import datetime
 import os
+import datetime
+from .modules.market import MarketModule
+from .modules.product import ProductModule
+from .modules.competitor import CompetitorModule
+from .modules.financial import FinancialModule
+from .modules.commercial import CommercialModule
+from .modules.monetization import MonetizationModule
+from .modules.growth import GrowthModule
+from .modules.risks import RisksModule
+from .modules.health import HealthModule
+from .scoring import ScoringEngine
+from .reporting import ReportGenerator
+from .security import SecureVault
 
-class QuantVantageAI:
-    def __init__(self, target_name, mode="app"):
+class QVProEngine:
+    """
+    Master QVPro Analysis Engine.
+    Coordinates the complete QVPro evaluation pipeline.
+    """
+    def __init__(self, target_name, api_key=None):
         self.target_name = target_name
-        self.mode = mode
-        self.report_data = {
-            "DATE": datetime.date.today().strftime("%B %d, %Y"),
-            "PURCHASE_LINK": "https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06",
+        self.api_key = api_key
+        self.data = {
+            "target_name": target_name,
+            "timestamp": datetime.datetime.now().isoformat(),
+            "analysis": {}
         }
         
-        if mode == "app":
-            self.report_data.update({
-                "APP_NAME": target_name,
-                "MARKET_STATUS": "Analyzing...",
-                "CORE_FEATURES": "",
-                "REVENUE_MODEL": "",
-                "INCOME_FREQUENCY": "",
-                "INCOME_PROJECTION": "",
-                "COMPETITOR_TABLE": "| App | Similarity | Better Method? |\n| :--- | :--- | :--- |\n",
-                "SIMILARITIES": "",
-                "DIFFERENCES": "",
-                "UNIQUENESS_SCORE": "0",
-                "ACTIVITY_LEVEL": "",
-                "CAGR": "",
-                "NET_WORTH_EVALUATION": "",
-                "BEST_CASE": "",
-                "WORST_CASE": "",
-                "RECOMMENDATION": "",
-                "DOWNLOAD_LINK": "#",
-                "DONATE_LINK": "https://www.buymeacoffee.com/yourhandle",
-                "SUBSCRIPTION_LINK": "https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01",
-                "AFFILIATE_NAME": "Top AI Tools Directory",
-                "AFFILIATE_URL": "https://example.com/affiliate",
-                "AFFILIATE_DESC": "Get 20% off the best AI tools for app development.",
-                "PROFIT_MARGIN": "0",
-                "EST_CAC": "0.00",
-                "BREAK_EVEN_UNITS": "0",
-                "PROFIT_OUTLOOK": "Analyzing...",
-                "TECH_STACK_COST": "",
-                "MONETIZATION_HACKS": "",
-                "VIRAL_SCORE": "0",
-                "UX_IMPROVEMENT": "",
-                "TRUST_IMPROVEMENT": "",
-                "PERFORMANCE_IMPROVEMENT": "",
-                "BETTER_CHOICE_SUMMARY": ""
-            })
-        elif mode == "health":
-            self.report_data.update({
-                "SUBJECT_NAME": target_name,
-                "RESPIRATORY_METRICS": "Analyzing physiological optics...",
-                "PHYSIOLOGICAL_TRENDS": "Identifying core patterns...",
-                "BASELINE_DATA": "Standardized respiratory metrics...",
-                "HEALTH_INSIGHTS_BODY": "AI-powered physiological synthesis...",
-                "IMMEDIATE_ACTION": "Optimization adjustments...",
-                "LONG_TERM_ROADMAP": "Tactical health stability...",
-                "VITALITY_SCORE": "0"
-            })
-
-    def generate_report(self, template_path=None, output_path=None):
-        if not template_path:
-            template_path = "templates/report_template.md" if self.mode == "app" else "templates/health_template.md"
+        # Initialize specialized modules
+        self.market = MarketModule(api_key)
+        self.product = ProductModule(api_key)
+        self.competitor = CompetitorModule(api_key)
+        self.financial = FinancialModule(api_key)
+        self.commercial = CommercialModule(api_key)
+        self.monetization = MonetizationModule(api_key)
+        self.growth = GrowthModule(api_key)
+        self.risks = RisksModule(api_key)
+        self.health = HealthModule(api_key)
         
-        if not output_path:
-            prefix = "app" if self.mode == "app" else "health"
-            output_path = f"{prefix}_{self.target_name.lower().replace(' ', '_')}_analysis.md"
-            
-        with open(template_path, 'r') as f:
-            template = f.read()
+        self.scoring = ScoringEngine()
+        self.reporting = ReportGenerator()
+        self.vault = SecureVault()
+
+    def run_full_evaluation(self):
+        """Coordinates the complete QVPro evaluation pipeline."""
+        self.data["analysis"]["market"] = self.market.analyze(self.target_name)
+        self.data["analysis"]["product"] = self.product.analyze(self.target_name)
+        self.data["analysis"]["competitor"] = self.competitor.analyze(self.target_name)
+        self.data["analysis"]["financial"] = self.financial.analyze(self.target_name)
+        self.data["analysis"]["commercial"] = self.commercial.analyze(self.target_name)
+        self.data["analysis"]["monetization"] = self.monetization.analyze(self.target_name)
+        self.data["analysis"]["growth"] = self.growth.analyze(self.target_name)
+        self.data["analysis"]["risks"] = self.risks.analyze(self.target_name)
         
-        for key, value in self.report_data.items():
-            template = template.replace(f"{{{{{key}}}}}", str(value))
-            
-        # Write the file and return absolute path
-        abs_path = os.path.abspath(output_path)
-        with open(abs_path, 'w') as f:
-            f.write(template)
-        return abs_path
+        self.data["scores"] = self.scoring.calculate(self.data["analysis"])
+        self.data["verdict"] = self.scoring.get_verdict(self.data["scores"])
+        
+        return self.data
 
-    def delete_customer(self, stripe_customer_id):
-        """
-        Mock method to delete a customer record in Stripe.
-        Refer to: https://docs.stripe.com/api/customers/delete
-        """
-        print(f"[Backend] Initiating DELETE request to https://api.stripe.com/v1/customers/{stripe_customer_id}")
-        # In a real app: stripe.Customer.delete(stripe_customer_id)
-        return {"id": stripe_customer_id, "deleted": True}
+    def generate_report(self):
+        """Generates the standardized QVPro result report."""
+        report = self.reporting.generate(self.data)
+        # Optional: Encrypt sensitive parts if needed
+        return report
 
-if __name__ == "__main__":
-    mode = input("Select mode (app/health): ").strip().lower()
-    name = input(f"Enter the {'app name' if mode == 'app' else 'subject name'} to evaluate: ")
-    evaluator = QuantVantageAI(name, mode=mode)
-    print(f"\n[System] Initializing Core for '{name}' (Mode: {mode})...")
-    print("[System] Searching for metrics and optics...")
-    # In a full app, this would call search/sensor APIs. 
-    print("[System] Analysis complete. Generating report...")
-    output = evaluator.generate_report()
-    print(f"[System] Report generated: {output}")
+    def get_encrypted_report(self):
+        """Returns an encrypted version of the full report."""
+        report = self.generate_report()
+        return self.vault.encrypt(report)
+
+    def run_health_evaluation(self, health_metrics, lang="English"):
+        """Separate health pathway analysis (Respiratory/Health data)."""
+        return self.health.analyze(health_metrics, lang=lang)
+
+    def delete_account(self, email):
+        """
+        [NOT IMPLEMENTED] Initiates account deletion for the specified email.
+        This method is a placeholder for your production database/auth deletion flow.
+        """
+        print(f"[QVPro Engine] WARNING: delete_account called for {email} but not implemented.")
+        return {
+            "status": "not_implemented",
+            "message": "Account deletion requires connection to a production database (e.g. PostgreSQL, Firebase) and auth provider (e.g. Stripe, Auth0).",
+            "timestamp": datetime.datetime.now().isoformat()
+        }
+
+    def delete_evaluation_file(self, filename):
+        """Deletes a specific evaluation report file from the filesystem."""
+        if os.path.exists(filename):
+            os.remove(filename)
+            return True
+        return False
+
+# Legacy compatibility alias
+class QuantVantageAI(QVProEngine):
+    pass
