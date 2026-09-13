@@ -108,6 +108,40 @@ class DeleteAndDisclosureTests(unittest.TestCase):
             self.assertFalse(missing_result["deleted"])
             self.assertIn("No generated data found", missing_result["errors"][0])
 
+    def test_delete_customer_rejects_unmanaged_paths(self):
+        engine_module = load_engine(ENGINE_PATHS[0])
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_root = Path(temp_dir)
+            registry_path = temp_root / "data" / "generated_records.json"
+            registry_path.parent.mkdir(parents=True, exist_ok=True)
+            registry_path.write_text(
+                json.dumps(
+                    {
+                        "records": [
+                            {
+                                "request_id": "qv-badpath",
+                                "target_name": "Unsafe",
+                                "mode": "app",
+                                "output_path": str((temp_root / ".." / "outside.txt").resolve()),
+                                "owner_reference": "",
+                                "created_at": "2026-09-13T00:00:00Z",
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            evaluator = engine_module.QuantVantageAI(
+                "Demo Venture",
+                registry_path=registry_path,
+                output_dir=temp_root / "generated_reports",
+            )
+
+            result = evaluator.delete_customer("qv-badpath")
+
+            self.assertFalse(result["deleted"])
+            self.assertIn("Refusing to delete unmanaged path", result["errors"][0])
+
 
 if __name__ == "__main__":
     unittest.main()

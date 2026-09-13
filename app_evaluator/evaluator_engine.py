@@ -87,14 +87,37 @@ class QuantVantageAI:
             json.dump({"records": records}, handle, indent=2)
         return registry_file
 
+    def _resolve_output_directory(self, output_dir=None):
+        output_directory = Path(output_dir) if output_dir else self.output_dir
+        output_directory.mkdir(parents=True, exist_ok=True)
+        return output_directory.resolve()
+
+    def _resolve_output_path(self, filename, output_dir=None):
+        output_directory = self._resolve_output_directory(output_dir)
+        safe_name = Path(filename).name
+        resolved_path = (output_directory / safe_name).resolve()
+        if resolved_path.parent != output_directory:
+            raise ValueError("Output path must stay within the generated reports directory.")
+        return resolved_path
+
+    def _is_managed_output_path(self, candidate_path):
+        try:
+            Path(candidate_path).resolve().relative_to(self._resolve_output_directory())
+            return True
+        except ValueError:
+            return False
+
     def _append_record(self, output_path, owner_reference=None, registry_path=None, request_id=None):
         registry_file = Path(registry_path) if registry_path else self.registry_path
         records = self._load_registry(registry_file)
+        resolved_output_path = Path(output_path).resolve()
+        if not self._is_managed_output_path(resolved_output_path):
+            raise ValueError("Output path must stay within the generated reports directory.")
         record = {
             "request_id": request_id or f"qv-{uuid4().hex[:8]}",
             "target_name": self.target_name,
             "mode": self.mode,
-            "output_path": str(Path(output_path).resolve()),
+            "output_path": str(resolved_output_path),
             "owner_reference": owner_reference or "",
             "created_at": datetime.datetime.now(datetime.UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         }
@@ -104,30 +127,31 @@ class QuantVantageAI:
         return record
 
     def store_generated_output(self, content, extension="txt", owner_reference=None, output_dir=None, registry_path=None):
-        output_directory = Path(output_dir) if output_dir else self.output_dir
-        output_directory.mkdir(parents=True, exist_ok=True)
         request_id = f"qv-{uuid4().hex[:8]}"
         filename = f"{self.mode}_{self._slugify(self.target_name)}_{request_id}.{extension.lstrip('.')}"
-        output_path = output_directory / filename
+        output_path = self._resolve_output_path(filename, output_dir=output_dir)
         output_path.write_text(content, encoding="utf-8")
         return self._append_record(output_path, owner_reference=owner_reference, registry_path=registry_path, request_id=request_id)
 
     def generate_report(self, template_path=None, output_path=None):
         if not template_path:
-            template_path = "templates/report_template.md" if self.mode == "app" else "templates/health_template.md"
+            template_path = self.base_dir / "templates" / ("report_template.md" if self.mode == "app" else "health_template.md")
+        else:
+            template_path = Path(template_path)
+            if not template_path.is_absolute():
+                template_path = (Path.cwd() / template_path).resolve()
         
         if not output_path:
             prefix = "app" if self.mode == "app" else "health"
-            output_path = f"{prefix}_{self.target_name.lower().replace(' ', '_')}_analysis.md"
-            
+            output_path = f"{prefix}_{self._slugify(self.target_name)}_analysis.md"
+             
         with open(template_path, 'r', encoding="utf-8") as f:
             template = f.read()
         
         for key, value in self.report_data.items():
             template = template.replace(f"{{{{{key}}}}}", str(value))
             
-        abs_path = Path(output_path).resolve()
-        abs_path.parent.mkdir(parents=True, exist_ok=True)
+        abs_path = self._resolve_output_path(output_path)
         with open(abs_path, 'w', encoding="utf-8") as f:
             f.write(template)
         self._append_record(abs_path)
@@ -181,7 +205,10 @@ class QuantVantageAI:
             if not output_path:
                 continue
 
-            path = Path(output_path)
+            path = Path(output_path).resolve()
+            if not self._is_managed_output_path(path):
+                errors.append(f"Refusing to delete unmanaged path '{path}'.")
+                continue
             if path.exists() and path.is_file():
                 path.unlink()
                 files_deleted.append(str(path))
