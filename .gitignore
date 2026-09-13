@@ -9,3 +9,7 @@ coin_balances.json
 .env.production
 .DS_Store
 private_assets/
+app_evaluator/data/
+app_evaluator/generated_reports/
+quantvantage_v3/app_evaluator/data/
+quantvantage_v3/app_evaluator/generated_reports/
