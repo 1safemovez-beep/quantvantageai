@@ -4,6 +4,12 @@ __pycache__/
 *.pyc
 history.json
 coin_balances.json
+advertising_data.json
+advertising_rate_card.json
+ad_subscriptions.json
+quantvantage_v3/advertising_data.json
+quantvantage_v3/advertising_rate_card.json
+quantvantage_v3/ad_subscriptions.json
 .env.local
 .env.development
 .env.production
