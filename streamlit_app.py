@@ -1,8 +1,10 @@
 # QuantVantage AI Pro - Analytical Engine
 # Build Version: 2026-09-13-ADVERTISING
 import base64
+import html
 import json
 import os
+import tempfile
 import uuid
 from datetime import date, datetime
 from pathlib import Path
@@ -76,7 +78,10 @@ def _load_json(path: Path, default_value):
 
 
 def _save_json(path: Path, value):
-    path.write_text(json.dumps(value, indent=2), encoding="utf-8")
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as tmp_file:
+        tmp_file.write(json.dumps(value, indent=2))
+        temp_path = Path(tmp_file.name)
+    temp_path.replace(path)
 
 
 def load_ads():
@@ -240,12 +245,14 @@ if current_active_ads:
                 f"<div class='ad-mini-desc'>{compact_ad.get('short_description', '')}</div>",
                 unsafe_allow_html=True,
             )
-            if st.link_button(
-                "Visit Sponsor",
-                compact_ad.get("destination_url", "https://example.com"),
-                key=f"visit_{compact_ad['id']}",
-            ):
+            if st.button("Visit Sponsor", key=f"visit_{compact_ad['id']}"):
                 increment_metric(compact_ad["id"], "clicks")
+                destination_url = compact_ad.get("destination_url", "https://example.com")
+                safe_destination_url = html.escape(destination_url, quote=True)
+                st.markdown(
+                    f'<meta http-equiv="refresh" content="0; url={safe_destination_url}">',
+                    unsafe_allow_html=True,
+                )
 
 base_tabs = ["🚀 App Evaluator", "🫁 Health Optics", "📧 Sponsor With Email"]
 if is_owner:
