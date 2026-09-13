@@ -126,12 +126,15 @@ def compute_metrics(ad):
     return impressions, clicks, ctr, revenue
 
 
-def active_ads(all_ads):
+def active_ads(all_ads, placement=None):
     today = date.today()
     result = []
     for ad in all_ads:
         start = parse_date_string(ad.get("start_date", ""))
         end = parse_date_string(ad.get("end_date", ""))
+        ad_placement = ad.get("placement", "Sidebar Compact")
+        if placement and ad_placement != placement:
+            continue
         if ad.get("status") == "Active" and start and end and start <= today <= end:
             result.append(ad)
     return result
@@ -176,7 +179,7 @@ def expire_campaigns_if_needed():
     changed = False
     for ad in ad_store.get("ads", []):
         end = parse_date_string(ad.get("end_date", ""))
-        if end and end < today and ad.get("status") != "Expired":
+        if end and end < today and ad.get("status") in {"Active", "Approved"}:
             ad["status"] = "Expired"
             changed = True
     if changed:
@@ -212,7 +215,7 @@ except Exception:
 
 ad_store = load_ads()
 all_ads = ad_store.get("ads", [])
-current_active_ads = active_ads(all_ads)
+current_active_ads = active_ads(all_ads, placement="Sidebar Compact")
 
 if "ad_impressions_seen" not in st.session_state:
     st.session_state["ad_impressions_seen"] = set()
@@ -237,9 +240,12 @@ if current_active_ads:
                 f"<div class='ad-mini-desc'>{compact_ad.get('short_description', '')}</div>",
                 unsafe_allow_html=True,
             )
-            if st.button("Visit Sponsor", key=f"visit_{compact_ad['id']}"):
+            if st.link_button(
+                "Visit Sponsor",
+                compact_ad.get("destination_url", "https://example.com"),
+                key=f"visit_{compact_ad['id']}",
+            ):
                 increment_metric(compact_ad["id"], "clicks")
-                st.link_button("Open destination", compact_ad.get("destination_url", "https://example.com"))
 
 base_tabs = ["🚀 App Evaluator", "🫁 Health Optics", "📧 Sponsor With Email"]
 if is_owner:
