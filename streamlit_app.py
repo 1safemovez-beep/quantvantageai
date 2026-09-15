@@ -1,13 +1,17 @@
 # QuantVantage AI Pro - Master Analysis Engine
 # Build Version: 2026-09-12-CONSOLIDATED
 import streamlit as st
-import anthropic
 import os
 import json
 import urllib.parse
 import urllib.request
 import urllib.error
 from app_evaluator.evaluator_engine import QVProEngine
+
+try:
+    import anthropic
+except ImportError:
+    anthropic = None
 
 
 # ============================================================
@@ -20,8 +24,8 @@ def verify_stripe_payment(session_id):
     Livemode expectation is configurable via STRIPE_EXPECT_LIVEMODE and
     defaults from the Stripe secret key prefix when unset.
     Returns False for missing configuration or any request/parse failure.
-    Returns True only when Stripe reports a paid, payment-mode session that
-    matches the expected livemode.
+    Returns True only when Stripe reports a paid session that matches the
+    expected livemode.
     """
 
     if not session_id:
@@ -65,7 +69,6 @@ def verify_stripe_payment(session_id):
         # Stripe must confirm this is the expected paid checkout context.
         return (
             session.get("payment_status") == "paid"
-            and session.get("mode") == "payment"
             and (expected_livemode is None or session.get("livemode") is expected_livemode)
         )
 
