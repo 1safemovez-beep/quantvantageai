@@ -6,6 +6,7 @@ import json
 import urllib.parse
 import urllib.request
 import urllib.error
+from streamlit.errors import StreamlitSecretNotFoundError
 from app_evaluator.evaluator_engine import QVProEngine
 
 try:
@@ -21,6 +22,8 @@ def verify_stripe_payment(session_id):
     """
     Verify a Stripe Checkout Session server-side.
     Requires STRIPE_SECRET_KEY from Streamlit secrets or environment.
+    Requires at least one app-specific session constraint:
+    STRIPE_EXPECT_CLIENT_REFERENCE_ID or STRIPE_EXPECT_AMOUNT_TOTAL.
     Livemode expectation is configurable via STRIPE_EXPECT_LIVEMODE and
     defaults from the Stripe secret key prefix when unset.
     Returns False for missing configuration or any request/parse failure.
@@ -34,14 +37,27 @@ def verify_stripe_payment(session_id):
     try:
         stripe_secret_key = os.getenv("STRIPE_SECRET_KEY")
         expected_livemode = os.getenv("STRIPE_EXPECT_LIVEMODE")
+        expected_client_reference_id = os.getenv("STRIPE_EXPECT_CLIENT_REFERENCE_ID")
+        expected_amount_total = os.getenv("STRIPE_EXPECT_AMOUNT_TOTAL")
 
         try:
             stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY", stripe_secret_key)
             expected_livemode = st.secrets.get("STRIPE_EXPECT_LIVEMODE", expected_livemode)
-        except Exception:
+            expected_client_reference_id = st.secrets.get(
+                "STRIPE_EXPECT_CLIENT_REFERENCE_ID",
+                expected_client_reference_id
+            )
+            expected_amount_total = st.secrets.get(
+                "STRIPE_EXPECT_AMOUNT_TOTAL",
+                expected_amount_total
+            )
+        except StreamlitSecretNotFoundError:
             pass
 
         if not stripe_secret_key:
+            return False
+
+        if not expected_client_reference_id and not expected_amount_total:
             return False
 
         if expected_livemode is None:
@@ -67,8 +83,24 @@ def verify_stripe_payment(session_id):
             session = json.loads(response.read().decode("utf-8"))
 
         # Stripe must confirm this is the expected paid checkout context.
+        matches_reference = True
+        if expected_client_reference_id:
+            matches_reference = (
+                str(session.get("client_reference_id", ""))
+                == str(expected_client_reference_id)
+            )
+
+        matches_amount = True
+        if expected_amount_total:
+            matches_amount = (
+                str(session.get("amount_total", ""))
+                == str(expected_amount_total)
+            )
+
         return (
             session.get("payment_status") == "paid"
+            and matches_reference
+            and matches_amount
             and (expected_livemode is None or session.get("livemode") is expected_livemode)
         )
 
