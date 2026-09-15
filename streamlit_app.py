@@ -29,7 +29,6 @@ def verify_stripe_payment(session_id):
                 stripe_secret_key = None
 
         if not stripe_secret_key:
-            st.error("Stripe configuration is missing.")
             return False
 
         encoded_session_id = urllib.parse.quote(str(session_id), safe="")
@@ -44,9 +43,14 @@ def verify_stripe_payment(session_id):
             session = json.loads(response.read().decode("utf-8"))
 
         return session.get("payment_status") == "paid"
-    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError):
-        return False
-    except Exception:
+    except (
+        urllib.error.HTTPError,
+        urllib.error.URLError,
+        TimeoutError,
+        ValueError,
+        json.JSONDecodeError,
+        UnicodeDecodeError,
+    ):
         return False
 
 # Restoration of the "Luxury Spatial Tech" Design (High-Performance Dark Mode)
