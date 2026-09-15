@@ -22,13 +22,13 @@ def verify_stripe_payment(session_id, expected_client_reference_id=None, expecte
     """
     Verify a Stripe Checkout Session server-side.
     Requires STRIPE_SECRET_KEY from Streamlit secrets or environment.
-    Requires at least one app-specific session constraint, ideally a
-    per-request nonce passed via `expected_metadata_nonce`.
+    Optionally validates app-specific constraints:
+    expected client reference ID, expected metadata nonce, and expected
+    amount total (STRIPE_EXPECT_AMOUNT_TOTAL).
     Livemode expectation is configurable via STRIPE_EXPECT_LIVEMODE and
     defaults from the Stripe secret key prefix when unset.
     Returns False for missing configuration or any request/parse failure.
-    Returns True only when Stripe reports a paid session that matches the
-    expected livemode.
+    Returns True only when session completion and configured constraints match.
     """
 
     if not session_id:
@@ -70,9 +70,6 @@ def verify_stripe_payment(session_id, expected_client_reference_id=None, expecte
         if not stripe_secret_key:
             return False
 
-        if not expected_client_reference_id and not expected_amount_total and not expected_metadata_nonce:
-            return False
-
         if expected_livemode is None:
             if stripe_secret_key.startswith("sk_live_"):
                 expected_livemode = True
@@ -95,7 +92,13 @@ def verify_stripe_payment(session_id, expected_client_reference_id=None, expecte
         with urllib.request.urlopen(request, timeout=10) as response:
             session = json.loads(response.read().decode("utf-8"))
 
-        # Stripe must confirm this is the expected paid checkout context.
+        session_mode = session.get("mode")
+        if session_mode == "setup":
+            status_matches = session.get("status") == "complete"
+        else:
+            status_matches = session.get("payment_status") == "paid"
+
+        # Stripe must confirm this is the expected checkout context.
         matches_reference = True
         if expected_client_reference_id:
             matches_reference = (
@@ -119,7 +122,7 @@ def verify_stripe_payment(session_id, expected_client_reference_id=None, expecte
             )
 
         return (
-            session.get("payment_status") == "paid"
+            status_matches
             and matches_reference
             and matches_amount
             and matches_nonce
