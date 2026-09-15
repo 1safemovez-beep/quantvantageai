@@ -17,8 +17,11 @@ def verify_stripe_payment(session_id):
     """
     Verify a Stripe Checkout Session server-side.
     Requires STRIPE_SECRET_KEY from Streamlit secrets or environment.
+    Livemode expectation is configurable via STRIPE_EXPECT_LIVEMODE and
+    defaults from the Stripe secret key prefix when unset.
     Returns False for missing configuration or any request/parse failure.
-    Returns True only when Stripe reports a paid, live, payment-mode session.
+    Returns True only when Stripe reports a paid, payment-mode session that
+    matches the expected livemode.
     """
 
     if not session_id:
@@ -29,9 +32,21 @@ def verify_stripe_payment(session_id):
             "STRIPE_SECRET_KEY",
             os.getenv("STRIPE_SECRET_KEY")
         )
+        expected_livemode = st.secrets.get(
+            "STRIPE_EXPECT_LIVEMODE",
+            os.getenv("STRIPE_EXPECT_LIVEMODE")
+        )
 
         if not stripe_secret_key:
             return False
+
+        if expected_livemode is None:
+            if stripe_secret_key.startswith("sk_live_"):
+                expected_livemode = True
+            elif stripe_secret_key.startswith("sk_test_"):
+                expected_livemode = False
+        else:
+            expected_livemode = str(expected_livemode).strip().lower() in {"1", "true", "yes", "on"}
 
         encoded_session_id = urllib.parse.quote(session_id, safe="")
         url = f"https://api.stripe.com/v1/checkout/sessions/{encoded_session_id}"
@@ -51,7 +66,7 @@ def verify_stripe_payment(session_id):
         return (
             session.get("payment_status") == "paid"
             and session.get("mode") == "payment"
-            and session.get("livemode") is True
+            and (expected_livemode is None or session.get("livemode") is expected_livemode)
         )
 
     except urllib.error.HTTPError:
