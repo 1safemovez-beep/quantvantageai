@@ -41,18 +41,21 @@ def verify_stripe_payment(session_id):
         expected_amount_total = os.getenv("STRIPE_EXPECT_AMOUNT_TOTAL")
 
         try:
-            stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY", stripe_secret_key)
-            expected_livemode = st.secrets.get("STRIPE_EXPECT_LIVEMODE", expected_livemode)
-            expected_client_reference_id = st.secrets.get(
+            secrets_store = st.secrets
+        except StreamlitSecretNotFoundError:
+            secrets_store = None
+
+        if secrets_store is not None:
+            stripe_secret_key = secrets_store.get("STRIPE_SECRET_KEY", stripe_secret_key)
+            expected_livemode = secrets_store.get("STRIPE_EXPECT_LIVEMODE", expected_livemode)
+            expected_client_reference_id = secrets_store.get(
                 "STRIPE_EXPECT_CLIENT_REFERENCE_ID",
                 expected_client_reference_id
             )
-            expected_amount_total = st.secrets.get(
+            expected_amount_total = secrets_store.get(
                 "STRIPE_EXPECT_AMOUNT_TOTAL",
                 expected_amount_total
             )
-        except StreamlitSecretNotFoundError:
-            pass
 
         if not stripe_secret_key:
             return False
@@ -101,7 +104,7 @@ def verify_stripe_payment(session_id):
             session.get("payment_status") == "paid"
             and matches_reference
             and matches_amount
-            and (expected_livemode is None or session.get("livemode") is expected_livemode)
+            and (expected_livemode is None or session.get("livemode") == expected_livemode)
         )
 
     except urllib.error.HTTPError:
@@ -110,7 +113,7 @@ def verify_stripe_payment(session_id):
     except urllib.error.URLError:
         return False
 
-    except Exception:
+    except (json.JSONDecodeError, UnicodeDecodeError, ValueError, TypeError):
         return False
 
 # Restoration of the "Luxury Spatial Tech" Design (High-Performance Dark Mode)
