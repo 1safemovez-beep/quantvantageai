@@ -4,13 +4,15 @@ import streamlit as st
 import anthropic
 import os
 import json
+import urllib.parse
 import urllib.request
 import urllib.error
 from app_evaluator.evaluator_engine import QVProEngine
 
 APP_RETURN_URL = "https://quantvantageai-d.streamlit.app"
-STRIPE_ANALYSIS_LINK = f"https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06?redirect={APP_RETURN_URL}"
-STRIPE_MEMBERSHIP_LINK = f"https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01?redirect={APP_RETURN_URL}"
+ENCODED_APP_RETURN_URL = urllib.parse.quote(APP_RETURN_URL, safe="")
+STRIPE_ANALYSIS_LINK = f"https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06?redirect={ENCODED_APP_RETURN_URL}"
+STRIPE_MEMBERSHIP_LINK = f"https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01?redirect={ENCODED_APP_RETURN_URL}"
 
 # Restoration of the "Luxury Spatial Tech" Design (High-Performance Dark Mode)
 st.set_page_config(page_title="QuantVantage AI Pro | Master Engine", layout="wide", initial_sidebar_state="collapsed")
