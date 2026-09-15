@@ -8,12 +8,7 @@ import urllib.request
 import urllib.error
 from app_evaluator.evaluator_engine import QVProEngine
 
-APP_RETURN_URL = "https://quantvantageai-d.streamlit.app"
-try:
-    APP_RETURN_URL = st.secrets.get("APP_RETURN_URL", APP_RETURN_URL)
-except Exception:
-    pass
-APP_RETURN_URL = os.getenv("APP_RETURN_URL", APP_RETURN_URL)
+APP_RETURN_URL = os.getenv("APP_RETURN_URL", "https://quantvantageai-d.streamlit.app")
 STRIPE_ANALYSIS_LINK = "https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06"
 STRIPE_MEMBERSHIP_LINK = "https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01"
 
@@ -130,7 +125,6 @@ st.sidebar.markdown(f"[{t['sidebar_analysis_link']}]({STRIPE_ANALYSIS_LINK})")
 
 st.sidebar.markdown(f"### {t['sidebar_membership_header']}")
 st.sidebar.markdown(f"[{t['sidebar_membership_link']}]({STRIPE_MEMBERSHIP_LINK})")
-st.sidebar.caption(f"Return URL: {APP_RETURN_URL}")
 
 st.sidebar.divider()
 
