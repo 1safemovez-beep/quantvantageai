@@ -5,6 +5,7 @@ import os
 import json
 import urllib.request
 import urllib.error
+import urllib.parse
 from app_evaluator.evaluator_engine import QVProEngine
 
 
@@ -20,12 +21,19 @@ def verify_stripe_payment(session_id):
         return False
 
     try:
-        stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY", os.getenv("STRIPE_SECRET_KEY"))
+        stripe_secret_key = os.getenv("STRIPE_SECRET_KEY")
+        if not stripe_secret_key:
+            try:
+                stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY")
+            except Exception:
+                stripe_secret_key = None
+
         if not stripe_secret_key:
             st.error("Stripe configuration is missing.")
             return False
 
-        url = f"https://api.stripe.com/v1/checkout/sessions/{session_id}"
+        encoded_session_id = urllib.parse.quote(str(session_id), safe="")
+        url = f"https://api.stripe.com/v1/checkout/sessions/{encoded_session_id}"
         request = urllib.request.Request(
             url,
             headers={"Authorization": "Bearer " + stripe_secret_key},
