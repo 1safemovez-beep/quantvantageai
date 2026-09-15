@@ -16,7 +16,9 @@ from app_evaluator.evaluator_engine import QVProEngine
 def verify_stripe_payment(session_id):
     """
     Verify a Stripe Checkout Session server-side.
-    Returns True only when Stripe reports payment_status == 'paid'.
+    Requires STRIPE_SECRET_KEY from Streamlit secrets or environment.
+    Returns False for missing configuration or any request/parse failure.
+    Returns True only when Stripe reports a paid, live, payment-mode session.
     """
 
     if not session_id:
@@ -45,8 +47,12 @@ def verify_stripe_payment(session_id):
         with urllib.request.urlopen(request, timeout=10) as response:
             session = json.loads(response.read().decode("utf-8"))
 
-        # Stripe must confirm that the payment was actually paid.
-        return session.get("payment_status") == "paid"
+        # Stripe must confirm this is the expected paid checkout context.
+        return (
+            session.get("payment_status") == "paid"
+            and session.get("mode") == "payment"
+            and session.get("livemode") is True
+        )
 
     except urllib.error.HTTPError:
         return False
