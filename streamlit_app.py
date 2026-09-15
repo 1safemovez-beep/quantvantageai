@@ -3,7 +3,43 @@
 import streamlit as st
 import os
 import json
+import urllib.request
+import urllib.error
 from app_evaluator.evaluator_engine import QVProEngine
+
+
+# ============================================================
+# STRIPE PAYMENT VERIFICATION
+# ============================================================
+def verify_stripe_payment(session_id):
+    """
+    Verify a Stripe Checkout Session server-side.
+    Returns True only when Stripe reports payment_status == 'paid'.
+    """
+    if not session_id:
+        return False
+
+    try:
+        stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY", os.getenv("STRIPE_SECRET_KEY"))
+        if not stripe_secret_key:
+            st.error("Stripe configuration is missing.")
+            return False
+
+        url = f"https://api.stripe.com/v1/checkout/sessions/{session_id}"
+        request = urllib.request.Request(
+            url,
+            headers={"Authorization": "Bearer " + stripe_secret_key},
+            method="GET",
+        )
+
+        with urllib.request.urlopen(request, timeout=10) as response:
+            session = json.loads(response.read().decode("utf-8"))
+
+        return session.get("payment_status") == "paid"
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError):
+        return False
+    except Exception:
+        return False
 
 # Restoration of the "Luxury Spatial Tech" Design (High-Performance Dark Mode)
 st.set_page_config(page_title="QuantVantage AI Pro | Master Engine", layout="wide", initial_sidebar_state="collapsed")
