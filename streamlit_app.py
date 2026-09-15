@@ -1,9 +1,16 @@
 # QuantVantage AI Pro - Master Analysis Engine
 # Build Version: 2026-09-12-CONSOLIDATED
 import streamlit as st
+import anthropic
 import os
 import json
+import urllib.request
+import urllib.error
 from app_evaluator.evaluator_engine import QVProEngine
+
+APP_RETURN_URL = "https://quantvantageai-d.streamlit.app"
+STRIPE_ANALYSIS_LINK = f"https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06?redirect={APP_RETURN_URL}"
+STRIPE_MEMBERSHIP_LINK = f"https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01?redirect={APP_RETURN_URL}"
 
 # Restoration of the "Luxury Spatial Tech" Design (High-Performance Dark Mode)
 st.set_page_config(page_title="QuantVantage AI Pro | Master Engine", layout="wide", initial_sidebar_state="collapsed")
@@ -114,10 +121,10 @@ st.sidebar.title(t["sidebar_title"])
 st.sidebar.info(t["sidebar_info"])
 
 st.sidebar.markdown(f"### {t['sidebar_analysis_header']}")
-st.sidebar.markdown(f"[{t['sidebar_analysis_link']}](https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06)")
+st.sidebar.markdown(f"[{t['sidebar_analysis_link']}]({STRIPE_ANALYSIS_LINK})")
 
 st.sidebar.markdown(f"### {t['sidebar_membership_header']}")
-st.sidebar.markdown(f"[{t['sidebar_membership_link']}](https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01)")
+st.sidebar.markdown(f"[{t['sidebar_membership_link']}]({STRIPE_MEMBERSHIP_LINK})")
 
 st.sidebar.divider()
 
@@ -263,7 +270,7 @@ with tab_list[0]:
             <div class="premium-card">
                 <h3>{t['premium_card_header']}</h3>
                 <p>{t['premium_card_text']}</p>
-                <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">{t['btn_get_full_report']}</button></a>
+                <a href="{STRIPE_ANALYSIS_LINK}" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">{t['btn_get_full_report']}</button></a>
             </div>
         """, unsafe_allow_html=True)
 
@@ -293,7 +300,7 @@ with tab_list[1]:
                         <div class="premium-card">
                             <h3>{t['premium_health_header']}</h3>
                             <p>{t['premium_health_text']}</p>
-                            <a href="https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">{t['btn_upgrade_now']}</button></a>
+                            <a href="{STRIPE_MEMBERSHIP_LINK}" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">{t['btn_upgrade_now']}</button></a>
                         </div>
                     """, unsafe_allow_html=True)
             except Exception as e:
