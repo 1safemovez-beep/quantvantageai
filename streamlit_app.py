@@ -42,7 +42,10 @@ def verify_stripe_payment(session_id):
         with urllib.request.urlopen(request, timeout=10) as response:
             session = json.loads(response.read().decode("utf-8"))
 
-        return session.get("payment_status") == "paid"
+        return (
+            session.get("payment_status") == "paid"
+            and session.get("status") == "complete"
+        )
     except (
         urllib.error.HTTPError,
         urllib.error.URLError,
