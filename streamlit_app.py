@@ -28,14 +28,14 @@ def verify_stripe_payment(session_id):
         return False
 
     try:
-        stripe_secret_key = st.secrets.get(
-            "STRIPE_SECRET_KEY",
-            os.getenv("STRIPE_SECRET_KEY")
-        )
-        expected_livemode = st.secrets.get(
-            "STRIPE_EXPECT_LIVEMODE",
-            os.getenv("STRIPE_EXPECT_LIVEMODE")
-        )
+        stripe_secret_key = os.getenv("STRIPE_SECRET_KEY")
+        expected_livemode = os.getenv("STRIPE_EXPECT_LIVEMODE")
+
+        try:
+            stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY", stripe_secret_key)
+            expected_livemode = st.secrets.get("STRIPE_EXPECT_LIVEMODE", expected_livemode)
+        except Exception:
+            pass
 
         if not stripe_secret_key:
             return False
