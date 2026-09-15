@@ -276,7 +276,7 @@ with tab_list[0]:
             <div class="premium-card">
                 <h3>{t['premium_card_header']}</h3>
                 <p>{t['premium_card_text']}</p>
-                <a href="{STRIPE_ANALYSIS_LINK}" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">{t['btn_get_full_report']}</button></a>
+                <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">{t['btn_get_full_report']}</button></a>
             </div>
         """, unsafe_allow_html=True)
 
@@ -306,7 +306,7 @@ with tab_list[1]:
                         <div class="premium-card">
                             <h3>{t['premium_health_header']}</h3>
                             <p>{t['premium_health_text']}</p>
-                            <a href="{STRIPE_MEMBERSHIP_LINK}" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">{t['btn_upgrade_now']}</button></a>
+                            <a href="https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">{t['btn_upgrade_now']}</button></a>
                         </div>
                     """, unsafe_allow_html=True)
             except Exception as e:
