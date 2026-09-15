@@ -18,12 +18,12 @@ except ImportError:
 # ============================================================
 # STRIPE PAYMENT VERIFICATION
 # ============================================================
-def verify_stripe_payment(session_id):
+def verify_stripe_payment(session_id, expected_client_reference_id=None, expected_metadata_nonce=None):
     """
     Verify a Stripe Checkout Session server-side.
     Requires STRIPE_SECRET_KEY from Streamlit secrets or environment.
-    Requires at least one app-specific session constraint:
-    STRIPE_EXPECT_CLIENT_REFERENCE_ID or STRIPE_EXPECT_AMOUNT_TOTAL.
+    Requires at least one app-specific session constraint, ideally a
+    per-request nonce passed via `expected_metadata_nonce`.
     Livemode expectation is configurable via STRIPE_EXPECT_LIVEMODE and
     defaults from the Stripe secret key prefix when unset.
     Returns False for missing configuration or any request/parse failure.
@@ -37,8 +37,9 @@ def verify_stripe_payment(session_id):
     try:
         stripe_secret_key = os.getenv("STRIPE_SECRET_KEY")
         expected_livemode = os.getenv("STRIPE_EXPECT_LIVEMODE")
-        expected_client_reference_id = os.getenv("STRIPE_EXPECT_CLIENT_REFERENCE_ID")
         expected_amount_total = os.getenv("STRIPE_EXPECT_AMOUNT_TOTAL")
+        env_client_reference_id = os.getenv("STRIPE_EXPECT_CLIENT_REFERENCE_ID")
+        env_metadata_nonce = os.getenv("STRIPE_EXPECT_METADATA_NONCE")
 
         try:
             secrets_store = st.secrets
@@ -48,19 +49,28 @@ def verify_stripe_payment(session_id):
         if secrets_store is not None:
             stripe_secret_key = secrets_store.get("STRIPE_SECRET_KEY", stripe_secret_key)
             expected_livemode = secrets_store.get("STRIPE_EXPECT_LIVEMODE", expected_livemode)
-            expected_client_reference_id = secrets_store.get(
+            env_client_reference_id = secrets_store.get(
                 "STRIPE_EXPECT_CLIENT_REFERENCE_ID",
-                expected_client_reference_id
+                env_client_reference_id
+            )
+            env_metadata_nonce = secrets_store.get(
+                "STRIPE_EXPECT_METADATA_NONCE",
+                env_metadata_nonce
             )
             expected_amount_total = secrets_store.get(
                 "STRIPE_EXPECT_AMOUNT_TOTAL",
                 expected_amount_total
             )
 
+        if expected_client_reference_id is None:
+            expected_client_reference_id = env_client_reference_id
+        if expected_metadata_nonce is None:
+            expected_metadata_nonce = env_metadata_nonce
+
         if not stripe_secret_key:
             return False
 
-        if not expected_client_reference_id and not expected_amount_total:
+        if not expected_client_reference_id and not expected_amount_total and not expected_metadata_nonce:
             return False
 
         if expected_livemode is None:
@@ -100,10 +110,19 @@ def verify_stripe_payment(session_id):
                 == str(expected_amount_total)
             )
 
+        matches_nonce = True
+        if expected_metadata_nonce:
+            metadata = session.get("metadata") or {}
+            matches_nonce = (
+                str(metadata.get("nonce", ""))
+                == str(expected_metadata_nonce)
+            )
+
         return (
             session.get("payment_status") == "paid"
             and matches_reference
             and matches_amount
+            and matches_nonce
             and (expected_livemode is None or session.get("livemode") == expected_livemode)
         )
 
