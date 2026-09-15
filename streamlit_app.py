@@ -3,7 +3,145 @@
 import streamlit as st
 import os
 import json
+import urllib.parse
+import urllib.request
+import urllib.error
+from streamlit.errors import StreamlitSecretNotFoundError
 from app_evaluator.evaluator_engine import QVProEngine
+
+try:
+    import anthropic
+except ImportError:
+    anthropic = None
+
+
+# ============================================================
+# STRIPE PAYMENT VERIFICATION
+# ============================================================
+def verify_stripe_payment(session_id, expected_client_reference_id=None, expected_metadata_nonce=None):
+    """
+    Verify a Stripe Checkout Session server-side.
+    Requires STRIPE_SECRET_KEY from Streamlit secrets or environment.
+    Optionally validates app-specific constraints:
+    expected client reference ID, expected metadata nonce, and expected
+    amount total (STRIPE_EXPECT_AMOUNT_TOTAL).
+    Livemode expectation is configurable via STRIPE_EXPECT_LIVEMODE and
+    defaults from the Stripe secret key prefix when unset.
+    Returns False for missing configuration or any request/parse failure.
+    Returns True only when session completion and configured constraints match.
+    """
+
+    if not session_id:
+        return False
+
+    try:
+        stripe_secret_key = os.getenv("STRIPE_SECRET_KEY")
+        expected_livemode = os.getenv("STRIPE_EXPECT_LIVEMODE")
+        expected_amount_total = os.getenv("STRIPE_EXPECT_AMOUNT_TOTAL")
+        env_client_reference_id = os.getenv("STRIPE_EXPECT_CLIENT_REFERENCE_ID")
+        env_metadata_nonce = os.getenv("STRIPE_EXPECT_METADATA_NONCE")
+
+        try:
+            secrets_store = st.secrets
+        except StreamlitSecretNotFoundError:
+            secrets_store = None
+
+        if secrets_store is not None:
+            stripe_secret_key = secrets_store.get("STRIPE_SECRET_KEY", stripe_secret_key)
+            expected_livemode = secrets_store.get("STRIPE_EXPECT_LIVEMODE", expected_livemode)
+            env_client_reference_id = secrets_store.get(
+                "STRIPE_EXPECT_CLIENT_REFERENCE_ID",
+                env_client_reference_id
+            )
+            env_metadata_nonce = secrets_store.get(
+                "STRIPE_EXPECT_METADATA_NONCE",
+                env_metadata_nonce
+            )
+            expected_amount_total = secrets_store.get(
+                "STRIPE_EXPECT_AMOUNT_TOTAL",
+                expected_amount_total
+            )
+
+        if expected_client_reference_id is None:
+            expected_client_reference_id = env_client_reference_id
+        if expected_metadata_nonce is None:
+            expected_metadata_nonce = env_metadata_nonce
+
+        if not stripe_secret_key:
+            return False
+
+        if expected_livemode is None:
+            if stripe_secret_key.startswith("sk_live_"):
+                expected_livemode = True
+            elif stripe_secret_key.startswith("sk_test_"):
+                expected_livemode = False
+        else:
+            expected_livemode = str(expected_livemode).strip().lower() in {"1", "true", "yes", "on"}
+
+        encoded_session_id = urllib.parse.quote(session_id, safe="")
+        url = f"https://api.stripe.com/v1/checkout/sessions/{encoded_session_id}"
+
+        request = urllib.request.Request(
+            url,
+            headers={
+                "Authorization": "Bearer " + stripe_secret_key
+            },
+            method="GET"
+        )
+
+        with urllib.request.urlopen(request, timeout=10) as response:
+            session = json.loads(response.read().decode("utf-8"))
+
+        session_mode = session.get("mode")
+        if session_mode == "setup":
+            status_matches = session.get("status") == "complete"
+        elif session_mode == "subscription":
+            status_matches = (
+                session.get("status") == "complete"
+                and session.get("payment_status") == "paid"
+            )
+        else:
+            status_matches = session.get("payment_status") == "paid"
+
+        # Stripe must confirm this is the expected checkout context.
+        matches_reference = True
+        if expected_client_reference_id:
+            matches_reference = (
+                str(session.get("client_reference_id", ""))
+                == str(expected_client_reference_id)
+            )
+
+        matches_amount = True
+        if expected_amount_total:
+            matches_amount = (
+                str(session.get("amount_total", ""))
+                == str(expected_amount_total)
+            )
+
+        matches_nonce = True
+        if expected_metadata_nonce:
+            metadata = session.get("metadata") or {}
+            matches_nonce = (
+                str(metadata.get("nonce", ""))
+                == str(expected_metadata_nonce)
+            )
+
+        return (
+            status_matches
+            and matches_reference
+            and matches_amount
+            and matches_nonce
+            and (expected_livemode is None or session.get("livemode") == expected_livemode)
+        )
+
+    except urllib.error.HTTPError:
+        return False
+
+    except urllib.error.URLError:
+        return False
+
+    except (json.JSONDecodeError, UnicodeDecodeError, ValueError, TypeError):
+        return False
 
 # Restoration of the "Luxury Spatial Tech" Design (High-Performance Dark Mode)
 st.set_page_config(page_title="QuantVantage AI Pro | Master Engine", layout="wide", initial_sidebar_state="collapsed")
