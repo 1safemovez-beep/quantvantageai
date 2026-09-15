@@ -8,7 +8,6 @@ import urllib.request
 import urllib.error
 from app_evaluator.evaluator_engine import QVProEngine
 
-APP_RETURN_URL = os.getenv("APP_RETURN_URL", "https://quantvantageai-d.streamlit.app")
 STRIPE_ANALYSIS_LINK = "https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06"
 STRIPE_MEMBERSHIP_LINK = "https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01"
 
