@@ -4,6 +4,7 @@ import streamlit as st
 import anthropic
 import os
 import json
+import urllib.parse
 import urllib.request
 import urllib.error
 from app_evaluator.evaluator_engine import QVProEngine
@@ -28,10 +29,10 @@ def verify_stripe_payment(session_id):
         )
 
         if not stripe_secret_key:
-            st.error("Stripe configuration is missing.")
             return False
 
-        url = f"https://api.stripe.com/v1/checkout/sessions/{session_id}"
+        encoded_session_id = urllib.parse.quote(session_id, safe="")
+        url = f"https://api.stripe.com/v1/checkout/sessions/{encoded_session_id}"
 
         request = urllib.request.Request(
             url,
