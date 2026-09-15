@@ -93,7 +93,7 @@ def verify_stripe_payment(session_id, expected_client_reference_id=None, expecte
             session = json.loads(response.read().decode("utf-8"))
 
         session_mode = session.get("mode")
-        if session_mode == "setup":
+        if session_mode in {"setup", "subscription"}:
             status_matches = session.get("status") == "complete"
         else:
             status_matches = session.get("payment_status") == "paid"
