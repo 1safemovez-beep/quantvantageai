@@ -4,6 +4,132 @@ import streamlit as st
 import anthropic
 import os
 import json
+import time
+import urllib.request
+import urllib.error
+import urllib.parse
+
+
+def verify_stripe_payment(session_id, expected_amount=499, expected_currency="usd", expected_email=None):
+    if not session_id:
+        return False
+    if isinstance(session_id, list):
+        session_id = session_id[0] if session_id else None
+    if not session_id:
+        return False
+
+    stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY", os.getenv("STRIPE_SECRET_KEY"))
+    if not stripe_secret_key:
+        return False
+
+    encoded_session_id = urllib.parse.quote(str(session_id), safe="")
+    url = f"https://api.stripe.com/v1/checkout/sessions/{encoded_session_id}"
+    auth_header = "Bearer " + stripe_secret_key
+    request = urllib.request.Request(
+        url,
+        headers={"Authorization": auth_header}
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            if response.status != 200:
+                return False
+            payload = response.read().decode("utf-8")
+        session_data = json.loads(payload)
+        if session_data.get("payment_status") != "paid":
+            return False
+        if session_data.get("status") != "complete":
+            return False
+        if session_data.get("amount_total") != expected_amount:
+            return False
+        if str(session_data.get("currency", "")).lower() != expected_currency.lower():
+            return False
+
+        if expected_email:
+            customer_details = session_data.get("customer_details") or {}
+            checkout_email = (
+                customer_details.get("email")
+                or session_data.get("customer_email")
+                or ""
+            ).strip().lower()
+            if checkout_email != expected_email.strip().lower():
+                return False
+
+        return True
+    except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError, TimeoutError, ValueError):
+        return False
+
+
+def load_stripe_redemptions():
+    redemptions_path = os.path.join(os.path.dirname(__file__), ".stripe_redemptions.json")
+    try:
+        with open(redemptions_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data if isinstance(data, dict) else {}
+    except (FileNotFoundError, json.JSONDecodeError, OSError, ValueError):
+        return {}
+
+
+def get_session_fingerprint(session_id):
+    if not session_id:
+        return None
+
+    stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY", os.getenv("STRIPE_SECRET_KEY"))
+    if not stripe_secret_key:
+        return None
+
+    return hashlib.sha256(f"{session_id}|{stripe_secret_key}".encode("utf-8")).hexdigest()
+
+
+def redeem_session_for_report(session_fingerprint, report_key):
+    if not session_fingerprint or not report_key:
+        return False
+
+    redemptions_path = os.path.join(os.path.dirname(__file__), ".stripe_redemptions.json")
+    lock_path = redemptions_path + ".lock"
+    lock_fd = None
+    try:
+        deadline = time.time() + 3
+        while lock_fd is None:
+            try:
+                lock_fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_RDWR)
+            except FileExistsError:
+                if time.time() >= deadline:
+                    return False
+                time.sleep(0.05)
+
+        with open(redemptions_path, "a+", encoding="utf-8") as f:
+            f.seek(0)
+            raw_data = f.read().strip()
+            redemptions = {}
+            if raw_data:
+                try:
+                    parsed = json.loads(raw_data)
+                    if isinstance(parsed, dict):
+                        redemptions = parsed
+                except (json.JSONDecodeError, ValueError):
+                    redemptions = {}
+
+            existing_report_key = redemptions.get(session_fingerprint)
+            if existing_report_key:
+                return existing_report_key == report_key
+
+            redemptions[session_fingerprint] = report_key
+            f.seek(0)
+            f.truncate()
+            json.dump(redemptions, f)
+            f.flush()
+            os.fsync(f.fileno())
+            return True
+    except OSError:
+        return False
+    finally:
+        if lock_fd is not None:
+            os.close(lock_fd)
+            try:
+                os.remove(lock_path)
+            except OSError:
+                pass
 
 # Restoration of the "First Theme" Design (Clean & Professional)
 st.set_page_config(page_title="QuantVantage AI Pro | Analytical Engine", layout="wide")
@@ -59,6 +185,23 @@ if st.sidebar.button("Creator Login"):
 st.title("QuantVantage AI Pro")
 st.subheader("Professional Grade Analytical Intelligence")
 
+session_id = st.query_params.get("session_id")
+if isinstance(session_id, list):
+    session_id = session_id[0] if session_id else None
+if session_id:
+    st.session_state.pending_stripe_session_id = session_id
+    try:
+        st.query_params.clear()
+    except (AttributeError, TypeError):
+        pass
+session_id = st.session_state.get("pending_stripe_session_id")
+expected_email = None
+try:
+    if st.experimental_user.is_logged_in and st.experimental_user.email:
+        expected_email = st.experimental_user.email
+except AttributeError:
+    pass
+
 is_owner = False
 try:
     if st.experimental_user.is_logged_in and st.experimental_user.email == "1safemovez@gmail.com":
@@ -76,10 +219,13 @@ tab_list = st.tabs(tabs)
 with tab_list[0]:
     st.header("Universal App Evaluator")
     app_name = st.text_input("ENTER THE NAME OF YOUR VENTURE", placeholder="e.g. Virtual Mall App")
+    if "current_report_key" not in st.session_state:
+        st.session_state.current_report_key = None
     
     if st.button("INITIALIZE COMMERCIAL ANALYSIS"):
         if app_name:
             try:
+                st.session_state.current_report_key = os.urandom(16).hex()
                 # Get API Key from Secrets
                 api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
                 if not api_key:
@@ -105,14 +251,33 @@ with tab_list[0]:
                         mime="text/plain"
                     )
                     
+                    report_key = st.session_state.current_report_key
+                    session_fingerprint = get_session_fingerprint(session_id)
+                    redeemed_report_key = load_stripe_redemptions().get(session_fingerprint)
+                    payment_verified = bool(session_id) and redeemed_report_key == report_key
+
+                    if not payment_verified and session_id and redeemed_report_key is None:
+                        payment_verified = verify_stripe_payment(session_id, expected_email=expected_email)
+                        if payment_verified:
+                            payment_verified = redeem_session_for_report(session_fingerprint, report_key)
+
                     st.divider()
-                    st.markdown("""
-                        <div class="premium-card">
-                            <h3>🔓 Want the Full 12-Page Deep Dive?</h3>
-                            <p>Unlock detailed revenue projections, competitor analysis, and viral score optimization.</p>
-                            <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - $4.99</button></a>
-                        </div>
-                    """, unsafe_allow_html=True)
+                    if payment_verified:
+                        st.success("✅ Payment verified — Full Report unlocked.")
+                        st.download_button(
+                            label="📄 Download Full Report",
+                            data=analysis_text,
+                            file_name=f"{app_name.lower().replace(' ', '_')}_full_report.txt",
+                            mime="text/plain"
+                        )
+                    else:
+                        st.markdown("""
+                            <div class="premium-card">
+                                <h3>🔓 Want the Full 12-Page Deep Dive?</h3>
+                                <p>Unlock detailed revenue projections, competitor analysis, and viral score optimization.</p>
+                                <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank" style="display: inline-block; background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; text-decoration: none;">Get Full Report - $4.99</a>
+                            </div>
+                        """, unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"AI Error: {str(e)}")
         else:
