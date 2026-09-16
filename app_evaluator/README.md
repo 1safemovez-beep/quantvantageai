@@ -1,28 +1,34 @@
-# 🚀 QuantVantage AI Prototype
+# QVPro Master Analysis Engine
 
-This tool automates the process of market research, competitive analysis, and financial projection for any app.
+## Architecture
+- **Orchestrator (`qvpro/engine.py`)**: Coordinates all specialized modules and handles the end-to-end evaluation flow.
+- **Specialized Modules (`qvpro/modules/`)**: Individual logic for Market, Product, Competitor, Financial, Commercial, Monetization, Growth, and Risks.
+- **Scoring Engine (`qvpro/scoring.py`)**: Handles numerical evaluation (0.1 - 100.0) and generates the final verdict.
+- **Reporting System (`qvpro/reporting.py`)**: Formats analysis data into a standardized, professional QVPro report.
 
-## 💳 Stripe & Mobile Integration
+## Expansion Roadmap
 
-### Stripe Payment Link:
-1. Go to your **Stripe Dashboard** -> **Payment Links**.
-2. Create a new link for "$4.99 - QuantVantage Report".
-3. Copy the URL and paste it into the `PURCHASE_LINK` field in `evaluator_engine.py`.
+### Market Module
+- [ ] Integration with real-time market data APIs (e.g., Bloomberg, Yahoo Finance).
+- [ ] Trend analysis via social graph scraping.
 
-### Mobile Usage:
-- The app is a **Web-App** (PWA compatible). 
-- To use as a mobile app, users simply "Add to Home Screen" on iOS/Android.
-- The `landing_page.html` is fully responsive for small screens.
+### Competitor Module
+- [ ] Automated similarity mapping using vector embeddings.
+- [ ] Feature-by-feature comparison matrices.
 
-### Features:
-- **Print**: Uses the device's native print-to-PDF functionality.
-- **Share**: Uses the **Web Share API** (native mobile sharing tray).
-- **Save to Drive**: Provides a direct link to the user's cloud storage.
+### Financial Module
+- [ ] Direct integration with accounting software for real-time CAC/LTV calculation.
+- [ ] Multi-scenario cash flow projections (Best/Worst case).
 
-## Files:
-- `evaluator_engine.py`: The core logic for data synthesis.
-- `templates/report_template.md`: The standardized reporting format.
-- `[app_name]_evaluation.md`: The final generated deliverable.
+### Commercial & Monetization
+- [ ] A/B testing recommendation engine for pricing models.
+- [ ] Affiliate network integration for revenue stream automation.
 
----
-*Created for analytical market intelligence.*
+## Usage
+The engine is decoupled from the UI. It can be initialized as follows:
+```python
+from qvpro.engine import QVProEngine
+engine = QVProEngine("Project Name", api_key="YOUR_API_KEY")
+results = engine.run_full_evaluation()
+report = engine.generate_report()
+```

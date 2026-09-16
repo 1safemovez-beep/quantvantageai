@@ -1,0 +1,13 @@
+{
+  "name": "QuantVantage AI Pro",
+  "short_name": "QuantVantage",
+  "start_url": "https://1safemovez-beep.github.io/quantvantageai/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
