@@ -4,7 +4,6 @@ import streamlit as st
 import anthropic
 import os
 import json
-import hashlib
 import urllib.request
 import urllib.error
 import urllib.parse
@@ -58,6 +57,25 @@ def verify_stripe_payment(session_id, expected_amount=499, expected_currency="us
         return True
     except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError, TimeoutError, ValueError):
         return False
+
+
+def load_stripe_redemptions():
+    redemptions_path = os.path.join(os.path.dirname(__file__), ".stripe_redemptions.json")
+    try:
+        with open(redemptions_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data if isinstance(data, dict) else {}
+    except (FileNotFoundError, json.JSONDecodeError, OSError, ValueError):
+        return {}
+
+
+def save_stripe_redemptions(redemptions):
+    redemptions_path = os.path.join(os.path.dirname(__file__), ".stripe_redemptions.json")
+    try:
+        with open(redemptions_path, "w", encoding="utf-8") as f:
+            json.dump(redemptions, f)
+    except OSError:
+        pass
 
 # Restoration of the "First Theme" Design (Clean & Professional)
 st.set_page_config(page_title="QuantVantage AI Pro | Analytical Engine", layout="wide")
@@ -122,8 +140,8 @@ try:
         expected_email = st.experimental_user.email
 except:
     pass
-if "stripe_session_redemptions" not in st.session_state:
-    st.session_state.stripe_session_redemptions = {}
+if "stripe_session_redemptions_cache" not in st.session_state:
+    st.session_state.stripe_session_redemptions_cache = load_stripe_redemptions()
 
 is_owner = False
 try:
@@ -171,16 +189,15 @@ with tab_list[0]:
                         mime="text/plain"
                     )
                     
-                    report_key = hashlib.sha256(
-                        f"{app_name}|{analysis_text}".encode("utf-8")
-                    ).hexdigest()
-                    redeemed_report_key = st.session_state.stripe_session_redemptions.get(session_id)
-                    payment_verified = redeemed_report_key == report_key
+                    report_key = f"{app_name.strip().lower()}|{len(analysis_text)}"
+                    redeemed_report_key = st.session_state.stripe_session_redemptions_cache.get(session_id)
+                    payment_verified = bool(session_id) and redeemed_report_key == report_key
 
                     if not payment_verified and session_id and redeemed_report_key is None:
                         payment_verified = verify_stripe_payment(session_id, expected_email=expected_email)
                         if payment_verified:
-                            st.session_state.stripe_session_redemptions[session_id] = report_key
+                            st.session_state.stripe_session_redemptions_cache[session_id] = report_key
+                            save_stripe_redemptions(st.session_state.stripe_session_redemptions_cache)
                             try:
                                 st.query_params.clear()
                             except:
