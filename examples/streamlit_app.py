@@ -5,7 +5,7 @@ import anthropic
 import os
 import json
 import hashlib
-import fcntl
+import time
 import urllib.request
 import urllib.error
 import urllib.parse
@@ -65,7 +65,6 @@ def load_stripe_redemptions():
     redemptions_path = os.path.join(os.path.dirname(__file__), ".stripe_redemptions.json")
     try:
         with open(redemptions_path, "r", encoding="utf-8") as f:
-            fcntl.flock(f.fileno(), fcntl.LOCK_SH)
             data = json.load(f)
             return data if isinstance(data, dict) else {}
     except (FileNotFoundError, json.JSONDecodeError, OSError, ValueError):
@@ -88,9 +87,19 @@ def redeem_session_for_report(session_fingerprint, report_key):
         return False
 
     redemptions_path = os.path.join(os.path.dirname(__file__), ".stripe_redemptions.json")
+    lock_path = redemptions_path + ".lock"
+    lock_fd = None
     try:
+        deadline = time.time() + 3
+        while lock_fd is None:
+            try:
+                lock_fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_RDWR)
+            except FileExistsError:
+                if time.time() >= deadline:
+                    return False
+                time.sleep(0.05)
+
         with open(redemptions_path, "a+", encoding="utf-8") as f:
-            fcntl.flock(f.fileno(), fcntl.LOCK_EX)
             f.seek(0)
             raw_data = f.read().strip()
             redemptions = {}
@@ -115,6 +124,13 @@ def redeem_session_for_report(session_fingerprint, report_key):
             return True
     except OSError:
         return False
+    finally:
+        if lock_fd is not None:
+            os.close(lock_fd)
+            try:
+                os.remove(lock_path)
+            except OSError:
+                pass
 
 # Restoration of the "First Theme" Design (Clean & Professional)
 st.set_page_config(page_title="QuantVantage AI Pro | Analytical Engine", layout="wide")
@@ -226,7 +242,9 @@ with tab_list[0]:
                         mime="text/plain"
                     )
                     
-                    report_key = f"{app_name.strip().lower()}|{len(analysis_text)}"
+                    report_key = hashlib.sha256(
+                        f"{app_name.strip().lower()}|{analysis_text}".encode("utf-8")
+                    ).hexdigest()
                     session_fingerprint = get_session_fingerprint(session_id)
                     redeemed_report_key = load_stripe_redemptions().get(session_fingerprint)
                     payment_verified = bool(session_id) and redeemed_report_key == report_key
