@@ -9,7 +9,7 @@ import urllib.error
 import urllib.parse
 
 
-def verify_stripe_payment(session_id):
+def verify_stripe_payment(session_id, expected_amount=499, expected_currency="usd", expected_email=None):
     if not session_id:
         return False
     if isinstance(session_id, list):
@@ -35,7 +35,26 @@ def verify_stripe_payment(session_id):
                 return False
             payload = response.read().decode("utf-8")
         session_data = json.loads(payload)
-        return session_data.get("payment_status") == "paid"
+        if session_data.get("payment_status") != "paid":
+            return False
+        if session_data.get("status") != "complete":
+            return False
+        if session_data.get("amount_total") != expected_amount:
+            return False
+        if str(session_data.get("currency", "")).lower() != expected_currency.lower():
+            return False
+
+        if expected_email:
+            customer_details = session_data.get("customer_details") or {}
+            checkout_email = (
+                customer_details.get("email")
+                or session_data.get("customer_email")
+                or ""
+            ).strip().lower()
+            if checkout_email != expected_email.strip().lower():
+                return False
+
+        return True
     except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError, TimeoutError, ValueError):
         return False
 
@@ -94,7 +113,13 @@ st.title("QuantVantage AI Pro")
 st.subheader("Professional Grade Analytical Intelligence")
 
 session_id = st.query_params.get("session_id")
-payment_verified = verify_stripe_payment(session_id)
+expected_email = None
+try:
+    if st.experimental_user.is_logged_in and st.experimental_user.email:
+        expected_email = st.experimental_user.email
+except:
+    pass
+payment_verified = verify_stripe_payment(session_id, expected_email=expected_email)
 
 is_owner = False
 try:
