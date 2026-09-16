@@ -4,6 +4,40 @@ import streamlit as st
 import anthropic
 import os
 import json
+import urllib.request
+import urllib.error
+import urllib.parse
+
+
+def verify_stripe_payment(session_id):
+    if not session_id:
+        return False
+    if isinstance(session_id, list):
+        session_id = session_id[0] if session_id else None
+    if not session_id:
+        return False
+
+    stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY", os.getenv("STRIPE_SECRET_KEY"))
+    if not stripe_secret_key:
+        return False
+
+    encoded_session_id = urllib.parse.quote(str(session_id), safe="")
+    url = f"https://api.stripe.com/v1/checkout/sessions/{encoded_session_id}"
+    auth_header = "Bearer " + stripe_secret_key
+    request = urllib.request.Request(
+        url,
+        headers={"Authorization": auth_header}
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            if response.status != 200:
+                return False
+            payload = response.read().decode("utf-8")
+        session_data = json.loads(payload)
+        return session_data.get("payment_status") == "paid"
+    except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError, TimeoutError, ValueError):
+        return False
 
 # Restoration of the "First Theme" Design (Clean & Professional)
 st.set_page_config(page_title="QuantVantage AI Pro | Analytical Engine", layout="wide")
@@ -59,6 +93,9 @@ if st.sidebar.button("Creator Login"):
 st.title("QuantVantage AI Pro")
 st.subheader("Professional Grade Analytical Intelligence")
 
+session_id = st.query_params.get("session_id")
+payment_verified = verify_stripe_payment(session_id)
+
 is_owner = False
 try:
     if st.experimental_user.is_logged_in and st.experimental_user.email == "1safemovez@gmail.com":
@@ -106,13 +143,22 @@ with tab_list[0]:
                     )
                     
                     st.divider()
-                    st.markdown("""
-                        <div class="premium-card">
-                            <h3>🔓 Want the Full 12-Page Deep Dive?</h3>
-                            <p>Unlock detailed revenue projections, competitor analysis, and viral score optimization.</p>
-                            <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - $4.99</button></a>
-                        </div>
-                    """, unsafe_allow_html=True)
+                    if payment_verified:
+                        st.success("✅ Payment verified — Full Report unlocked.")
+                        st.download_button(
+                            label="📄 Download Full Report",
+                            data=analysis_text,
+                            file_name=f"{app_name.lower().replace(' ', '_')}_full_report.txt",
+                            mime="text/plain"
+                        )
+                    else:
+                        st.markdown("""
+                            <div class="premium-card">
+                                <h3>🔓 Want the Full 12-Page Deep Dive?</h3>
+                                <p>Unlock detailed revenue projections, competitor analysis, and viral score optimization.</p>
+                                <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - $4.99</button></a>
+                            </div>
+                        """, unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"AI Error: {str(e)}")
         else:
