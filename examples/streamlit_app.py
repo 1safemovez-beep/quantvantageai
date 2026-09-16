@@ -219,10 +219,13 @@ tab_list = st.tabs(tabs)
 with tab_list[0]:
     st.header("Universal App Evaluator")
     app_name = st.text_input("ENTER THE NAME OF YOUR VENTURE", placeholder="e.g. Virtual Mall App")
+    if "current_report_key" not in st.session_state:
+        st.session_state.current_report_key = None
     
     if st.button("INITIALIZE COMMERCIAL ANALYSIS"):
         if app_name:
             try:
+                st.session_state.current_report_key = os.urandom(16).hex()
                 # Get API Key from Secrets
                 api_key = st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY"))
                 if not api_key:
@@ -248,7 +251,7 @@ with tab_list[0]:
                         mime="text/plain"
                     )
                     
-                    report_key = os.urandom(16).hex()
+                    report_key = st.session_state.current_report_key
                     session_fingerprint = get_session_fingerprint(session_id)
                     redeemed_report_key = load_stripe_redemptions().get(session_fingerprint)
                     payment_verified = bool(session_id) and redeemed_report_key == report_key
@@ -272,7 +275,7 @@ with tab_list[0]:
                             <div class="premium-card">
                                 <h3>🔓 Want the Full 12-Page Deep Dive?</h3>
                                 <p>Unlock detailed revenue projections, competitor analysis, and viral score optimization.</p>
-                                <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - $4.99</button></a>
+                                <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" target="_blank" style="display: inline-block; background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; text-decoration: none;">Get Full Report - $4.99</a>
                             </div>
                         """, unsafe_allow_html=True)
             except Exception as e:
