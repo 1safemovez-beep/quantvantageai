@@ -4,6 +4,7 @@ import streamlit as st
 import anthropic
 import os
 import json
+import hashlib
 import urllib.request
 import urllib.error
 import urllib.parse
@@ -113,13 +114,16 @@ st.title("QuantVantage AI Pro")
 st.subheader("Professional Grade Analytical Intelligence")
 
 session_id = st.query_params.get("session_id")
+if isinstance(session_id, list):
+    session_id = session_id[0] if session_id else None
 expected_email = None
 try:
     if st.experimental_user.is_logged_in and st.experimental_user.email:
         expected_email = st.experimental_user.email
 except:
     pass
-payment_verified = verify_stripe_payment(session_id, expected_email=expected_email)
+if "stripe_session_redemptions" not in st.session_state:
+    st.session_state.stripe_session_redemptions = {}
 
 is_owner = False
 try:
@@ -167,6 +171,21 @@ with tab_list[0]:
                         mime="text/plain"
                     )
                     
+                    report_key = hashlib.sha256(
+                        f"{app_name}|{analysis_text}".encode("utf-8")
+                    ).hexdigest()
+                    redeemed_report_key = st.session_state.stripe_session_redemptions.get(session_id)
+                    payment_verified = redeemed_report_key == report_key
+
+                    if not payment_verified and session_id and redeemed_report_key is None:
+                        payment_verified = verify_stripe_payment(session_id, expected_email=expected_email)
+                        if payment_verified:
+                            st.session_state.stripe_session_redemptions[session_id] = report_key
+                            try:
+                                st.query_params.clear()
+                            except:
+                                pass
+
                     st.divider()
                     if payment_verified:
                         st.success("✅ Payment verified — Full Report unlocked.")
