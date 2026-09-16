@@ -4,6 +4,8 @@ import streamlit as st
 import anthropic
 import os
 import json
+import hashlib
+import fcntl
 import urllib.request
 import urllib.error
 import urllib.parse
@@ -63,19 +65,56 @@ def load_stripe_redemptions():
     redemptions_path = os.path.join(os.path.dirname(__file__), ".stripe_redemptions.json")
     try:
         with open(redemptions_path, "r", encoding="utf-8") as f:
+            fcntl.flock(f.fileno(), fcntl.LOCK_SH)
             data = json.load(f)
             return data if isinstance(data, dict) else {}
     except (FileNotFoundError, json.JSONDecodeError, OSError, ValueError):
         return {}
 
 
-def save_stripe_redemptions(redemptions):
+def get_session_fingerprint(session_id):
+    if not session_id:
+        return None
+
+    stripe_secret_key = st.secrets.get("STRIPE_SECRET_KEY", os.getenv("STRIPE_SECRET_KEY"))
+    if not stripe_secret_key:
+        return None
+
+    return hashlib.sha256(f"{session_id}|{stripe_secret_key}".encode("utf-8")).hexdigest()
+
+
+def redeem_session_for_report(session_fingerprint, report_key):
+    if not session_fingerprint or not report_key:
+        return False
+
     redemptions_path = os.path.join(os.path.dirname(__file__), ".stripe_redemptions.json")
     try:
-        with open(redemptions_path, "w", encoding="utf-8") as f:
+        with open(redemptions_path, "a+", encoding="utf-8") as f:
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+            f.seek(0)
+            raw_data = f.read().strip()
+            redemptions = {}
+            if raw_data:
+                try:
+                    parsed = json.loads(raw_data)
+                    if isinstance(parsed, dict):
+                        redemptions = parsed
+                except (json.JSONDecodeError, ValueError):
+                    redemptions = {}
+
+            existing_report_key = redemptions.get(session_fingerprint)
+            if existing_report_key:
+                return existing_report_key == report_key
+
+            redemptions[session_fingerprint] = report_key
+            f.seek(0)
+            f.truncate()
             json.dump(redemptions, f)
+            f.flush()
+            os.fsync(f.fileno())
+            return True
     except OSError:
-        pass
+        return False
 
 # Restoration of the "First Theme" Design (Clean & Professional)
 st.set_page_config(page_title="QuantVantage AI Pro | Analytical Engine", layout="wide")
@@ -138,10 +177,8 @@ expected_email = None
 try:
     if st.experimental_user.is_logged_in and st.experimental_user.email:
         expected_email = st.experimental_user.email
-except:
+except AttributeError:
     pass
-if "stripe_session_redemptions_cache" not in st.session_state:
-    st.session_state.stripe_session_redemptions_cache = load_stripe_redemptions()
 
 is_owner = False
 try:
@@ -190,17 +227,17 @@ with tab_list[0]:
                     )
                     
                     report_key = f"{app_name.strip().lower()}|{len(analysis_text)}"
-                    redeemed_report_key = st.session_state.stripe_session_redemptions_cache.get(session_id)
+                    session_fingerprint = get_session_fingerprint(session_id)
+                    redeemed_report_key = load_stripe_redemptions().get(session_fingerprint)
                     payment_verified = bool(session_id) and redeemed_report_key == report_key
 
                     if not payment_verified and session_id and redeemed_report_key is None:
                         payment_verified = verify_stripe_payment(session_id, expected_email=expected_email)
                         if payment_verified:
-                            st.session_state.stripe_session_redemptions_cache[session_id] = report_key
-                            save_stripe_redemptions(st.session_state.stripe_session_redemptions_cache)
+                            payment_verified = redeem_session_for_report(session_fingerprint, report_key)
                             try:
                                 st.query_params.clear()
-                            except:
+                            except (AttributeError, TypeError):
                                 pass
 
                     st.divider()
