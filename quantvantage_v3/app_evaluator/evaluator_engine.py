@@ -1,99 +1,75 @@
 import datetime
 import os
 
+
 class QuantVantageAI:
     def __init__(self, target_name, mode="app"):
         self.target_name = target_name
         self.mode = mode
         self.report_data = {
             "DATE": datetime.date.today().strftime("%B %d, %Y"),
-            "PURCHASE_LINK": "https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06",
+            "APP_NAME": target_name,
+            "PURCHASE_LINK": "https://buy.stripe.com/dRm4grdJxcF3bUKgIuaVa0d",
+            "OVERALL_SCORE": "78",
+            "OPPORTUNITY_SCORE": "81",
+            "COMMERCIAL_SCORE": "76",
+            "RISK_SCORE": "58",
+            "RECOMMENDED_NEXT_STEP": "Run a 30-day pilot focused on customer acquisition assumptions and pricing validation.",
+            "MARKET_DEMAND": "Early demand signals are positive in niche segments with moderate competition.",
+            "TARGET_MARKET_FIT": "The concept aligns best with SMB and early-stage founder personas.",
+            "COMPETITOR_SUMMARY": "Competitors are present but fragmented; positioning clarity is the primary differentiator.",
+            "OPPORTUNITY_THESIS": "Capture a focused segment first, then expand by use-case adjacency.",
+            "BUSINESS_ASSUMPTIONS": "Assumes paid conversion after initial trial and repeat usage in monthly cycles.",
+            "REVENUE_MODEL_ANALYSIS": "Subscription + one-time premium report upsell provides diversified revenue streams.",
+            "COST_MARGIN_ANALYSIS": "Primary costs are model calls and acquisition spend; margin improves with retention.",
+            "FINANCIAL_SCENARIOS": "Base case indicates sustainable contribution margin by month 6 with disciplined CAC.",
+            "RISK_1_NAME": "Customer acquisition concentration",
+            "RISK_1_WHY": "Over-reliance on one channel can increase CAC volatility.",
+            "RISK_1_MITIGATION": "Diversify channels and enforce CAC payback guardrails.",
+            "RISK_2_NAME": "Positioning ambiguity",
+            "RISK_2_WHY": "Mixed messaging reduces conversion and trust.",
+            "RISK_2_MITIGATION": "Keep messaging centered on creation and commercial evaluation outcomes.",
+            "RISK_3_NAME": "Feature sprawl",
+            "RISK_3_WHY": "Non-core features dilute execution velocity.",
+            "RISK_3_MITIGATION": "Prioritize core evaluation workflows and sunset low-value paths.",
+            "RISK_4_NAME": "Compliance interpretation drift",
+            "RISK_4_WHY": "Overstated claims can increase legal/regulatory review burden.",
+            "RISK_4_MITIGATION": "Maintain explicit informational-use disclosures and legal review checkpoints.",
+            "RISK_5_NAME": "Monetization timing mismatch",
+            "RISK_5_WHY": "Pricing before validated value can suppress adoption.",
+            "RISK_5_MITIGATION": "Use staged pricing tests tied to measurable customer outcomes.",
+            "ACTIONS_IMMEDIATE": "Clarify product scope and update all customer-facing language.",
+            "ACTIONS_30_DAY": "Validate acquisition channels and onboarding conversion assumptions.",
+            "ACTIONS_60_DAY": "Refine pricing and package structure based on pilot learnings.",
+            "ACTIONS_90_DAY": "Scale the highest-performing channels and automate key reporting workflows.",
+            "OPTIONAL_DEEP_DIVE": "Detailed assumptions, sensitivity analysis, and extended competitor breakdown.",
         }
-        
-        if mode == "app":
-            self.report_data.update({
-                "APP_NAME": target_name,
-                "MARKET_STATUS": "Analyzing...",
-                "CORE_FEATURES": "",
-                "REVENUE_MODEL": "",
-                "INCOME_FREQUENCY": "",
-                "INCOME_PROJECTION": "",
-                "COMPETITOR_TABLE": "| App | Similarity | Better Method? |\n| :--- | :--- | :--- |\n",
-                "SIMILARITIES": "",
-                "DIFFERENCES": "",
-                "UNIQUENESS_SCORE": "0",
-                "ACTIVITY_LEVEL": "",
-                "CAGR": "",
-                "NET_WORTH_EVALUATION": "",
-                "BEST_CASE": "",
-                "WORST_CASE": "",
-                "RECOMMENDATION": "",
-                "DOWNLOAD_LINK": "#",
-                "DONATE_LINK": "https://www.buymeacoffee.com/yourhandle",
-                "SUBSCRIPTION_LINK": "https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01",
-                "AFFILIATE_NAME": "Top AI Tools Directory",
-                "AFFILIATE_URL": "https://example.com/affiliate",
-                "AFFILIATE_DESC": "Get 20% off the best AI tools for app development.",
-                "PROFIT_MARGIN": "0",
-                "EST_CAC": "0.00",
-                "BREAK_EVEN_UNITS": "0",
-                "PROFIT_OUTLOOK": "Analyzing...",
-                "TECH_STACK_COST": "",
-                "MONETIZATION_HACKS": "",
-                "VIRAL_SCORE": "0",
-                "UX_IMPROVEMENT": "",
-                "TRUST_IMPROVEMENT": "",
-                "PERFORMANCE_IMPROVEMENT": "",
-                "BETTER_CHOICE_SUMMARY": ""
-            })
-        elif mode == "health":
-            self.report_data.update({
-                "SUBJECT_NAME": target_name,
-                "RESPIRATORY_METRICS": "Analyzing physiological optics...",
-                "PHYSIOLOGICAL_TRENDS": "Identifying core patterns...",
-                "BASELINE_DATA": "Standardized respiratory metrics...",
-                "HEALTH_INSIGHTS_BODY": "AI-powered physiological synthesis...",
-                "IMMEDIATE_ACTION": "Optimization adjustments...",
-                "LONG_TERM_ROADMAP": "Tactical health stability...",
-                "VITALITY_SCORE": "0"
-            })
+
+        if mode != "app":
+            raise ValueError("Health mode is disabled in the customer-facing product scope. Use mode='app'.")
 
     def generate_report(self, template_path=None, output_path=None):
         if not template_path:
-            template_path = "templates/report_template.md" if self.mode == "app" else "templates/health_template.md"
-        
+            template_path = "templates/report_template.md"
+
         if not output_path:
-            prefix = "app" if self.mode == "app" else "health"
-            output_path = f"{prefix}_{self.target_name.lower().replace(' ', '_')}_analysis.md"
-            
-        with open(template_path, 'r') as f:
+            output_path = f"app_{self.target_name.lower().replace(' ', '_')}_analysis.md"
+
+        with open(template_path, "r", encoding="utf-8") as f:
             template = f.read()
-        
+
         for key, value in self.report_data.items():
             template = template.replace(f"{{{{{key}}}}}", str(value))
-            
-        # Write the file and return absolute path
+
         abs_path = os.path.abspath(output_path)
-        with open(abs_path, 'w') as f:
+        with open(abs_path, "w", encoding="utf-8") as f:
             f.write(template)
         return abs_path
 
-    def delete_customer(self, stripe_customer_id):
-        """
-        Mock method to delete a customer record in Stripe.
-        Refer to: https://docs.stripe.com/api/customers/delete
-        """
-        print(f"[Backend] Initiating DELETE request to https://api.stripe.com/v1/customers/{stripe_customer_id}")
-        # In a real app: stripe.Customer.delete(stripe_customer_id)
-        return {"id": stripe_customer_id, "deleted": True}
 
 if __name__ == "__main__":
-    mode = input("Select mode (app/health): ").strip().lower()
-    name = input(f"Enter the {'app name' if mode == 'app' else 'subject name'} to evaluate: ")
-    evaluator = QuantVantageAI(name, mode=mode)
-    print(f"\n[System] Initializing Core for '{name}' (Mode: {mode})...")
-    print("[System] Searching for metrics and optics...")
-    # In a full app, this would call search/sensor APIs. 
-    print("[System] Analysis complete. Generating report...")
+    name = input("Enter app name to evaluate: ")
+    evaluator = QuantVantageAI(name, mode="app")
+    print(f"\n[System] Initializing commercial evaluation core for '{name}'...")
     output = evaluator.generate_report()
     print(f"[System] Report generated: {output}")

@@ -1,43 +1,50 @@
 # QuantVantageAI (repo: quantvantageai)
 
-This repository contains a demo scaffold for an "app evaluation" tool backed by an AI assistant. The repo previously contained PDF files (certificate.pdf and fghagft9); this scaffold adds a Streamlit example app, styling, and a simple in-app coin system.
+QuantVantageAI/QVPro provides **AI-powered creation, market, and commercial evaluation**.
 
-Features
-- Streamlit example UI that collects human answers to an evaluation questionnaire.
-- Simple CoinManager (JSON-backed) that tracks user coins and supports earn/spend actions.
-- Placeholder AI assistant call to QuantumVantage (configurable via environment variables).
-- Simple Plotly charts that summarize responses.
-- Styling (metallic/chrome background, pop colors) and print-friendly overrides.
+## Product scope
+- Creation and market evaluation reports
+- Commercial scenario analysis and strategic recommendations
+- Compact sponsored placement support (clearly labeled)
 
-Quick start (Python / Streamlit)
+QVPro is **not** positioned as:
+- an investment adviser
+- a brokerage
+- a trading platform
+- a portfolio manager
+- a personalized investment recommendation service
+
+## Quick start (Python / Streamlit)
 1. Clone the repo:
+   ```bash
    git clone https://github.com/1safemovez-beep/quantvantageai.git
    cd quantvantageai
-
-2. Create a virtual environment and install dependencies:
+   ```
+2. Create and activate a virtual environment, then install dependencies:
+   ```bash
    python -m venv .venv
    source .venv/bin/activate   # macOS / Linux
-   .venv\\Scripts\\activate    # Windows
+   .venv\Scripts\activate    # Windows
    pip install -r requirements.txt
-
-3. Copy the example environment file and add your API key:
+   ```
+3. Copy env template and configure:
+   ```bash
    cp .env.example .env
-   # Edit .env and set QUANTVANTAGE_API_KEY. Optionally set QUANTVANTAGE_API_URL.
-
-4. Run the Streamlit app:
+   ```
+4. Run the app:
+   ```bash
    streamlit run examples/streamlit_app.py
+   ```
 
-Configuration
-- QUANTVANTAGE_API_KEY: Your API key for the QuantumVantage service. If not provided, the app uses a local mock assistant for demos.
-- QUANTVANTAGE_API_URL: The assistant endpoint. Default in .env.example is a placeholder. Replace with the real endpoint if you have it.
+## Configuration
+- `ANTHROPIC_API_KEY`: Runtime API key for commercial evaluation generation.
+- `QV_DATA_ENCRYPTION_KEY`: Required Fernet key for encrypted-at-rest storage of advertiser, sponsor-request, and generated-report data.
+- `QUANTVANTAGE_API_URL`: Optional placeholder endpoint config.
 
-Coin system
-- The app includes a simple JSON-backed coin store (coin_balances.json). This is NOT a blockchain token — it's a local rewards system to let your agent reward users.
-- To upgrade to a blockchain ERC-20 token, see the TODOs in the README.
+## Security notes
+- Sensitive local storage is encrypted at rest when `QV_DATA_ENCRYPTION_KEY` is configured.
+- Do not commit secrets, API keys, or encryption keys to the repository.
+- Transport security depends on HTTPS deployment configuration (e.g., Streamlit Cloud / hosting TLS).
 
-Next steps
-- Add your real QuantumVantage API endpoint and API key to .env, or implement a proper SDK call if QuantumVantage provides one.
-- Extend the questionnaire, store results in a DB, or wire results into dashboards.
-
-License
-- Add a LICENSE file if you want to publish under a specific license.
+## Legal/disclosure note
+Outputs are informational and support commercial planning. They are not investment advice or personalized investment recommendations.
