@@ -445,7 +445,7 @@ with tab_list[0]:
                                 {
                                     "role": "user",
                                     "content": (
-                                        "Generate a concise 4-6 page markdown creation evaluation for idear: "
+                                        "Generate a concise 4-6 page markdown creation evaluation for idea: "
                                         f"'{app_name}'. Use exactly this structure and headings: \n"
                                         "PAGE 1: Executive Summary\n"
                                         "- Overall score\n- Opportunity score\n- Commercial score\n- Risk score\n- Recommended next step\n"
