@@ -497,7 +497,7 @@ with tab_list[0]:
                 unsafe_allow_html=True,
             )
         else:
-            st.warning("Please enter an idear name.")
+            st.warning("Please enter an idea name.")
 
 with tab_list[1]:
     st.header("Sponsor With Email")
