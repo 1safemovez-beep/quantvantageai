@@ -445,7 +445,7 @@ with tab_list[0]:
                                 {
                                     "role": "user",
                                     "content": (
-                                        "Generate a concise 4-6 page markdown creation evaluation for idear: "
+                                        "Generate a concise 4-6 page markdown creation evaluation for idea: "
                                         f"'{app_name}'. Use exactly this structure and headings: \n"
                                         "PAGE 1: Executive Summary\n"
                                         "- Overall score\n- Opportunity score\n- Commercial score\n- Risk score\n- Recommended next step\n"
@@ -497,7 +497,7 @@ with tab_list[0]:
                 unsafe_allow_html=True,
             )
         else:
-            st.warning("Please enter an idear name.")
+            st.warning("Please enter an idea name.")
 
 with tab_list[1]:
     st.header("Sponsor With Email")
