@@ -354,8 +354,6 @@ st.sidebar.info("AI-powered creation, market, and commercial evaluation.")
 st.sidebar.markdown("### 🚀 Get a Full Analysis")
 st.sidebar.markdown("[Unlock Full 12-Page Report (Grand Opening Price)](https://buy.stripe.com/dRm4grdJxcF3bUKgIuaVa0d)")
 
-st.sidebar.markdown("### 📈 Monthly Membership")
-st.sidebar.markdown("[🌟 Pro Subscription ($40/mo)](https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01)")
 
 st.sidebar.divider()
 
