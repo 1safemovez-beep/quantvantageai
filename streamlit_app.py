@@ -355,7 +355,7 @@ st.sidebar.markdown("### 🚀 Get a Full Analysis")
 st.sidebar.markdown("[Unlock Full 12-Page Report (Grand Opening Price)](https://buy.stripe.com/dRm4grdJxcF3bUKgIuaVa0d)")
 
 st.sidebar.markdown("### 📈 Monthly Membership")
-st.sidebar.markdown("[🌟 Pro Subscription ($2/mo)](https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01)")
+st.sidebar.markdown("[🌟 Pro Subscription ($40/mo)](https://buy.stripe.com/cNi8wH5d120pe2S9g2aVa01)")
 
 st.sidebar.divider()
 
@@ -419,7 +419,7 @@ tab_list = st.tabs(base_tabs)
 
 with tab_list[0]:
     st.header("Creation & Market Evaluation")
-    app_name = st.text_input("ENTER THE NAME OF YOUR CREATION/IDEA", placeholder="e.g. Premier tool bazaar idea")
+    app_name = st.text_input("ENTER THE NAME OF YOUR CREATION/IDEA", placeholder="e.g. Premium tool bazaar idea")
     context_notes = st.text_area(
         "Context (optional)",
         placeholder="Target users, market assumptions, current traction, goals...",
