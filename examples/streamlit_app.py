@@ -417,7 +417,7 @@ tab_list = st.tabs(base_tabs)
 
 with tab_list[0]:
     st.header("Creation & Market Evaluation")
-    app_name = st.text_input("ENTER THE NAME OF YOUR CREATION/IDEA", placeholder="e.g. Premium tool bazaar idea")
+    app_name = st.text_input("ENTER Business NAME,URL or YOUR CREATION/IDEA", placeholder="e.g. Premium tool bazaar idea")
     context_notes = st.text_area(
         "Context (optional)",
         placeholder="Target users, market assumptions, current traction, goals...",
