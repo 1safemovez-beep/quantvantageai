@@ -16,7 +16,7 @@ except Exception:  # pragma: no cover
     Fernet = None
     InvalidToken = Exception
 
-st.set_page_config(page_title="QuantVantage AI Pro | Commercial Evaluation", layout="wide")
+st.set_page_config(page_title="QuantVantage AI Pro | Evaluation", layout="wide")
 
 st.markdown(
     """
