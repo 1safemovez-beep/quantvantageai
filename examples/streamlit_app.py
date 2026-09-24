@@ -3,6 +3,7 @@
 import base64
 import json
 import os
+import re
 import uuid
 from datetime import date, datetime
 from pathlib import Path
@@ -30,6 +31,8 @@ st.markdown(
         font-weight: bold;
     }
     h1, h2, h3 { color: #3E7096; font-weight: 800; }
+    h1 { white-space: nowrap; }
+    @media (max-width: 640px) { h1 { font-size: 1.35rem !important; } }
     .premium-card {
         background-color: #f0f4f7;
         padding: 14px;
@@ -284,13 +287,75 @@ def dedupe_report_lines(report_text: str) -> str:
     return "\n".join(cleaned).strip()
 
 
+def extract_scores(report_text: str) -> dict:
+    """Pull the four headline scores out of a report so they can be charted."""
+    scores = {}
+    patterns = {
+        "Overall": r"Overall score:\*?\*?\s*(\d+)",
+        "Opportunity": r"Opportunity score:\*?\*?\s*(\d+)",
+        "Commercial": r"Commercial score:\*?\*?\s*(\d+)",
+        "Risk": r"Risk score:\*?\*?\s*(\d+)",
+    }
+    for label, pat in patterns.items():
+        m = re.search(pat, report_text or "")
+        if m:
+            try:
+                scores[label] = int(m.group(1))
+            except ValueError:
+                pass
+    return scores if len(scores) == 4 else {}
+
+
 def build_fallback_finale_report(creation_name: str, context_notes: str, ad_price_note: str, commercial_price_note: str) -> str:
+    name = (creation_name or "").strip()
+    notes = (context_notes or "").strip()
+    thin_input = len(name) < 12 and not notes
+    if thin_input:
+        overall, opportunity, commercial, risk = 22, 25, 20, 70
+        next_step = "Describe what the creation actually does, who it serves, and how it earns money, then re-run the evaluation."
+        missing = "The input was too thin to evaluate properly — a name or URL alone is not an idea. "
+        financial = ("- No financial picture is possible yet — there is not enough detail to estimate costs, "
+                     "pricing, or revenue. Describe the idea and re-run the evaluation.")
+        risks = ("1. \U0001F534 **Too little information**\n"
+                 "   - Why it matters: nothing here can be priced, scoped, or validated\n"
+                 "   - How to reduce it: describe the creation, its buyer, and how it earns money")
+    else:
+        overall, opportunity, commercial, risk = 62, 65, 60, 55
+        next_step = "Run a 30-day validation sprint focused on audience fit and conversion assumptions."
+        missing = ""
+        try:
+            price = float((commercial_price_note or "").strip().replace("$", "").replace(",", "") or 25)
+        except ValueError:
+            price = 25.0
+        price_s = f"${price:,.0f}" if price == int(price) else f"${price:,.2f}"
+        cons_rev = int(1000 * 0.01 * price)
+        base_rev = int(5000 * 0.02 * price)
+        opt_rev = int(20000 * 0.03 * price)
+        financial = (
+            f"- **Estimated startup cost range:** $2,000 - $8,000 (lean build, first marketing tests, basic tooling).\n"
+            f"- **Revenue scenarios** (audience reached x conversion x {price_s} price point):\n"
+            f"  - Conservative: 1,000 x 1% x {price_s} = **${cons_rev:,}/mo** (~${cons_rev * 12:,}/yr)\n"
+            f"  - Base: 5,000 x 2% x {price_s} = **${base_rev:,}/mo** (~${base_rev * 12:,}/yr)\n"
+            f"  - Optimistic: 20,000 x 3% x {price_s} = **${opt_rev:,}/mo** (~${opt_rev * 12:,}/yr)\n"
+            f"- **Break-even sketch:** at the base case, roughly 300-400 paying customers cover a lean $5,000 launch.\n"
+            f"- **Possible levers (not promises):** if acquisition cost fell 20% and buyers purchased twice a year instead of once, "
+            f"base-case revenue could roughly double and margin could rise from ~40% toward ~60%. Possible — not guaranteed."
+        )
+        risks = ("1. \U0001F534 **Acquisition concentration**\n"
+                 "   - Why it matters: CAC spikes from single-channel dependency\n"
+                 "   - How to reduce it: diversify channels and cap paid spend tests\n"
+                 "2. \U0001F7E1 **Positioning drift**\n"
+                 "   - Why it matters: unclear messaging lowers conversion\n"
+                 "   - How to reduce it: keep one value proposition per landing flow\n"
+                 "3. \U0001F7E1 **Feature overload**\n"
+                 "   - Why it matters: slows execution and confuses users\n"
+                 "   - How to reduce it: keep roadmap tied to conversion metrics")
     return f"""# PAGE 1 — Executive Summary
-- **Overall score:** 76 / 100
-- **Opportunity score:** 79 / 100
-- **Commercial score:** 74 / 100
-- **Risk score:** 57 / 100
-- **Recommended next step:** Run a 30-day validation sprint focused on audience fit and conversion assumptions.
+- **Overall score:** {overall} / 100
+- **Opportunity score:** {opportunity} / 100
+- **Commercial score:** {commercial} / 100
+- **Risk score:** {risk} / 100
+- **Recommended next step:** {missing}{next_step}
 
 ## WHAT YOU'LL GET
 - Market opportunity analysis
@@ -298,9 +363,11 @@ def build_fallback_finale_report(creation_name: str, context_notes: str, ad_pric
 - Customer/target-market analysis
 - Commercial viability
 - Revenue-model analysis
-- Risk analysis
+- Financial scenario analysis (costs, revenue scenarios, break-even, possible levers)
+- Risk analysis (ranked \U0001F534 critical / \U0001F7E1 moderate)
 - Strategic recommendations
 - Action plan
+- Possible value estimate (rough planning estimate, not a valuation)
 
 ### User Input Snapshot
 - **Creation name:** {creation_name}
@@ -316,16 +383,11 @@ def build_fallback_finale_report(creation_name: str, context_notes: str, ad_pric
 - Prioritize simple pricing tiers and validate conversion drivers.
 - Track payback period and retention assumptions monthly.
 
+## Financial picture
+{financial}
+
 # PAGE 4 — Top Risks
-1. **Positioning drift**  
-   - Why it matters: unclear messaging lowers conversion  
-   - How to reduce it: keep one value proposition per landing flow
-2. **Acquisition concentration**  
-   - Why it matters: CAC spikes from single-channel dependency  
-   - How to reduce it: diversify channels and cap paid spend tests
-3. **Feature overload**  
-   - Why it matters: slows execution and confuses users  
-   - How to reduce it: keep roadmap tied to conversion metrics
+{risks}
 
 # PAGE 5 — Strategic Recommendations
 - **Immediate actions:** tighten messaging and define one primary KPI
@@ -335,15 +397,25 @@ def build_fallback_finale_report(creation_name: str, context_notes: str, ad_pric
 
 # PAGE 6 — Optional Deep-Dive Material
 - Additional assumptions, scenario sensitivity, and extended competitor notes.
+
+# PAGE 7 — Possible Value Estimate
+- **Rough estimate:** $5,000 - $25,000 at small-scale launch
+- **Because:** this assumes a narrow early audience, a modest price point, and low single-digit conversion on first outreach. A rough planning estimate only — not a professional valuation, not a guarantee, not investment advice.
 """
 
 
 def normalize_final_report(report_text: str, creation_name: str, context_notes: str, ad_price_note: str, commercial_price_note: str) -> str:
     cleaned = dedupe_report_lines(report_text or "")
-    required = ["PAGE 1", "PAGE 2", "PAGE 3", "PAGE 4", "PAGE 5"]
-    if not cleaned or not all(section in cleaned for section in required):
-        return build_fallback_finale_report(creation_name, context_notes, ad_price_note, commercial_price_note)
-    return cleaned
+    # Lenient structure check: accept "page 1" in any letter case.
+    lowered = cleaned.lower()
+    required = ["page 1", "page 2", "page 3", "page 4", "page 5", "page 7"]
+    if cleaned and all(section in lowered for section in required):
+        return cleaned
+    # Never silently throw away a real AI response: if the model returned
+    # substantial content, keep it even if its headings drifted from the template.
+    if len(cleaned.strip()) >= 800:
+        return cleaned
+    return build_fallback_finale_report(creation_name, context_notes, ad_price_note, commercial_price_note)
 
 
 expire_campaigns_if_needed()
@@ -440,23 +512,28 @@ with tab_list[0]:
                     with st.spinner("Building commercial evaluation..."):
                         response = client.messages.create(
                             model="claude-sonnet-4-5",
-                            max_tokens=1800,
+                            max_tokens=2400,
                             messages=[
                                 {
                                     "role": "user",
                                     "content": (
-                                        "Generate a concise 4-6 page markdown creation evaluation for idea: "
+                                        "Generate a concise 6-8 page markdown creation evaluation for idea: "
                                         f"'{app_name}'. Use exactly this structure and headings: \n"
                                         "PAGE 1: Executive Summary\n"
                                         "- Overall score\n- Opportunity score\n- Commercial score\n- Risk score\n- Recommended next step\n"
-                                        "- WHAT YOU'LL GET section including: Market opportunity analysis, Competitor analysis, Customer/target-market analysis, Commercial viability, Revenue-model analysis, Risk analysis, Strategic recommendations, Action plan.\n"
+                                        "- WHAT YOU'LL GET section including: Market opportunity analysis, Competitor analysis, Customer/target-market analysis, Commercial viability, Revenue-model analysis, Risk analysis, Strategic recommendations, Action plan, Financial scenario analysis, Possible value estimate (rough planning estimate, not a valuation).\n"
                                         "PAGE 2: Market & Opportunity\n"
                                         "PAGE 3: Commercial Analysis\n"
-                                        "PAGE 4: Top Risks (3-5 only, each with Risk / Why it matters / How to reduce it)\n"
+"Include a Financial picture subsection: estimated startup cost range; three revenue scenarios (conservative/base/optimistic) showing the math as audience x conversion x price; a break-even sketch; and 2 possible levers (e.g. if acquisition cost fell 20%, show how margin moves) framed as possibilities, never guarantees.\n"
+                                        "PAGE 4: Top Risks (3-5 only, ranked with \U0001F534 Critical / \U0001F7E1 Moderate indicators, each with Risk / Why it matters / How to reduce it)\n"
                                         "PAGE 5: Strategic Recommendations (Immediate actions, 30-day, 60-day, 90-day priorities)\n"
                                         "PAGE 6: Optional Deep-Dive Material (optional section, concise).\n"
+                                        "PAGE 7: Possible Value Estimate\n"
+                                        "- Give one estimated dollar range for what this creation could be worth at a small-scale launch (for example \"$X - $Y\"), then 2-3 sentences beginning with \"because\" that spell out the assumptions behind it (audience size, price point, conversion rate). "
+                                        "Tie the range to the scores above: stronger commercial and opportunity scores support a higher range. "
+                                        "Label it plainly as a rough planning estimate — never a professional valuation, never a guarantee, never investment advice.\n"
                                         "Use language for market analysis, creation analysis, commercial evaluation, financial scenario analysis, creation assumptions, and commercial recommendations. "
-                                        "Do not provide personalized investment advice. Do not include buy/sell signals, brokerage guidance, or guaranteed predictions. Remove repetitive filler.\n"
+                                        "Do not provide personalized investment advice. Do not include buy/sell signals, brokerage guidance, or guaranteed predictions. Remove repetitive filler.\nSCORING RUBRIC — use the full 0-100 range and make scores discriminate between strong and weak inputs. 90-100: exceptional, clear demand, strong defensibility. 70-89: solid concept with real opportunity and manageable risks. 40-69: plausible but unproven, major assumptions untested. 10-39: weak, vague, or fundamentally flawed concept. 0-9: no evaluable content. Judge the idea AS DESCRIBED, not its best possible version. If the input is only a URL, a company name, or a few words with no description of what the creation does, who it serves, or how it earns money, scores must reflect that: overall score below 30, and state plainly what information is missing. Never default to the middle. Two different ideas must get meaningfully different scores. If every idea scores the same, the scoring has failed.\n"
                                         f"User context notes: {context_notes or 'None'}\n"
                                         f"Advertising price note: {advertising_price_note or 'None'}\n"
                                         f"Commercial price note: {commercial_price_note or 'None'}"
@@ -472,6 +549,11 @@ with tab_list[0]:
             report_text = normalize_final_report(report_text, app_name, context_notes, advertising_price_note, commercial_price_note)
             st.success("Commercial evaluation complete")
             st.markdown(report_text)
+
+            score_snapshot = extract_scores(report_text)
+            if score_snapshot:
+                st.subheader("\U0001F4CA Score snapshot")
+                st.bar_chart(score_snapshot)
 
             st.download_button(
                 label="📄 Download Evaluation Report",
