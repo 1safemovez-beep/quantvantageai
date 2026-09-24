@@ -4,6 +4,7 @@ import base64
 import json
 import os
 import re
+import requests
 import uuid
 from datetime import date, datetime
 from pathlib import Path
@@ -457,6 +458,8 @@ current_active_ads = active_ads(all_ads)
 
 if "ad_impressions_seen" not in st.session_state:
     st.session_state["ad_impressions_seen"] = set()
+if "qv_unlocked" not in st.session_state:
+    st.session_state["qv_unlocked"] = False
 
 if current_active_ads:
     compact_ad = sorted(current_active_ads, key=lambda a: float(a.get("campaign_price", 0) or 0), reverse=True)[0]
@@ -484,6 +487,40 @@ if current_active_ads:
 base_tabs = ["🚀 App Evaluator", "📧 Sponsor With Email"]
 if is_owner:
     base_tabs.extend(["🛠️ Advertising", "📊 Owner Analytics"])
+
+STRIPE_FULL_REPORT_URL = "https://buy.stripe.com/dRm4grdJxcF3bUKgIuaVa0d"
+
+
+def verify_stripe_payment(email):
+    """Return True if Stripe shows a completed (paid) checkout session for this email.
+
+    Payment Links create checkout sessions, so we list recent sessions and match
+    on the customer email. Used to unlock the full report after purchase.
+    """
+    try:
+        secret = st.secrets.get("STRIPE_SECRETS_KEY", "")
+    except Exception:
+        secret = ""
+    email = (email or "").strip().lower()
+    if not secret or not email:
+        return False
+    try:
+        resp = requests.get(
+            "https://api.stripe.com/v1/checkout/sessions",
+            auth=(secret, ""),
+            params={"limit": 100},
+            timeout=20,
+        )
+        if resp.status_code != 200:
+            return False
+        for sess in resp.json().get("data", []):
+            details = sess.get("customer_details") or {}
+            if (details.get("email") or "").strip().lower() == email and sess.get("payment_status") == "paid":
+                return True
+    except Exception:
+        return False
+    return False
+
 
 tab_list = st.tabs(base_tabs)
 
@@ -548,36 +585,60 @@ with tab_list[0]:
 
             report_text = normalize_final_report(report_text, app_name, context_notes, advertising_price_note, commercial_price_note)
             st.success("Commercial evaluation complete")
-            st.markdown(report_text)
 
             score_snapshot = extract_scores(report_text)
             if score_snapshot:
                 st.subheader("\U0001F4CA Score snapshot")
                 st.bar_chart(score_snapshot)
 
-            st.download_button(
-                label="📄 Download Evaluation Report",
-                data=report_text,
-                file_name=f"{app_name.lower().replace(' ', '_')}_commercial_evaluation.md",
-                mime="text/markdown",
-            )
+            if st.session_state.get("qv_unlocked"):
+                st.markdown(report_text)
 
-            if SECURE_STORAGE_ENABLED:
-                save_generated_report(app_name, report_text)
+                st.download_button(
+                    label="📄 Download Evaluation Report",
+                    data=report_text,
+                    file_name=f"{app_name.lower().replace(' ', '_')}_commercial_evaluation.md",
+                    mime="text/markdown",
+                )
+
+                if SECURE_STORAGE_ENABLED:
+                    save_generated_report(app_name, report_text)
+                else:
+                    st.info("Generated report persistence disabled until QV_DATA_ENCRYPTION_KEY is configured.")
             else:
-                st.info("Generated report persistence disabled until QV_DATA_ENCRYPTION_KEY is configured.")
-
-            st.divider()
-            st.markdown(
-                """
-                <div class="premium-card">
-                    <h3>🔓 Optional Detailed Deep Dive</h3>
-                    <p>Use the downloadable report for optional extra details beyond the core 4–6 page structure.</p>
-                    <a href="https://buy.stripe.com/dRm4grdJxcF3bUKgIuaVa0d" target="_blank"><button style="background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Get Full Report - Grand Opening Price</button></a>
-                </div>
-            """,
-                unsafe_allow_html=True,
-            )
+                teaser = report_text[:700].rsplit("\n", 1)[0]
+                st.markdown(teaser)
+                st.markdown("*🔒 The full 6–8 page report is locked. Unlock below to keep reading.*")
+                st.divider()
+                st.subheader("🔓 Unlock the full report")
+                st.markdown(
+                    f"<a href=\"{STRIPE_FULL_REPORT_URL}\" target=\"_blank\"><button style=\"background-color: #3E7096; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;\">Get Full Report - Grand Opening Price ($12)</button></a>",
+                    unsafe_allow_html=True,
+                )
+                with st.expander("I already paid — unlock with my payment email"):
+                    pay_email = st.text_input("Email used at checkout", key="qv_pay_email")
+                    if st.button("Verify payment", key="qv_verify_btn"):
+                        if verify_stripe_payment(pay_email):
+                            st.session_state["qv_unlocked"] = True
+                            st.success("Payment verified — full report unlocked.")
+                            st.rerun()
+                        else:
+                            st.error("No completed payment found for that email. Check the spelling, or finish checkout first.")
+                tester_code = ""
+                try:
+                    tester_code = st.secrets.get("TESTER_CODE", "")
+                except Exception:
+                    tester_code = ""
+                if tester_code:
+                    with st.expander("I have a tester code"):
+                        code_in = st.text_input("Tester code", key="qv_tester_code", type="password")
+                        if st.button("Apply tester code", key="qv_tester_btn"):
+                            if code_in.strip() == tester_code:
+                                st.session_state["qv_unlocked"] = True
+                                st.success("Tester code accepted — full report unlocked.")
+                                st.rerun()
+                            else:
+                                st.error("That code didn't match.")
         else:
             st.warning("Please enter an idea name.")
 
