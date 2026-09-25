@@ -26,6 +26,12 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
+      - name: Satisfy Bubblewrap SDK layout check
+        run: |
+          SDK_BIN="$(dirname "$(find "$ANDROID_SDK_ROOT/cmdline-tools" -maxdepth 3 -name sdkmanager -type f | head -1)")"
+          ln -sfn "$SDK_BIN" "$ANDROID_SDK_ROOT/bin"
+          ls "$ANDROID_SDK_ROOT/bin" | head -3
+
       - name: Configure Bubblewrap SDK paths
         run: |
           mkdir -p ~/.bubblewrap
