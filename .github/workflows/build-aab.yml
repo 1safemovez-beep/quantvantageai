@@ -59,7 +59,9 @@ jobs:
         run: bubblewrap build --manifest ./twa-manifest.json
 
       - name: Verify signature
-        run: "$ANDROID_SDK_ROOT/build-tools/36.1.0/apksigner verify --print-certs app-release-bundle.aab"
+        run: |
+          jarsigner -verify -verbose -certs app-release-bundle.aab | head -25
+          keytool -printcert -jarfile app-release-bundle.aab | grep -i "SHA256"
 
       - name: Upload signed AAB
         uses: actions/upload-artifact@v4
