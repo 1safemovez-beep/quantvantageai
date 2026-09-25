@@ -1,0 +1,42 @@
+{
+  "packageId": "com.quantvantageai.twa",
+  "host": "1safemovez-beep.github.io",
+  "name": "QuantVantage AI Pro",
+  "launcherName": "QuantVantage",
+  "display": "standalone",
+  "themeColor": "#008F68",
+  "themeColorDark": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#000000",
+  "enableNotifications": true,
+  "startUrl": "/quantvantageai/",
+  "iconUrl": "https://1safemovez-beep.github.io/quantvantageai/icon_512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "quantvantage"
+  },
+  "appVersionCode": 2,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://1safemovez-beep.github.io/quantvantageai/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://1safemovez-beep.github.io/quantvantageai/",
+  "minSdkVersion": 21,
+  "orientation": "default",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "displayOverride": [],
+  "appVersion": "1.0.0"
+}
