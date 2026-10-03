@@ -3,31 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuantVantage AI | Evaluation Engine</title>
+    <title>QuantVantage AI | Commercial Evaluation Engine</title>
     <style>
         :root {
-            --emerald: #008F68;
-            --chrome: #E8E8E8;
-            --chrome-dark: #A9A9A9;
-            --purple-deep: #4B0082;
-            --emerald-glow: #50C878;
-            --bg-black: #000000;
-            --glass-chrome: rgba(232, 232, 232, 0.05);
+            --evaluation-orange: #FF8C00;
+            --chrome-silver: #C0C0C0;
+            --chrome-bright: #E8E8E8;
+            --text-black: #000000;
+            --text-gray: #444444;
+            --orange-glow: rgba(255, 140, 0, 0.15);
+            --bg-light: #F9F9F9;
+            --glass-white: rgba(255, 255, 255, 0.8);
         }
         body { 
             font-family: 'Inter', -apple-system, sans-serif; 
             margin: 0; 
-            background: var(--bg-black); 
-            color: var(--chrome);
+            background: #FFFFFF; 
+            color: var(--text-black);
             overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 50%, #0D0D0F 0%, #000 100%);
+            background-image: radial-gradient(circle at 50% 50%, #FFF5E6 0%, #FFFFFF 100%);
         }
         .container { max-width: 1000px; margin: 0 auto; padding: 60px 20px; text-align: center; position: relative; }
         
-        /* THE PEACOCK TRIANGLE LOGO */
+        /* THE ORANGE & SILVER LOGO */
         .peacock-svg { 
             width: 160px; height: 160px; 
-            filter: drop-shadow(0 0 15px var(--emerald-glow)); 
+            filter: drop-shadow(0 0 15px var(--orange-glow)); 
             margin-bottom: 20px;
         }
         
@@ -35,23 +36,30 @@
             font-size: 4.2rem; 
             letter-spacing: -0.04em; 
             font-weight: 900; 
-            background: linear-gradient(180deg, #FFFFFF 0%, var(--chrome-dark) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-black);
             margin: 0;
             text-transform: uppercase;
         }
-        .tagline { font-size: 1.6rem; color: var(--emerald); font-weight: 300; margin-bottom: 60px; letter-spacing: 0.1em; }
+        .tagline { font-size: 1.6rem; color: var(--evaluation-orange); font-weight: 300; margin-bottom: 60px; letter-spacing: 0.1em; }
 
         /* CTA SECTION */
         .hero-card {
-            background: var(--glass-chrome);
-            backdrop-filter: blur(40px);
-            border: 2px solid var(--chrome-dark);
+            background: var(--glass-white);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--chrome-silver);
             padding: 80px 40px;
             border-radius: 0px;
             margin-bottom: 80px;
-            box-shadow: 0 0 40px rgba(0, 143, 104, 0.1);
+            box-shadow: 0 15px 40px var(--orange-glow);
+            position: relative;
+        }
+        .hero-card::before {
+            content: "";
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            border: 2px solid var(--evaluation-orange);
+            z-index: -1;
+            clip-path: inset(0 70% 70% 0);
         }
 
         .btn {
@@ -67,41 +75,62 @@
             cursor: pointer;
             border-radius: 0;
         }
-        .btn-chrome { 
-            background: linear-gradient(180deg, #FFF 0%, var(--chrome-dark) 100%); 
-            color: #000; 
+        .btn-orange { 
+            background: var(--evaluation-orange); 
+            color: #FFF; 
             border: none;
         }
-        .btn-chrome:hover { 
-            background: var(--emerald); 
+        .btn-orange:hover { 
+            background: var(--text-black); 
             color: #FFF;
-            transform: scale(1.05);
-            box-shadow: 0 0 30px var(--emerald);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--orange-glow);
         }
-        .btn-outline-purple { 
-            border: 2px solid var(--purple-deep); 
-            color: #FFF; 
+        .btn-outline-chrome { 
+            border: 2px solid var(--chrome-silver); 
+            color: var(--text-black); 
+            background: linear-gradient(180deg, #FFFFFF 0%, var(--chrome-bright) 100%);
         }
-        .btn-outline-purple:hover { 
-            background: var(--purple-deep); 
-            border-color: #FFF;
+        .btn-outline-chrome:hover { 
+            background: var(--text-black); 
+            color: #FFF;
+            border-color: var(--text-black);
+            transform: translateY(-5px);
         }
 
         /* FEATURES GRID */
         .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; text-align: left; }
         .card { 
             padding: 40px; 
-            background: #080808; 
-            border-left: 4px solid var(--emerald);
+            background: #FFFFFF; 
+            border-bottom: 4px solid var(--chrome-silver);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
             transition: 0.4s;
         }
-        .card:hover { border-left-color: var(--purple-deep); background: #0C0C0C; }
-        .card h3 { color: var(--chrome); text-transform: uppercase; letter-spacing: 0.2em; font-size: 1rem; margin-bottom: 20px; }
-        .card p { color: #666; font-weight: 400; line-height: 1.8; font-size: 0.95rem; }
+        .card:hover { border-bottom-color: var(--evaluation-orange); transform: translateY(-10px); box-shadow: 0 15px 30px var(--orange-glow); }
+        .card h3 { color: var(--text-black); text-transform: uppercase; letter-spacing: 0.2em; font-size: 1rem; margin-bottom: 20px; }
+        .card p { color: var(--text-gray); font-weight: 400; line-height: 1.8; font-size: 0.95rem; }
 
-        footer { margin-top: 100px; padding: 40px 0; border-top: 1px solid #111; font-size: 0.8rem; color: #444; text-transform: uppercase; letter-spacing: 0.1em; }
-        .link-mall { color: var(--emerald); text-decoration: none; font-weight: bold; }
-        .link-mall:hover { color: #FFF; }
+        footer { margin-top: 100px; padding: 40px 0; border-top: 1px solid #EEE; font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.1em; }
+        .link-orange { color: var(--evaluation-orange); text-decoration: none; font-weight: bold; }
+        .link-orange:hover { color: var(--text-black); }
+        .mall-link { color: var(--chrome-silver); text-decoration: none; transition: 0.3s; }
+        .mall-link:hover { color: var(--evaluation-orange); }
+
+        .accio-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            border: 1px solid #EEE;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.85rem;
+            margin-top: 40px;
+            transition: all 0.3s;
+        }
+        .accio-badge:hover { border-color: var(--evaluation-orange); color: var(--text-black); }
+        .accio-icon { width: 20px; height: 20px; }
     </style>
 </head>
 <body>
@@ -110,63 +139,80 @@
     <div class="logo-container">
         <svg class="peacock-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <defs>
-                <linearGradient id="peacockChrome" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:var(--emerald);stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:var(--purple-deep);stop-opacity:1" />
+                <linearGradient id="orangeEval" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:var(--evaluation-orange);stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#FFD580;stop-opacity:1" />
                 </linearGradient>
             </defs>
-            <polygon points="50,5 95,85 5,85" fill="none" stroke="var(--chrome)" stroke-width="3" />
-            <circle cx="50" cy="65" r="12" fill="url(#peacockChrome)" />
-            <path d="M50,55 Q50,45 55,40 Q50,35 45,40 Q50,45 50,55" fill="var(--chrome)" />
-            <line x1="50" y1="65" x2="30" y2="30" stroke="var(--emerald)" stroke-width="2" />
-            <line x1="50" y1="65" x2="70" y2="30" stroke="var(--purple-deep)" stroke-width="2" />
-            <line x1="50" y1="65" x2="50" y2="20" stroke="var(--chrome)" stroke-width="2" />
-            <circle cx="30" cy="30" r="4" fill="var(--emerald)" />
-            <circle cx="70" cy="30" r="4" fill="var(--purple-deep)" />
-            <circle cx="50" cy="20" r="4" fill="#FFF" />
+            <polygon points="50,5 95,85 5,85" fill="none" stroke="var(--evaluation-orange)" stroke-width="2" />
+            <circle cx="50" cy="65" r="12" fill="url(#orangeEval)" />
+            <path d="M50,55 Q50,45 55,40 Q50,35 45,40 Q50,45 50,55" fill="var(--evaluation-orange)" />
+            <line x1="50" y1="65" x2="30" y2="30" stroke="var(--evaluation-orange)" stroke-width="1.5" />
+            <line x1="50" y1="65" x2="70" y2="30" stroke="var(--text-black)" stroke-width="1.5" />
+            <line x1="50" y1="65" x2="50" y2="20" stroke="var(--evaluation-orange)" stroke-width="1.5" />
+            <circle cx="30" cy="30" r="3" fill="var(--evaluation-orange)" />
+            <circle cx="70" cy="30" r="3" fill="var(--text-black)" />
+            <circle cx="50" cy="20" r="3" fill="var(--evaluation-orange)" />
         </svg>
     </div>
 
     <header>
         <h1>QuantVantage AI</h1>
-        <p class="tagline">COMMERCIAL ARCHITECTURE & OPTICS</p>
+        <p class="tagline">EVALUATION & EXPLORATION ENGINE</p>
     </header>
 
     <div class="hero-card">
-        <h2 style="font-weight: 800; letter-spacing: 0.3em; margin-bottom: 40px; color: #FFF;">INITIALIZE EVALUATION</h2>
+        <h2 style="font-weight: 800; letter-spacing: 0.3em; margin-bottom: 40px; color: var(--text-black);">INITIALIZE EVALUATION</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div class="card" style="text-align: center; border-radius: 0; background: rgba(255,255,255,0.02);">
-                <h3 style="color: var(--chrome);">Personal Engine</h3>
-                <p style="color: var(--chrome-dark); font-size: 0.8rem; margin-bottom: 20px;">Lightweight app analysis with real-time feedback.</p>
-                <span style="display: block; color: var(--emerald); font-weight: bold; margin-bottom: 20px;">$12.00 / report</span>
-                <a href="https://quantvantageai-d.streamlit.app?mode=app" class="btn btn-chrome" style="width: 100%; box-sizing: border-box; margin: 0;">Select Personal</a>
+            <div class="card" style="text-align: center;">
+                <h3>Exploration Mode</h3>
+                <p>Safe, evidence-based learning and research for all ages.</p>
+                <span style="display: block; color: var(--evaluation-orange); font-weight: bold; margin-bottom: 20px;">FREE ACCESS</span>
+                <a href="https://quantvantageai-d.streamlit.app" class="btn btn-orange" style="width: 100%; box-sizing: border-box; margin: 0;">Start Exploring</a>
             </div>
-            <div class="card" style="text-align: center; border-radius: 0; border-left: 4px solid var(--purple-deep); background: rgba(255,255,255,0.02);">
-                <h3 style="color: var(--chrome);">QVpro Commercial</h3>
-                <p style="color: var(--chrome-dark); font-size: 0.8rem; margin-bottom: 20px;">High-fidelity terminal for commercial venture valuation.</p>
-                <span style="display: block; color: var(--purple-deep); font-weight: bold; margin-bottom: 20px;">$12.00 / report</span>
-                <a href="https://quantvantage-beta.site.accio.ai" class="btn btn-outline-purple" style="width: 100%; box-sizing: border-box; margin: 0;">Select QVpro</a>
+            <div class="card" style="text-align: center; border-color: var(--text-black); position: relative;">
+                <div style="position: absolute; top: -10px; right: -10px; background: var(--evaluation-orange); color: white; padding: 5px 10px; font-size: 0.6rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em;">Construct Space</div>
+                <h3>QuantVantage Pro</h3>
+                <p>Professional-grade commercial architecture and valuation optics.</p>
+                <div style="margin-bottom: 20px;">
+                    <span style="display: block; color: var(--text-black); font-weight: bold;">$12.00 / report</span>
+                    <span style="display: block; color: #999; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;">Secure Stripe Checkout</span>
+                </div>
+                <div style="background: #FFF5E6; border: 1px dashed var(--evaluation-orange); padding: 15px; margin-bottom: 20px; font-size: 0.8rem; color: var(--text-black);">
+                    <strong>COMMERCIAL SPACE NOT READY</strong><br>
+                    This is currently a construct space. The full commercial suite will be available once development is finished.
+                </div>
+                <a href="https://buy.stripe.com/eVq8wH7l9awV2kaboaaVa06" class="btn btn-outline-chrome" style="width: 100%; box-sizing: border-box; margin: 0; opacity: 0.7; pointer-events: none;">Coming Soon</a>
             </div>
         </div>
         <div style="margin-top: 30px;">
-            <button id="shareBtn" class="btn" style="border: 1px solid var(--emerald); color: var(--emerald); background: transparent;">🔗 Share Site</button>
+            <button id="shareBtn" class="btn" style="border: 1px solid var(--evaluation-orange); color: var(--evaluation-orange); background: transparent;">🔗 Share Dashboard</button>
+        </div>
+    </div>
+
+    <!-- FEATURES GRID -->
+    <div class="features">
+        <div class="card">
+            <h3>📈 ROI & Profitability</h3>
+            <p>Detailed unit economics, break-even analysis, and revenue projections based on 2026 market data.</p>
+        </div>
+        <div class="card">
+            <h3>⚔️ Competitive Intel</h3>
+            <p>We compare your app against industry giants and identify the "Better Method" to win your niche.</p>
+        </div>
+        <div class="card">
+            <h3>📂 Portable & Shareable</h3>
+            <p>Print to PDF, save directly to Google Drive, or share via a secure unique link instantly.</p>
         </div>
     </div>
 
     <script>
-        // Automatic Redirect to Evaluation Engine
-        window.onload = function() {
-            setTimeout(function() {
-                window.location.href = "https://quantvantageai-d.streamlit.app?mode=app";
-            }, 3000); // 3-second delay to show the landing page first
-        };
-
         document.getElementById('shareBtn').onclick = async () => {
             if (navigator.share) {
                 try {
                     await navigator.share({
-                        title: 'QuantVantage AI | Commercial Architecture',
-                        text: 'Check out this futuristic AI evaluation engine.',
+                        title: 'QuantVantage AI | Evaluation & Exploration',
+                        text: 'Evidence-based intelligence for a new generation.',
                         url: window.location.href
                     });
                 } catch (err) {
