@@ -526,15 +526,17 @@ tab_list = st.tabs(base_tabs)
 
 with tab_list[0]:
     st.header("Creation & Market Evaluation")
-    app_name = st.text_input("ENTER Business NAME,URL or YOUR CREATION/IDEA", placeholder="e.g. Premium tool bazaar idea")
-    context_notes = st.text_area(
-        "Context (optional)",
-        placeholder="Target users, market assumptions, current traction, goals...",
-        height=90,
-    )
-    col_price_1, col_price_2 = st.columns(2)
-    advertising_price_note = col_price_1.text_input("Advertising price note (optional)")
-    commercial_price_note = col_price_2.text_input("Commercial price note (optional)")
+    st.caption("Type your idea below, then tap Generate.")
+    app_name = st.text_input("Business name, URL, or your creation/idea", placeholder="e.g. Premium tool bazaar idea")
+    with st.expander("Add details (optional) — makes the report better"):
+        context_notes = st.text_area(
+            "Context",
+            placeholder="Target users, market assumptions, current traction, goals...",
+            height=90,
+        )
+        col_price_1, col_price_2 = st.columns(2)
+        advertising_price_note = col_price_1.text_input("Advertising price note")
+        commercial_price_note = col_price_2.text_input("Commercial price note")
 
     if st.button("GENERATE COMMERCIAL EVALUATION"):
         if app_name:
